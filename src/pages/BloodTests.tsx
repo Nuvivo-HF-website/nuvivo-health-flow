@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { 
-  Search, Filter, Clock, TestTube2, Heart, Brain, 
+  Search, Filter, Clock, TestTube2, Heart, Droplets, 
   Zap, Shield, Calendar, CheckCircle, Users, Star, Home, Building2
 } from "lucide-react";
 import Header from "@/components/Header";
@@ -23,7 +23,7 @@ const BloodTests = () => {
       case "Performance & Sports": return <Zap className="w-4 h-4" />;
       case "Hormones & Fertility": return <Users className="w-4 h-4" />;
       case "Heart Health": return <Heart className="w-4 h-4" />;
-      case "Sleep & Fatigue": return <Brain className="w-4 h-4" />;
+      case "Sleep & Fatigue": return <Droplets className="w-4 h-4" />;
       case "Cancer Screening": return <Shield className="w-4 h-4" />;
       case "Specialty Testing": return <TestTube2 className="w-4 h-4" />;
       default: return <TestTube2 className="w-4 h-4" />;

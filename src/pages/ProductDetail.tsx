@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   ArrowLeft, Calendar, Clock, TestTube2, CheckCircle, AlertTriangle, 
-  Users, Heart, Zap, Brain, Shield, Star, Info, Droplets, Building2, Home, MapPin, ChevronDown, ChevronRight
+  Users, Heart, Zap, Droplets, Shield, Star, Info, Building2, Home, MapPin, ChevronDown, ChevronRight
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -59,7 +59,7 @@ const ProductDetail = () => {
       case "Performance & Sports": return <Zap className="w-5 h-5" />;
       case "Hormones & Fertility": return <Users className="w-5 h-5" />;
       case "Heart Health": return <Heart className="w-5 h-5" />;
-      case "Sleep & Fatigue": return <Brain className="w-5 h-5" />;
+      case "Sleep & Fatigue": return <Droplets className="w-5 h-5" />;
       case "Cancer Screening": return <Shield className="w-5 h-5" />;
       case "Specialty Testing": return <TestTube2 className="w-5 h-5" />;
       default: return <TestTube2 className="w-5 h-5" />;

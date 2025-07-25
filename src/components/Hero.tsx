@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, Clock } from "lucide-react";
-import heroImage from "@/assets/hero-blood-test.jpg";
+import heroImage from "@/assets/hero-blood-testing.jpg";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {

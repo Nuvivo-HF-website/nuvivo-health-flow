@@ -165,11 +165,12 @@ const Services = () => {
                     variant={category.popular ? "hero" : "default"} 
                     className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors"
                     size="lg"
+                    onClick={() => window.location.href = category.link}
                   >
-                    <a href={category.link} className="flex items-center justify-center gap-2 w-full">
+                    <div className="flex items-center justify-center gap-2 w-full">
                       Explore {category.title}
                       <ArrowRight className="w-4 h-4" />
-                    </a>
+                    </div>
                   </Button>
                 </CardContent>
               </Card>
@@ -231,17 +232,27 @@ const Services = () => {
               Get started with a comprehensive health assessment or book a consultation with one of our specialists.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="secondary" size="lg" className="bg-white text-primary hover:bg-white/90">
-                <a href="/booking" className="flex items-center gap-2">
+              <Button 
+                variant="secondary" 
+                size="lg" 
+                className="bg-white text-primary hover:bg-white/90"
+                onClick={() => window.location.href = "/booking"}
+              >
+                <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5" />
                   Book Appointment
-                </a>
+                </div>
               </Button>
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
-                <a href="/blood-tests" className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-white text-white hover:bg-white/10"
+                onClick={() => window.location.href = "/blood-tests"}
+              >
+                <div className="flex items-center gap-2">
                   <TestTube2 className="w-5 h-5" />
                   Browse Tests
-                </a>
+                </div>
               </Button>
             </div>
           </div>

@@ -42,6 +42,7 @@ const Hero = () => {
                 variant="hero" 
                 size="lg" 
                 className="text-base px-8 py-3"
+                onClick={() => window.location.href = "/booking"}
               >
                 Book Your Test Today
               </Button>
@@ -49,6 +50,7 @@ const Hero = () => {
                 variant="outline" 
                 size="lg" 
                 className="text-base px-8 py-3"
+                onClick={() => window.location.href = "/blood-tests"}
               >
                 View Test Packages
               </Button>

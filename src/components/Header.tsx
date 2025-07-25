@@ -41,12 +41,24 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" className="hidden sm:flex items-center space-x-1">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="hidden sm:flex items-center space-x-1"
+              onClick={() => {
+                // TODO: Implement sign in functionality
+                window.location.href = "/sign-in";
+              }}
+            >
               <User className="w-4 h-4" />
               <span>Sign In</span>
             </Button>
-            <Button variant="hero" size="sm">
-              <a href="/booking">Book Test</a>
+            <Button 
+              variant="hero" 
+              size="sm"
+              onClick={() => window.location.href = "/booking"}
+            >
+              Book Test
             </Button>
           </div>
         </div>

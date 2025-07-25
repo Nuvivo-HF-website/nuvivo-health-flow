@@ -121,11 +121,11 @@ const BloodTests = () => {
                   }`}
                   onClick={(e) => {
                     // Check if click was on the card content area, not selection buttons
-                    if (e.detail === 2) { // Double click for details
-                      window.location.href = `/product/${test.id}`;
-                    } else {
-                      toggleTestSelection(test.id);
+                    if ((e.target as HTMLElement).closest('button')) {
+                      // If clicked on a button inside the card, don't toggle selection
+                      return;
                     }
+                    toggleTestSelection(test.id);
                   }}
                 >
                   <CardHeader className="pb-4">

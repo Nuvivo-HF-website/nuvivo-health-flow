@@ -275,7 +275,13 @@ const Marketplace = () => {
                   </div>
                   
                   <div className="flex gap-2">
-                    <Button className="flex-1" size="sm">
+                    <Button 
+                      className="flex-1" 
+                      size="sm"
+                      onClick={() => {
+                        window.location.href = '/booking';
+                      }}
+                    >
                       Book Consultation
                     </Button>
                     <Button variant="outline" size="sm" className="gap-1">

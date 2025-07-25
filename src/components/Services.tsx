@@ -17,7 +17,7 @@ const Services = () => {
       features: [
         "65+ biomarkers tested",
         "Doctor-reviewed results",
-        "Fast 24-48hr turnaround",
+        "From 3 working days turnaround",
         "Home & clinic collection"
       ],
       popular: true,

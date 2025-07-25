@@ -309,7 +309,12 @@ const Radiology = () => {
                       </ul>
                     </div>
 
-                    <Button className="w-full mt-4">
+                    <Button 
+                      className="w-full mt-4"
+                      onClick={() => {
+                        window.location.href = '/booking';
+                      }}
+                    >
                       <Calendar className="w-4 h-4 mr-2" />
                       Book Now
                     </Button>
@@ -402,7 +407,13 @@ const Radiology = () => {
                               </div>
                             </div>
 
-                            <Button size="lg" className="w-full">
+                            <Button 
+                              size="lg" 
+                              className="w-full"
+                              onClick={() => {
+                                window.location.href = '/booking';
+                              }}
+                            >
                               <Calendar className="w-4 h-4 mr-2" />
                               Book {service.name}
                             </Button>

@@ -20,6 +20,7 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import ClinicMap from "@/components/ClinicMap";
 
 const clinics = [
   // London & South East England
@@ -379,6 +380,19 @@ const ClinicFinder = () => {
             </CardContent>
           </Card>
 
+          {/* Map Section */}
+          <div className="mb-8">
+            <ClinicMap 
+              clinics={filteredClinics} 
+              onClinicSelect={(clinic) => {
+                toast({
+                  title: "Clinic Selected",
+                  description: `${clinic.name} - ${clinic.address}`,
+                });
+              }}
+            />
+          </div>
+
           {/* Results Summary */}
           <div className="mb-6">
             <p className="text-muted-foreground">
@@ -474,7 +488,9 @@ const ClinicFinder = () => {
                   <div className="flex gap-2 pt-4">
                     <Button 
                       className="flex-1"
-                      onClick={() => handleBooking(clinic.id)}
+                      onClick={() => {
+                        window.location.href = '/booking';
+                      }}
                     >
                       <Calendar className="w-4 h-4 mr-2" />
                       Book Blood Draw

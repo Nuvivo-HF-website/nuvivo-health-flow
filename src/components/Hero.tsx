@@ -32,7 +32,7 @@ const Hero = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Clock className="w-5 h-5 text-success" />
-                <span className="text-sm text-muted-foreground">24-48h Results</span>
+                <span className="text-sm text-muted-foreground">From 3 working days Results</span>
               </div>
             </div>
 

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, Clock } from "lucide-react";
-import heroImage from "@/assets/hero-elegant.jpg";
+import heroImage from "@/assets/hero-medical-elegant.jpg";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
@@ -76,7 +76,7 @@ const Hero = () => {
             <div className="relative rounded-2xl overflow-hidden shadow-medical">
               <img 
                 src={heroImage} 
-                alt="Elegant professional environment"
+                alt="Modern medical laboratory environment"
                 className="w-full h-auto object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-accent/10"></div>

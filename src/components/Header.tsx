@@ -42,12 +42,6 @@ const Header = () => {
             <a href="/upload-results" className="text-muted-foreground hover:text-primary transition-colors">
               Upload Results
             </a>
-            <a href="/faq" className="text-muted-foreground hover:text-primary transition-colors">
-              FAQ
-            </a>
-            <a href="/preparation" className="text-muted-foreground hover:text-primary transition-colors">
-              Test Prep
-            </a>
             <a href="/about" className="text-muted-foreground hover:text-primary transition-colors">
               About
             </a>
@@ -55,6 +49,16 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="flex items-center space-x-3">
+            {/* Health Professional Registration */}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate("/professional-registration")}
+              className="hidden lg:flex"
+            >
+              Join as Professional
+            </Button>
+            
             <Button 
               variant="ghost" 
               size="sm" 

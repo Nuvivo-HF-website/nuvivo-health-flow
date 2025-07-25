@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { 
   ArrowLeft, Calendar, Clock, TestTube2, CheckCircle, AlertTriangle, 
-  Users, Heart, Zap, Brain, Shield, Star, Info, Droplets
+  Users, Heart, Zap, Brain, Shield, Star, Info, Droplets, Building2, Home, MapPin
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -17,6 +20,7 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [selectedOption, setSelectedOption] = useState<string>("clinic");
   
   const test = id ? getTestById(id) : undefined;
 
@@ -52,18 +56,33 @@ const ProductDetail = () => {
     }
   };
 
+  const getSelectedOption = () => {
+    return test?.options.find(option => option.type === selectedOption);
+  };
+
+  const getOptionIcon = (type: string) => {
+    switch (type) {
+      case 'clinic': return <Building2 className="w-4 h-4" />;
+      case 'partner': return <MapPin className="w-4 h-4" />;
+      case 'home': return <Home className="w-4 h-4" />;
+      default: return <Building2 className="w-4 h-4" />;
+    }
+  };
+
   const handleBooking = () => {
+    const option = getSelectedOption();
     toast({
       title: "Booking initiated",
-      description: `Adding ${test.name} to your appointment booking`,
+      description: `Adding ${test.name} (${option?.name}) to your appointment booking`,
     });
-    navigate(`/booking?test=${test.id}`);
+    navigate(`/booking?test=${test.id}&option=${selectedOption}`);
   };
 
   const addToBasket = () => {
+    const option = getSelectedOption();
     toast({
       title: "Added to basket",
-      description: `${test.name} has been added to your basket`,
+      description: `${test.name} (${option?.name}) has been added to your basket`,
     });
   };
 
@@ -104,8 +123,9 @@ const ProductDetail = () => {
                     </CardDescription>
                   </div>
                   <div className="ml-6 text-right">
-                    <div className="text-4xl font-bold text-primary">£{test.price}</div>
+                    <div className="text-2xl font-bold text-primary">from £{test.basePrice}</div>
                     <div className="text-muted-foreground">{test.duration} appointment</div>
+                    <div className="text-sm text-muted-foreground">3 options available</div>
                   </div>
                 </div>
               </CardHeader>
@@ -254,15 +274,57 @@ const ProductDetail = () => {
           <div className="lg:col-span-1">
             <Card className="sticky top-24">
               <CardHeader>
-                <CardTitle className="text-2xl">£{test.price}</CardTitle>
-                <CardDescription>{test.duration} appointment</CardDescription>
+                <CardTitle className="text-xl">Choose Your Option</CardTitle>
+                <CardDescription>Select how you'd like to take your test</CardDescription>
               </CardHeader>
               
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
+                {/* Pricing Options */}
+                <RadioGroup value={selectedOption} onValueChange={setSelectedOption}>
+                  {test.options.map((option) => (
+                    <div key={option.type} className="flex items-center space-x-3 p-3 border rounded-lg">
+                      <RadioGroupItem value={option.type} id={option.type} />
+                      <Label 
+                        htmlFor={option.type} 
+                        className="flex-1 cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            {getOptionIcon(option.type)}
+                            <div>
+                              <div className="font-medium">{option.name}</div>
+                              <div className="text-xs text-muted-foreground">{option.description}</div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-primary">£{option.price}</div>
+                            {option.additionalCost > 0 && (
+                              <div className="text-xs text-muted-foreground">+£{option.additionalCost}</div>
+                            )}
+                          </div>
+                        </div>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+
+                <Separator />
+
+                {/* Selected Option Summary */}
+                <div className="p-3 bg-secondary/50 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Selected:</span>
+                    <span className="text-lg font-bold text-primary">£{getSelectedOption()?.price}</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    {getSelectedOption()?.name}
+                  </div>
+                </div>
+
                 <div className="space-y-3">
                   <Button onClick={handleBooking} className="w-full" size="lg">
                     <Calendar className="w-4 h-4 mr-2" />
-                    Book Now
+                    Book Now - £{getSelectedOption()?.price}
                   </Button>
                   <Button variant="outline" onClick={addToBasket} className="w-full">
                     Add to Basket

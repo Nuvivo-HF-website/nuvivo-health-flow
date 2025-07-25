@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { 
   Search, Filter, Clock, TestTube2, Heart, Brain, 
-  Zap, Shield, Calendar, CheckCircle, Users, Star
+  Zap, Shield, Calendar, CheckCircle, Users, Star, Home, Building2
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { bloodTests, bloodTestCategories, getTestsByCategory, type BloodTest } from "@/data/bloodTests";
+import { bloodTests, bloodTestCategories, getTestsByCategory, type BloodTest, type BloodTestOption } from "@/data/bloodTests";
 
 const BloodTests = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,7 +51,7 @@ const BloodTests = () => {
   const getTotalPrice = () => {
     return Array.from(selectedTests).reduce((total, testId) => {
       const test = bloodTests.find(t => t.id === testId);
-      return total + (test?.price || 0);
+      return total + (test?.basePrice || 0);
     }, 0);
   };
 
@@ -143,8 +143,9 @@ const BloodTests = () => {
                         </CardDescription>
                       </div>
                       <div className="ml-4 text-right">
-                        <div className="text-2xl font-bold text-accent">£{test.price}</div>
+                        <div className="text-lg font-bold text-accent">from £{test.basePrice}</div>
                         <div className="text-sm text-muted-foreground">{test.duration}</div>
+                        <div className="text-xs text-muted-foreground">3 options available</div>
                       </div>
                     </div>
                   </CardHeader>
@@ -195,6 +196,34 @@ const BloodTests = () => {
                       </div>
                     </div>
 
+                    {/* Pricing Options Preview */}
+                    <div className="space-y-2">
+                      <h4 className="font-medium mb-2 text-sm">Pricing Options:</h4>
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-1">
+                            <Building2 className="w-3 h-3" />
+                            <span>Livingston Clinic</span>
+                          </div>
+                          <span className="font-medium">£{test.basePrice}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Building2 className="w-3 h-3" />
+                            <span>Partner Clinic</span>
+                          </div>
+                          <span>£{test.basePrice + 39}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Home className="w-3 h-3" />
+                            <span>Home Visit</span>
+                          </div>
+                          <span>£{test.basePrice + 59}</span>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* View Details Button */}
                     <div className="pt-2">
                       <Button 
@@ -206,7 +235,7 @@ const BloodTests = () => {
                           window.location.href = `/product/${test.id}`;
                         }}
                       >
-                        View Details
+                        View Details & Book
                       </Button>
                     </div>
 
@@ -251,7 +280,7 @@ const BloodTests = () => {
                         return test ? (
                           <div key={testId} className="flex items-center justify-between text-sm">
                             <span className="flex-1">{test.name}</span>
-                            <span className="font-medium">£{test.price}</span>
+                            <span className="font-medium">from £{test.basePrice}</span>
                           </div>
                         ) : null;
                       })}

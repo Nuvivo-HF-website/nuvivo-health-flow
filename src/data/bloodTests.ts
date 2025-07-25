@@ -1,8 +1,16 @@
+export interface BloodTestOption {
+  type: 'clinic' | 'partner' | 'home';
+  name: string;
+  description: string;
+  price: number;
+  additionalCost: number;
+}
+
 export interface BloodTest {
   id: string;
   name: string;
   category: string;
-  price: number;
+  basePrice: number;
   duration: string;
   description: string;
   biomarkers: string[];
@@ -11,6 +19,7 @@ export interface BloodTest {
   turnaroundTime: string;
   fastingRequired: boolean;
   image?: string;
+  options: BloodTestOption[];
 }
 
 export const bloodTestCategories = [
@@ -29,7 +38,7 @@ export const bloodTests: BloodTest[] = [
     id: "advanced-wellness",
     name: "Advanced Wellness Blood Panel",
     category: "General Health",
-    price: 249,
+    basePrice: 249,
     duration: "30 min",
     description: "Comprehensive health assessment covering all major body systems. Perfect for annual health checks and early detection.",
     biomarkers: [
@@ -44,13 +53,36 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Adults seeking comprehensive health overview", "Preventive health monitoring", "Annual health checks"],
     turnaroundTime: "2-3 business days",
-    fastingRequired: true
+    fastingRequired: true,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 249,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 288,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 308,
+        additionalCost: 59
+      }
+    ]
   },
   {
     id: "advanced-athlete",
     name: "Advanced Athlete Health Panel", 
     category: "Performance & Sports",
-    price: 240,
+    basePrice: 240,
     duration: "25 min",
     description: "Specialized testing for athletes and active individuals to optimize performance, recovery, and prevent injury.",
     biomarkers: [
@@ -65,13 +97,36 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Professional athletes", "Active individuals", "Fitness enthusiasts", "Sports teams"],
     turnaroundTime: "2-3 business days", 
-    fastingRequired: true
+    fastingRequired: true,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 240,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 279,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 299,
+        additionalCost: 59
+      }
+    ]
   },
   {
     id: "advanced-thyroid",
     name: "Advanced Thyroid Insight Panel",
     category: "Hormones & Fertility",
-    price: 189,
+    basePrice: 189,
     duration: "20 min", 
     description: "Comprehensive thyroid function assessment including antibodies and reverse T3 for complete thyroid health picture.",
     biomarkers: [
@@ -86,13 +141,36 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Suspected thyroid disorders", "Weight management issues", "Fatigue and energy problems", "Family history of thyroid disease"],
     turnaroundTime: "3-5 business days",
-    fastingRequired: false
+    fastingRequired: false,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 189,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 228,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 248,
+        additionalCost: 59
+      }
+    ]
   },
   {
     id: "pregnancy-advanced",
     name: "Advanced Pregnancy Risk Panel",
     category: "Hormones & Fertility",
-    price: 300,
+    basePrice: 300,
     duration: "25 min",
     description: "Comprehensive pre-pregnancy and early pregnancy health assessment to optimize maternal and fetal health.",
     biomarkers: [
@@ -107,13 +185,36 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Women planning pregnancy", "Early pregnancy screening", "Fertility optimization"],
     turnaroundTime: "3-5 business days",
-    fastingRequired: true
+    fastingRequired: true,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 300,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 339,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 359,
+        additionalCost: 59
+      }
+    ]
   },
   {
     id: "pregnancy-basic", 
     name: "Basic Pregnancy Risk Panel",
     category: "Hormones & Fertility",
-    price: 230,
+    basePrice: 230,
     duration: "20 min",
     description: "Essential pregnancy screening tests for maternal and fetal health monitoring.",
     biomarkers: [
@@ -128,13 +229,36 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Routine pregnancy screening", "Budget-conscious expectant mothers", "Follow-up testing"],
     turnaroundTime: "2-3 business days",
-    fastingRequired: true
+    fastingRequired: true,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 230,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 269,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 289,
+        additionalCost: 59
+      }
+    ]
   },
   {
     id: "allergy-intolerance",
     name: "Allergy & Intolerance Insight Panel",
     category: "Specialty Testing", 
-    price: 650,
+    basePrice: 650,
     duration: "15 min",
     description: "Comprehensive testing for food allergies, environmental allergens, and intolerances affecting quality of life.",
     biomarkers: [
@@ -149,13 +273,36 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Unexplained symptoms", "Digestive issues", "Skin problems", "Respiratory symptoms"],
     turnaroundTime: "7-10 business days",
-    fastingRequired: false
+    fastingRequired: false,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 650,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 689,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 709,
+        additionalCost: 59
+      }
+    ]
   },
   {
     id: "bone-strength",
     name: "Bone Strength & Osteoporosis Risk Panel", 
     category: "General Health",
-    price: 169,
+    basePrice: 169,
     duration: "15 min",
     description: "Assessment of bone health and osteoporosis risk factors for preventive bone care.",
     biomarkers: [
@@ -170,13 +317,36 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Post-menopausal women", "Family history of osteoporosis", "Bone health monitoring", "Athletes with stress fractures"],
     turnaroundTime: "3-5 business days",
-    fastingRequired: false
+    fastingRequired: false,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 169,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 208,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 228,
+        additionalCost: 59
+      }
+    ]
   },
   {
     id: "cancer-markers",
     name: "Cancer Marker Awareness Panel",
     category: "Cancer Screening",
-    price: 199,
+    basePrice: 199,
     duration: "20 min",
     description: "Early detection cancer markers for proactive health monitoring and peace of mind.",
     biomarkers: [
@@ -191,13 +361,36 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Family history of cancer", "Preventive screening", "High-risk individuals", "Regular monitoring"],
     turnaroundTime: "3-5 business days",
-    fastingRequired: false
+    fastingRequired: false,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 199,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 238,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 258,
+        additionalCost: 59
+      }
+    ]
   },
   {
     id: "sleep-fatigue",
     name: "Deep Sleep & Fatigue Investigation Panel",
     category: "Sleep & Fatigue",
-    price: 139,
+    basePrice: 139,
     duration: "20 min",
     description: "Comprehensive investigation of sleep disorders and chronic fatigue causes.",
     biomarkers: [
@@ -212,13 +405,36 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Chronic fatigue", "Sleep disorders", "Energy optimization", "Stress management"],
     turnaroundTime: "3-5 business days", 
-    fastingRequired: true
+    fastingRequired: true,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 139,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 178,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 198,
+        additionalCost: 59
+      }
+    ]
   },
   {
     id: "detox-toxin",
     name: "Detox & Toxin Exposure Panel",
     category: "Specialty Testing",
-    price: 179,
+    basePrice: 179,
     duration: "15 min",
     description: "Assessment of toxic load and detoxification capacity for environmental health optimization.",
     biomarkers: [
@@ -233,7 +449,30 @@ export const bloodTests: BloodTest[] = [
     ],
     suitableFor: ["Environmental exposure concerns", "Detox program monitoring", "Occupational health", "Wellness optimization"],
     turnaroundTime: "5-7 business days",
-    fastingRequired: false
+    fastingRequired: false,
+    options: [
+      {
+        type: 'clinic',
+        name: 'Livingston Clinic Visit',
+        description: 'Visit our main clinic in Livingston',
+        price: 179,
+        additionalCost: 0
+      },
+      {
+        type: 'partner',
+        name: 'Partner Clinic Visit',
+        description: 'Visit one of our partner clinics nationwide',
+        price: 218,
+        additionalCost: 39
+      },
+      {
+        type: 'home',
+        name: 'Home Visit',
+        description: 'Professional phlebotomist visits your home',
+        price: 238,
+        additionalCost: 59
+      }
+    ]
   }
 ];
 

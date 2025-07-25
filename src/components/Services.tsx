@@ -70,7 +70,7 @@ const Services = () => {
       ],
       popular: false,
       startingPrice: "£45",
-      link: "/wellness",
+      link: "/treatments",
       services: ["Deep Tissue Massage", "Sports Massage", "Therapeutic Massage", "Injury Treatment"]
     }
   ];

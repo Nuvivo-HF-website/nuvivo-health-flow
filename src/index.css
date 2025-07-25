@@ -8,9 +8,9 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Nuvivo inspired color palette - warm, professional, approachable */
-    --background: 35 25% 97%; /* Warm off-white like Nuvivo */
-    --foreground: 20 25% 8%; /* Rich dark brown for text */
+    /* Luxury palette inspired colors */
+    --background: 35 33% 92%; /* Cream #EFE9E1 */
+    --foreground: 30 8% 18%; /* Dark charcoal #322D29 */
 
     --card: 0 0% 100%;
     --card-foreground: 20 25% 8%;
@@ -18,23 +18,23 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 20 25% 8%;
 
-    /* Primary - Luxury navy blue */
-    --primary: 225 100% 20%; /* Deep navy */
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 225 100% 15%;
+    /* Primary - Luxury dark charcoal */
+    --primary: 30 8% 18%; /* Dark charcoal #322D29 */
+    --primary-foreground: 35 33% 92%;
+    --primary-hover: 30 8% 15%;
 
-    /* Secondary - Luxury cream */
-    --secondary: 45 20% 96%;
-    --secondary-foreground: 225 100% 20%;
+    /* Secondary - Light beige */
+    --secondary: 35 25% 78%; /* Light beige #D1C7BD */
+    --secondary-foreground: 30 8% 18%;
 
-    /* Muted - Soft warm neutrals */
-    --muted: 35 15% 93%;
-    --muted-foreground: 20 15% 45%;
+    /* Muted - Warm taupe */
+    --muted: 35 20% 61%; /* Warm taupe #AC9C8D */
+    --muted-foreground: 30 8% 18%;
 
-    /* Accent - Luxury gold */
-    --accent: 45 100% 60%;
-    --accent-foreground: 225 100% 20%;
-    --accent-soft: 45 50% 95%;
+    /* Accent - Luxury burgundy */
+    --accent: 355 33% 33%; /* Burgundy #72383D */
+    --accent-foreground: 35 33% 92%;
+    --accent-soft: 355 20% 85%;
 
     /* Medical success - calming green */
     --success: 142 60% 45%;
@@ -47,17 +47,17 @@ All colors MUST be HSL.
     --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 35 20% 88%;
-    --input: 35 15% 94%;
-    --ring: 345 70% 58%;
+    --border: 0 0% 85%; /* Light gray #D9D9D9 */
+    --input: 35 25% 78%;
+    --ring: 355 33% 33%;
 
     --radius: 0.75rem;
 
     /* Luxury gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(45 80% 70%));
-    --gradient-hero: linear-gradient(135deg, hsl(225 30% 15%) 0%, hsl(45 30% 25%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(45 25% 97%) 0%, hsl(45 15% 94%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-soft)));
+    --gradient-hero: linear-gradient(135deg, hsl(30 8% 25%) 0%, hsl(355 33% 40%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(35 33% 92%) 0%, hsl(35 25% 88%) 100%);
     
     /* Nuvivo shadows - warm and subtle */
     --shadow-medical: 0 4px 20px -4px hsl(20 25% 15% / 0.08);

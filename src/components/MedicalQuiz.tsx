@@ -48,14 +48,14 @@ const MedicalQuiz = () => {
       ]
     },
     {
-      title: "Women's Health & Hormones",
-      description: "For women: Select any hormonal or reproductive health concerns",
+      title: "Hormones & Reproductive Health",
+      description: "Select any hormonal or reproductive health concerns you may have",
       symptoms: [
-        { id: "irregular-periods", label: "Irregular or painful periods", tests: ["Hormone Health Panel", "PCOS Profile", "Thyroid Function Tests"] },
-        { id: "fertility-concerns", label: "Trying to conceive or fertility concerns", tests: ["Fertility Health Check", "Hormone Health Panel", "Thyroid Function Tests"] },
-        { id: "menopause-symptoms", label: "Menopause symptoms (hot flashes, night sweats)", tests: ["Menopause Health Check", "Hormone Health Panel", "Advanced Wellness Blood Panel"] },
-        { id: "low-libido", label: "Decreased sex drive or energy", tests: ["Hormone Health Panel", "Thyroid Function Tests", "Advanced Wellness Blood Panel"] },
-        { id: "hair-skin-changes", label: "Hair loss, acne, or skin changes", tests: ["PCOS Profile", "Hormone Health Panel", "Thyroid Function Tests"] }
+        { id: "hormone-imbalance", label: "Suspected hormone imbalance or changes", tests: ["Hormone Health Panel", "Thyroid Function Tests", "Advanced Wellness Blood Panel"] },
+        { id: "reproductive-health", label: "Fertility concerns or reproductive health issues", tests: ["Fertility Health Check", "Hormone Health Panel", "Thyroid Function Tests"] },
+        { id: "libido-energy", label: "Decreased sex drive or energy levels", tests: ["Hormone Health Panel", "Thyroid Function Tests", "Advanced Wellness Blood Panel"] },
+        { id: "mood-hormones", label: "Mood swings or hormonal mood changes", tests: ["Hormone Health Panel", "Thyroid Function Tests", "Cortisol"] },
+        { id: "physical-changes", label: "Unexplained hair loss, acne, or body changes", tests: ["Hormone Health Panel", "Thyroid Function Tests", "PCOS Profile"] }
       ]
     },
     {

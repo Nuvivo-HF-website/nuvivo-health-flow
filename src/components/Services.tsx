@@ -1,15 +1,73 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   Heart, Brain, Dumbbell, Shield, Clock, CheckCircle, 
   TestTube2, Users, Scan, Zap, ArrowRight, Star,
-  Calendar, MapPin, Award
+  Calendar, MapPin, Award, X
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Services = () => {
   const navigate = useNavigate();
+  const [selectedTreatment, setSelectedTreatment] = useState<string | null>(null);
+  
+  const treatmentDetails = {
+    "Deep Tissue Massage": {
+      description: "Intensive massage targeting deeper layers of muscle and connective tissue to relieve chronic tension and pain.",
+      duration: "60-90 minutes",
+      price: "£85",
+      benefits: [
+        "Reduces chronic muscle tension",
+        "Improves blood circulation", 
+        "Relieves pain and stiffness",
+        "Enhances athletic recovery"
+      ],
+      process: "Our certified therapists use firm pressure and slow strokes to target knots and adhesions in muscle tissue.",
+      suitable: "Athletes, office workers, those with chronic pain or muscle tension"
+    },
+    "Sports Massage": {
+      description: "Specialized massage therapy designed for athletes and active individuals to enhance performance and prevent injury.",
+      duration: "45-75 minutes",
+      price: "£75",
+      benefits: [
+        "Prevents sports injuries",
+        "Improves flexibility and range of motion",
+        "Accelerates recovery time",
+        "Enhances athletic performance"
+      ],
+      process: "Combines techniques like effleurage, petrissage, and friction to prepare muscles for activity or aid recovery.",
+      suitable: "Athletes, fitness enthusiasts, pre/post workout sessions"
+    },
+    "Therapeutic Massage": {
+      description: "Medical massage focused on treating specific conditions and promoting overall wellness and healing.",
+      duration: "60 minutes",
+      price: "£70",
+      benefits: [
+        "Reduces stress and anxiety",
+        "Improves sleep quality",
+        "Boosts immune system",
+        "Promotes natural healing"
+      ],
+      process: "Gentle, therapeutic techniques tailored to your specific health needs and conditions.",
+      suitable: "Anyone seeking stress relief, pain management, or general wellness"
+    },
+    "Injury Treatment": {
+      description: "Comprehensive rehabilitation therapy for acute and chronic injuries using advanced treatment modalities.",
+      duration: "45-60 minutes", 
+      price: "£95",
+      benefits: [
+        "Accelerates injury healing",
+        "Reduces inflammation and swelling",
+        "Restores normal movement patterns",
+        "Prevents re-injury"
+      ],
+      process: "Assessment-based treatment using manual therapy, exercise prescription, and recovery protocols.",
+      suitable: "Recent injuries, chronic pain conditions, post-surgery rehabilitation"
+    }
+  };
   const serviceCategories = [
     {
       icon: TestTube2,
@@ -156,7 +214,18 @@ const Services = () => {
                     <h4 className="font-medium text-sm mb-3">Available Services:</h4>
                     <div className="flex flex-wrap gap-2">
                       {category.services.map((service, serviceIndex) => (
-                        <Badge key={serviceIndex} variant="secondary" className="text-xs">
+                        <Badge 
+                          key={serviceIndex} 
+                          variant="secondary" 
+                          className={`text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors ${
+                            category.title === "Treatments" ? "hover:scale-105" : ""
+                          }`}
+                          onClick={() => {
+                            if (category.title === "Treatments") {
+                              setSelectedTreatment(service);
+                            }
+                          }}
+                        >
                           {service}
                         </Badge>
                       ))}
@@ -175,15 +244,6 @@ const Services = () => {
                         <ArrowRight className="w-4 h-4" />
                       </div>
                     </Button>
-                    {category.title === "Treatments" && (
-                      <Button 
-                        variant="outline" 
-                        size="lg"
-                        onClick={() => navigate("/treatments")}
-                      >
-                        Read More
-                      </Button>
-                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -270,6 +330,87 @@ const Services = () => {
             </div>
           </div>
         </div>
+
+        {/* Treatment Details Modal */}
+        <Dialog open={!!selectedTreatment} onOpenChange={() => setSelectedTreatment(null)}>
+          <DialogContent className="max-w-2xl">
+            {selectedTreatment && treatmentDetails[selectedTreatment as keyof typeof treatmentDetails] && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="text-2xl text-accent flex items-center gap-3">
+                    <Zap className="w-6 h-6" />
+                    {selectedTreatment}
+                  </DialogTitle>
+                  <DialogDescription className="text-base">
+                    {treatmentDetails[selectedTreatment as keyof typeof treatmentDetails].description}
+                  </DialogDescription>
+                </DialogHeader>
+                
+                <div className="space-y-6">
+                  {/* Treatment Details */}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-primary">Duration</h4>
+                      <p className="text-muted-foreground">{treatmentDetails[selectedTreatment as keyof typeof treatmentDetails].duration}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-semibold text-primary">Price</h4>
+                      <p className="text-2xl font-bold text-accent">{treatmentDetails[selectedTreatment as keyof typeof treatmentDetails].price}</p>
+                    </div>
+                  </div>
+
+                  {/* Benefits */}
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-primary">Key Benefits</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      {treatmentDetails[selectedTreatment as keyof typeof treatmentDetails].benefits.map((benefit, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <CheckCircle className="w-4 h-4 text-success flex-shrink-0" />
+                          <span className="text-sm">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Process */}
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-primary">Treatment Process</h4>
+                    <p className="text-muted-foreground text-sm">{treatmentDetails[selectedTreatment as keyof typeof treatmentDetails].process}</p>
+                  </div>
+
+                  {/* Suitable For */}
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-primary">Suitable For</h4>
+                    <p className="text-muted-foreground text-sm">{treatmentDetails[selectedTreatment as keyof typeof treatmentDetails].suitable}</p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4">
+                    <Button 
+                      onClick={() => {
+                        setSelectedTreatment(null);
+                        navigate("/booking");
+                      }}
+                      className="flex-1"
+                    >
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Book This Treatment
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedTreatment(null);
+                        navigate("/treatments");
+                      }}
+                    >
+                      View All Treatments
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );

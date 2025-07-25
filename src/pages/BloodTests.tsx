@@ -119,7 +119,14 @@ const BloodTests = () => {
                   className={`overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer ${
                     selectedTests.has(test.id) ? 'ring-2 ring-accent border-accent' : ''
                   }`}
-                  onClick={() => toggleTestSelection(test.id)}
+                  onClick={(e) => {
+                    // Check if click was on the card content area, not selection buttons
+                    if (e.detail === 2) { // Double click for details
+                      window.location.href = `/product/${test.id}`;
+                    } else {
+                      toggleTestSelection(test.id);
+                    }
+                  }}
                 >
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
@@ -186,6 +193,21 @@ const BloodTests = () => {
                           <span className="text-success">No fasting</span>
                         )}
                       </div>
+                    </div>
+
+                    {/* View Details Button */}
+                    <div className="pt-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.href = `/product/${test.id}`;
+                        }}
+                      >
+                        View Details
+                      </Button>
                     </div>
 
                     {/* Selection indicator */}

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, Clock } from "lucide-react";
-import heroImage from "@/assets/hero-medical-new.jpg";
+import heroImage from "@/assets/hero-elegant.jpg";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
@@ -76,35 +76,10 @@ const Hero = () => {
             <div className="relative rounded-2xl overflow-hidden shadow-medical">
               <img 
                 src={heroImage} 
-                alt="Professional medical environment"
+                alt="Elegant professional environment"
                 className="w-full h-auto object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-accent/10"></div>
-            </div>
-            
-            {/* Floating cards */}
-            <div className="absolute -bottom-6 -left-6 bg-background rounded-xl shadow-card p-4 border border-border">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-success" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-primary">99.9% Accurate</p>
-                  <p className="text-xs text-muted-foreground">Lab certified results</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="absolute -top-6 -right-6 bg-background rounded-xl shadow-card p-4 border border-border">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-primary">Secure & Private</p>
-                  <p className="text-xs text-muted-foreground">GDPR compliant</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

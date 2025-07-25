@@ -59,19 +59,19 @@ const Services = () => {
     },
     {
       icon: Zap,
-      title: "Wellness Therapy",
+      title: "Treatments",
       subtitle: "Recovery & Performance",
-      description: "Sports massage and recovery treatments",
+      description: "Advanced wellness and recovery treatments",
       features: [
-        "Sports massage therapy",
-        "Deep tissue treatment",
-        "Cryotherapy sessions",
-        "Recovery optimization"
+        "Deep tissue massage",
+        "Sports massage therapy", 
+        "Injury rehabilitation",
+        "Therapeutic treatments"
       ],
       popular: false,
       startingPrice: "£45",
       link: "/wellness",
-      services: ["Sports Massage", "Cryotherapy", "Cupping", "Joint Mobilization"]
+      services: ["Deep Tissue Massage", "Sports Massage", "Therapeutic Massage", "Injury Treatment"]
     }
   ];
 
@@ -91,7 +91,7 @@ const Services = () => {
             Complete Healthcare Services
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            From blood tests to specialist consultations, radiology to wellness therapy - 
+            From blood tests to specialist consultations, radiology to treatments - 
             everything you need for optimal health in one place.
           </p>
         </div>

@@ -10,6 +10,7 @@ import BloodTests from "./pages/BloodTests";
 import Booking from "./pages/Booking";
 import UploadResults from "./pages/UploadResults";
 import Radiology from "./pages/Radiology";
+import ClinicFinder from "./pages/ClinicFinder";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/radiology" element={<Radiology />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/upload-results" element={<UploadResults />} />
+          <Route path="/clinic-finder" element={<ClinicFinder />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

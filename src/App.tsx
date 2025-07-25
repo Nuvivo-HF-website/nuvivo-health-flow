@@ -8,6 +8,7 @@ import Results from "./pages/Results";
 import Marketplace from "./pages/Marketplace";
 import BloodTests from "./pages/BloodTests";
 import Booking from "./pages/Booking";
+import UploadResults from "./pages/UploadResults";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/blood-tests" element={<BloodTests />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/upload-results" element={<UploadResults />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

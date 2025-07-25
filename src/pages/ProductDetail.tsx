@@ -240,17 +240,9 @@ const ProductDetail = () => {
                             {biomarker.description}
                           </p>
                           
-                          {biomarker.normalRange && (
-                            <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded">
-                              <p className="text-sm text-green-800">
-                                <strong>Normal Range:</strong> {biomarker.normalRange}
-                              </p>
-                            </div>
-                          )}
-                          
-                          <div className="p-3 bg-blue-50 border border-blue-200 rounded">
-                            <p className="text-sm text-blue-800">
-                              <strong>Clinical Significance:</strong> {biomarker.significance}
+                          <div className="p-3 bg-secondary/30 border border-border rounded">
+                            <p className="text-sm text-foreground">
+                              {biomarker.significance}
                             </p>
                           </div>
                         </div>

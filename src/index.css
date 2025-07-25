@@ -18,23 +18,23 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 20 25% 8%;
 
-    /* Primary - Deep navy */
-    --primary: 200 25% 15%; /* Deep navy */
+    /* Primary - Soft teal */
+    --primary: 195 35% 45%; /* Soft teal */
     --primary-foreground: 210 20% 90%;
-    --primary-hover: 200 25% 12%;
+    --primary-hover: 195 35% 38%;
 
-    /* Secondary - Medium blue-grey */
-    --secondary: 210 15% 75%; /* Medium blue-grey */
-    --secondary-foreground: 200 25% 15%;
+    /* Secondary - Warm taupe */
+    --secondary: 35 20% 61%; /* Warm taupe */
+    --secondary-foreground: 210 20% 90%;
 
-    /* Muted - Warm taupe */
-    --muted: 35 20% 61%; /* Warm taupe #AC9C8D */
-    --muted-foreground: 30 8% 18%;
+    /* Muted - Medium blue-grey */
+    --muted: 210 15% 75%; /* Medium blue-grey */
+    --muted-foreground: 200 25% 15%;
 
-    /* Accent - Soft teal */
-    --accent: 195 35% 45%; /* Soft teal */
+    /* Accent - Deep navy */
+    --accent: 200 25% 15%; /* Deep navy */
     --accent-foreground: 210 20% 90%;
-    --accent-soft: 195 20% 85%;
+    --accent-soft: 200 15% 25%;
 
     /* Medical success - calming green */
     --success: 142 60% 45%;

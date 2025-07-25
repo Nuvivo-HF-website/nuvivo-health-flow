@@ -13,12 +13,11 @@ const Hero = () => {
           <div className="space-y-8 animate-fade-in">
             <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-primary leading-tight">
-                Private Blood Tests
-                <span className="text-accent"> Made Simple</span>
+                Evidence First.
+                <span className="text-accent"> Action Next.</span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Get comprehensive health insights with results reviewed by qualified doctors and delivered securely through a secure link. 
-                GDPR compliant, private, and professional.
+                Browse trusted doctors, order the right blood tests, and get hands-on treatments—connected through one powerful platform.
               </p>
             </div>
 

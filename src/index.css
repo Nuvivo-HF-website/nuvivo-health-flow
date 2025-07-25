@@ -18,10 +18,10 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 20 25% 8%;
 
-    /* Primary - Modern purple brand color */
-    --primary: 268 83% 58%; /* Modern purple */
+    /* Primary - Vibrant blue brand color */
+    --primary: 214 100% 50%; /* Bright blue */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 268 83% 53%;
+    --primary-hover: 214 100% 45%;
 
     /* Secondary - Warm beiges */
     --secondary: 35 20% 95%;
@@ -31,10 +31,10 @@ All colors MUST be HSL.
     --muted: 35 15% 93%;
     --muted-foreground: 20 15% 45%;
 
-    /* Accent - Vibrant teal for CTAs */
-    --accent: 180 100% 45%;
+    /* Accent - Electric green for CTAs */
+    --accent: 142 76% 36%;
     --accent-foreground: 0 0% 100%;
-    --accent-soft: 180 50% 95%;
+    --accent-soft: 142 50% 95%;
 
     /* Medical success - calming green */
     --success: 142 60% 45%;
@@ -53,11 +53,11 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    /* Nuvivo gradients */
+    /* Modern gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-soft)));
-    --gradient-hero: linear-gradient(135deg, hsl(35 30% 88%) 0%, hsl(345 30% 88%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(35 25% 95%) 0%, hsl(25 20% 92%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(214 50% 88%) 0%, hsl(142 30% 88%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(214 25% 95%) 0%, hsl(142 20% 92%) 100%);
     
     /* Nuvivo shadows - warm and subtle */
     --shadow-medical: 0 4px 20px -4px hsl(20 25% 15% / 0.08);

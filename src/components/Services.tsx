@@ -161,17 +161,28 @@ const Services = () => {
                     </div>
                   </div>
                   
-                  <Button 
-                    variant={category.popular ? "hero" : "default"} 
-                    className="w-full group-hover:bg-accent group-hover:text-accent-foreground transition-colors"
-                    size="lg"
-                    onClick={() => window.location.href = category.link}
-                  >
-                    <div className="flex items-center justify-center gap-2 w-full">
-                      Explore {category.title}
-                      <ArrowRight className="w-4 h-4" />
-                    </div>
-                  </Button>
+                  <div className="flex gap-3">
+                    <Button 
+                      variant={category.popular ? "hero" : "default"} 
+                      className="flex-1 group-hover:bg-accent group-hover:text-accent-foreground transition-colors"
+                      size="lg"
+                      onClick={() => window.location.href = category.link}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        Explore {category.title}
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </Button>
+                    {category.title === "Treatments" && (
+                      <Button 
+                        variant="outline" 
+                        size="lg"
+                        onClick={() => window.location.href = "/treatments"}
+                      >
+                        Read More
+                      </Button>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             );

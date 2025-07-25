@@ -63,7 +63,7 @@ const mockDoctors = [
     tags: ["Diabetes", "Thyroid", "Hormone Therapy"],
     followers: 675,
     posts: 73,
-    bio: "Endocrinologist with expertise in diabetes management and hormonal disorders. Focused on personalized treatment plans.",
+    bio: "Endocrinologist with expertise in diabetes management and hormonal disorders. Focused on personalised treatment plans.",
     hospital: "Queen Elizabeth Hospital"
   },
   {

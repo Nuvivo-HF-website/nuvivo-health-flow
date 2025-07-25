@@ -349,7 +349,7 @@ const BloodTests = () => {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                All results are reviewed by qualified doctors with personalized insights.
+                All results are reviewed by qualified doctors with personalised insights.
               </p>
             </CardContent>
           </Card>

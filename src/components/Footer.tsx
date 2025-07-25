@@ -15,7 +15,7 @@ const Footer = () => {
             </div>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
               Private, secure, and professional blood testing services 
-              with doctor-reviewed results delivered to your home.
+              with results reviewed by qualified doctors and delivered through secure links.
             </p>
             <div className="space-y-1 text-sm text-primary-foreground/80">
               <p>📍 8 Carmondean Centre Road, EH54 8PT, Livingston</p>

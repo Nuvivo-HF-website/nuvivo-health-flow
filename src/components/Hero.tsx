@@ -15,7 +15,7 @@ const Hero = () => {
                 <span className="text-accent"> Made Simple</span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Get comprehensive health insights with doctor-reviewed results delivered securely to your home. 
+                Get comprehensive health insights with results reviewed by qualified doctors and delivered securely through a secure link. 
                 GDPR compliant, private, and professional.
               </p>
             </div>

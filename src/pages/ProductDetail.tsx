@@ -305,8 +305,8 @@ const ProductDetail = () => {
                 <div>
                   <h4 className="font-medium mb-2">Results Delivery</h4>
                   <p className="text-sm text-muted-foreground">
-                    Results are reviewed by qualified doctors and delivered securely through your 
-                    patient portal with detailed explanations and personalized recommendations.
+                    Results are reviewed by qualified doctors and delivered securely through a 
+                    secure link with detailed explanations and personalised recommendations.
                   </p>
                 </div>
                 <div>
@@ -408,7 +408,7 @@ const ProductDetail = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Personalized insights</span>
+                    <span>Personalised insights</span>
                   </div>
                 </div>
 

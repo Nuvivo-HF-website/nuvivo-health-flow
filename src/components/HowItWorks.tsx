@@ -24,7 +24,7 @@ const HowItWorks = () => {
     {
       icon: FileText,
       title: "Get Results",
-      description: "Receive doctor-reviewed results with personalized health insights.",
+      description: "Receive doctor-reviewed results with personalised health insights.",
       step: "04"
     }
   ];

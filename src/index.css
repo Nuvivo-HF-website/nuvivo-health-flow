@@ -8,9 +8,9 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Luxury palette - warm taupe background */
-    --background: 35 20% 78%; /* Warm taupe #D1C7BD */
-    --foreground: 30 8% 18%; /* Dark charcoal #322D29 */
+    /* Luxury palette - soft blue-grey background */
+    --background: 210 20% 90%; /* Light blue-grey */
+    --foreground: 200 25% 15%; /* Dark navy */
 
     --card: 0 0% 100%;
     --card-foreground: 20 25% 8%;
@@ -18,23 +18,23 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 20 25% 8%;
 
-    /* Primary - Luxury burgundy */
-    --primary: 355 33% 33%; /* Burgundy #72383D */
-    --primary-foreground: 35 33% 92%;
-    --primary-hover: 355 33% 28%;
+    /* Primary - Deep navy */
+    --primary: 200 25% 15%; /* Deep navy */
+    --primary-foreground: 210 20% 90%;
+    --primary-hover: 200 25% 12%;
 
-    /* Secondary - Cream */
-    --secondary: 35 33% 92%; /* Cream #EFE9E1 */
-    --secondary-foreground: 30 8% 18%;
+    /* Secondary - Medium blue-grey */
+    --secondary: 210 15% 75%; /* Medium blue-grey */
+    --secondary-foreground: 200 25% 15%;
 
     /* Muted - Warm taupe */
     --muted: 35 20% 61%; /* Warm taupe #AC9C8D */
     --muted-foreground: 30 8% 18%;
 
-    /* Accent - Dark charcoal */
-    --accent: 30 8% 18%; /* Dark charcoal #322D29 */
-    --accent-foreground: 35 33% 92%;
-    --accent-soft: 30 8% 85%;
+    /* Accent - Soft teal */
+    --accent: 195 35% 45%; /* Soft teal */
+    --accent-foreground: 210 20% 90%;
+    --accent-soft: 195 20% 85%;
 
     /* Medical success - calming green */
     --success: 142 60% 45%;

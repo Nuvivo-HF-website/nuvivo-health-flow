@@ -37,7 +37,7 @@ const Header = () => {
               <span>Sign In</span>
             </Button>
             <Button variant="hero" size="sm">
-              Book Test
+              <a href="/booking">Book Test</a>
             </Button>
           </div>
         </div>

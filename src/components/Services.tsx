@@ -104,12 +104,12 @@ const Services = () => {
               <Card 
                 key={index} 
                 className={`relative transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group ${
-                  category.popular ? 'border-accent shadow-accent/20 ring-2 ring-accent/20' : ''
+                  category.popular ? 'border-primary shadow-primary/20 ring-2 ring-primary/20' : ''
                 }`}
               >
                 {category.popular && (
                   <div className="absolute -top-3 left-6">
-                    <Badge className="bg-accent text-accent-foreground">
+                    <Badge className="bg-primary text-primary-foreground">
                       Most Popular
                     </Badge>
                   </div>
@@ -119,20 +119,20 @@ const Services = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-4">
                       <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        category.popular ? 'bg-accent/10' : 'bg-primary/10'
+                        category.popular ? 'bg-primary/10' : 'bg-accent/10'
                       }`}>
                         <IconComponent className={`w-6 h-6 ${
-                          category.popular ? 'text-accent' : 'text-primary'
+                          category.popular ? 'text-primary' : 'text-accent'
                         }`} />
                       </div>
                       <div>
-                        <CardTitle className="text-xl text-primary">{category.title}</CardTitle>
+                        <CardTitle className="text-xl text-accent">{category.title}</CardTitle>
                         <p className="text-sm text-muted-foreground">{category.subtitle}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-muted-foreground">Starting from</div>
-                      <div className="text-2xl font-bold text-accent">{category.startingPrice}</div>
+                      <div className="text-2xl font-bold text-primary">{category.startingPrice}</div>
                     </div>
                   </div>
                   <p className="text-muted-foreground mt-2">{category.description}</p>
@@ -164,7 +164,7 @@ const Services = () => {
                   <div className="flex gap-3">
                     <Button 
                       variant={category.popular ? "hero" : "default"} 
-                      className="flex-1 group-hover:bg-accent group-hover:text-accent-foreground transition-colors"
+                      className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                       size="lg"
                       onClick={() => window.location.href = category.link}
                     >
@@ -192,7 +192,7 @@ const Services = () => {
         {/* Stats Section */}
         <div className="bg-secondary/30 rounded-2xl p-8 mb-16">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-primary mb-2">Trusted by Thousands</h3>
+            <h3 className="text-2xl font-bold text-accent mb-2">Trusted by Thousands</h3>
             <p className="text-muted-foreground">Join our growing community of health-conscious individuals</p>
           </div>
           
@@ -201,8 +201,8 @@ const Services = () => {
               const IconComponent = stat.icon;
               return (
                 <div key={index} className="text-center">
-                  <IconComponent className="w-8 h-8 text-accent mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-primary">{stat.number}</div>
+                  <IconComponent className="w-8 h-8 text-primary mx-auto mb-3" />
+                  <div className="text-2xl font-bold text-accent">{stat.number}</div>
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </div>
               );
@@ -213,22 +213,22 @@ const Services = () => {
         {/* Trust indicators */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center">
-            <Shield className="w-8 h-8 text-accent mx-auto mb-3" />
-            <h3 className="font-semibold text-primary mb-2">GDPR Compliant</h3>
+            <Shield className="w-8 h-8 text-primary mx-auto mb-3" />
+            <h3 className="font-semibold text-accent mb-2">GDPR Compliant</h3>
             <p className="text-sm text-muted-foreground">
               Your health data is encrypted and stored securely in the EU
             </p>
           </div>
           <div className="text-center">
-            <Award className="w-8 h-8 text-accent mx-auto mb-3" />
-            <h3 className="font-semibold text-primary mb-2">Accredited Labs</h3>
+            <Award className="w-8 h-8 text-primary mx-auto mb-3" />
+            <h3 className="font-semibold text-accent mb-2">Accredited Labs</h3>
             <p className="text-sm text-muted-foreground">
               All tests processed in fully accredited medical laboratories
             </p>
           </div>
           <div className="text-center">
-            <Calendar className="w-8 h-8 text-accent mx-auto mb-3" />
-            <h3 className="font-semibold text-primary mb-2">Easy Booking</h3>
+            <Calendar className="w-8 h-8 text-primary mx-auto mb-3" />
+            <h3 className="font-semibold text-accent mb-2">Easy Booking</h3>
             <p className="text-sm text-muted-foreground">
               Book appointments online with flexible scheduling options
             </p>
@@ -246,7 +246,7 @@ const Services = () => {
               <Button 
                 variant="secondary" 
                 size="lg" 
-                className="bg-white text-primary hover:bg-white/90"
+                className="bg-white text-accent hover:bg-white/90"
                 onClick={() => window.location.href = "/booking"}
               >
                 <div className="flex items-center gap-2">

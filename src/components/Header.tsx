@@ -7,7 +7,7 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center">
               <img 
                 src="/lovable-uploads/d10bf310-8418-438d-af09-376e2c242db8.png" 
@@ -15,7 +15,6 @@ const Header = () => {
                 className="w-8 h-8 object-contain"
               />
             </div>
-            <span className="text-xl font-semibold text-primary">Nuvivo Health</span>
           </div>
 
           {/* Navigation */}

@@ -17,6 +17,11 @@ const Footer = () => {
               Private, secure, and professional blood testing services 
               with doctor-reviewed results delivered to your home.
             </p>
+            <div className="space-y-1 text-sm text-primary-foreground/80">
+              <p>📍 8 Carmondean Centre Road, EH54 8PT, Livingston</p>
+              <p>📞 0333 305 9916</p>
+              <p>✉️ hello@nuvivo.co.uk</p>
+            </div>
             <div className="text-xs text-primary-foreground/60">
               GDPR Compliant • ISO 27001 Certified
             </div>

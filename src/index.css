@@ -18,10 +18,10 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 20 25% 8%;
 
-    /* Primary - Nuvivo pink/coral brand color */
-    --primary: 345 85% 65%; /* Nuvivo pink */
+    /* Primary - Modern purple brand color */
+    --primary: 268 83% 58%; /* Modern purple */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 345 85% 60%;
+    --primary-hover: 268 83% 53%;
 
     /* Secondary - Warm beiges */
     --secondary: 35 20% 95%;
@@ -31,10 +31,10 @@ All colors MUST be HSL.
     --muted: 35 15% 93%;
     --muted-foreground: 20 15% 45%;
 
-    /* Accent - Warm coral for CTAs */
-    --accent: 345 70% 58%;
+    /* Accent - Vibrant teal for CTAs */
+    --accent: 180 100% 45%;
     --accent-foreground: 0 0% 100%;
-    --accent-soft: 345 50% 95%;
+    --accent-soft: 180 50% 95%;
 
     /* Medical success - calming green */
     --success: 142 60% 45%;

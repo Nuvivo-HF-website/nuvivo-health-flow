@@ -193,15 +193,60 @@ const ProductDetail = () => {
               </Alert>
             )}
 
-            {/* Biomarkers Section */}
+            {/* Comprehensive Biomarkers Section */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Droplets className="w-5 h-5 text-red-500" />
-                  Biomarkers Tested ({test.biomarkers.length})
+                  Comprehensive Biomarker Analysis ({test.biomarkerDetails.length} markers)
                 </CardTitle>
                 <CardDescription>
-                  Complete list of all biomarkers included in this test panel
+                  Detailed breakdown of all biomarkers included in this test panel with clinical significance and normal ranges
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {test.biomarkerDetails.map((biomarker, index) => (
+                    <div key={index} className="border-l-4 border-primary/20 pl-4 py-3 bg-secondary/20 rounded-r-lg">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-primary text-lg">{biomarker.name}</h4>
+                        <Badge variant="outline" className="ml-2 text-xs">
+                          {biomarker.normalRange ? "Reference Available" : "Complex Range"}
+                        </Badge>
+                      </div>
+                      
+                      <p className="text-muted-foreground mb-3 leading-relaxed">
+                        {biomarker.description}
+                      </p>
+                      
+                      {biomarker.normalRange && (
+                        <div className="mb-3 p-2 bg-green-50 border border-green-200 rounded">
+                          <p className="text-sm text-green-800">
+                            <strong>Normal Range:</strong> {biomarker.normalRange}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+                        <p className="text-sm text-blue-800">
+                          <strong>Clinical Significance:</strong> {biomarker.significance}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Traditional Biomarkers List */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TestTube2 className="w-5 h-5 text-primary" />
+                  Quick Reference - All Biomarkers
+                </CardTitle>
+                <CardDescription>
+                  Complete list of biomarkers for easy reference
                 </CardDescription>
               </CardHeader>
               <CardContent>

@@ -102,6 +102,7 @@ const radiologyServices = [
 ];
 
 const locations = [
+  // London
   {
     name: "Central London Clinic",
     address: "123 Harley Street, London W1G 6BA",
@@ -122,6 +123,110 @@ const locations = [
     distance: "4.2 miles",
     rating: 4.7,
     services: ["CT", "X-Ray", "Ultrasound", "DEXA"]
+  },
+  
+  // England (Outside London)
+  {
+    name: "Manchester Medical Imaging",
+    address: "234 Oxford Road, Manchester M13 9PL",
+    distance: "12.5 miles",
+    rating: 4.8,
+    services: ["MRI", "CT", "X-Ray", "Ultrasound", "DEXA", "Mammography"]
+  },
+  {
+    name: "Birmingham Radiology Centre",
+    address: "567 Broad Street, Birmingham B1 2HE",
+    distance: "8.3 miles",
+    rating: 4.6,
+    services: ["MRI", "CT", "X-Ray", "Ultrasound"]
+  },
+  {
+    name: "Leeds Diagnostic Centre",
+    address: "890 Wellington Street, Leeds LS1 4JJ",
+    distance: "15.7 miles",
+    rating: 4.7,
+    services: ["CT", "X-Ray", "Ultrasound", "DEXA"]
+  },
+  {
+    name: "Bristol Imaging Services",
+    address: "123 Park Street, Bristol BS1 5NA",
+    distance: "18.2 miles",
+    rating: 4.9,
+    services: ["MRI", "CT", "X-Ray", "Mammography"]
+  },
+  {
+    name: "Liverpool Medical Centre",
+    address: "456 Bold Street, Liverpool L1 4HY",
+    distance: "22.1 miles",
+    rating: 4.5,
+    services: ["MRI", "CT", "X-Ray", "Ultrasound", "DEXA"]
+  },
+  {
+    name: "Newcastle Radiology",
+    address: "789 Grey Street, Newcastle NE1 6EF",
+    distance: "28.4 miles",
+    rating: 4.8,
+    services: ["CT", "X-Ray", "Ultrasound", "Mammography"]
+  },
+  
+  // Wales
+  {
+    name: "Cardiff Imaging Centre",
+    address: "234 Queen Street, Cardiff CF10 2BQ",
+    distance: "35.2 miles",
+    rating: 4.7,
+    services: ["MRI", "CT", "X-Ray", "Ultrasound", "DEXA"]
+  },
+  {
+    name: "Swansea Medical Imaging",
+    address: "567 Oxford Street, Swansea SA1 3AQ",
+    distance: "42.8 miles",
+    rating: 4.6,
+    services: ["CT", "X-Ray", "Ultrasound", "Mammography"]
+  },
+  {
+    name: "Newport Radiology Services",
+    address: "890 Commercial Road, Newport NP20 2DA",
+    distance: "38.5 miles",
+    rating: 4.5,
+    services: ["MRI", "X-Ray", "Ultrasound"]
+  },
+  
+  // Scotland
+  {
+    name: "Edinburgh Medical Centre",
+    address: "123 Princes Street, Edinburgh EH2 4AD",
+    distance: "45.7 miles",
+    rating: 4.9,
+    services: ["MRI", "CT", "X-Ray", "Ultrasound", "DEXA", "Mammography"]
+  },
+  {
+    name: "Glasgow Imaging Institute",
+    address: "456 Sauchiehall Street, Glasgow G2 3LW",
+    distance: "52.3 miles",
+    rating: 4.8,
+    services: ["MRI", "CT", "X-Ray", "Ultrasound"]
+  },
+  {
+    name: "Aberdeen Radiology Centre",
+    address: "789 Union Street, Aberdeen AB11 6BD",
+    distance: "68.9 miles",
+    rating: 4.7,
+    services: ["CT", "X-Ray", "Ultrasound", "DEXA"]
+  },
+  {
+    name: "Dundee Medical Imaging",
+    address: "234 High Street, Dundee DD1 1EU",
+    distance: "58.4 miles",
+    rating: 4.6,
+    services: ["MRI", "X-Ray", "Mammography"]
+  },
+  {
+    name: "Stirling Diagnostic Services",
+    address: "567 King Street, Stirling FK8 1AY",
+    distance: "48.1 miles",
+    rating: 4.5,
+    services: ["CT", "X-Ray", "Ultrasound"]
   }
 ];
 

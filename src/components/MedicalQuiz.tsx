@@ -18,33 +18,55 @@ const MedicalQuiz = () => {
       title: "General Symptoms",
       description: "Select any symptoms you've been experiencing recently",
       symptoms: [
-        { id: "fatigue", label: "Fatigue or tiredness", tests: ["Full Blood Count", "Thyroid Function", "Vitamin B12", "Iron Studies"] },
-        { id: "weight-changes", label: "Unexplained weight changes", tests: ["Thyroid Function", "Diabetes Panel", "Hormone Profile"] },
-        { id: "mood-changes", label: "Mood changes or anxiety", tests: ["Thyroid Function", "Vitamin D", "Cortisol", "Hormone Profile"] },
-        { id: "sleep-issues", label: "Sleep problems", tests: ["Cortisol", "Thyroid Function", "Magnesium"] },
-        { id: "headaches", label: "Frequent headaches", tests: ["Blood Pressure", "Blood Sugar", "Vitamin Levels"] }
+        { id: "fatigue", label: "Persistent fatigue or tiredness", tests: ["Advanced Wellness Blood Panel", "Thyroid Function Tests", "Iron Studies", "Vitamin B12 & Folate"] },
+        { id: "weight-changes", label: "Unexplained weight gain or loss", tests: ["Thyroid Function Tests", "Diabetes Health Check", "Hormone Health Panel"] },
+        { id: "mood-changes", label: "Mood changes, anxiety, or depression", tests: ["Thyroid Function Tests", "Vitamin D", "Cortisol", "Hormone Health Panel"] },
+        { id: "sleep-issues", label: "Sleep problems or insomnia", tests: ["Cortisol", "Thyroid Function Tests", "Advanced Wellness Blood Panel"] },
+        { id: "headaches", label: "Frequent headaches or migraines", tests: ["Advanced Wellness Blood Panel", "Inflammation Markers", "Vitamin Levels"] }
       ]
     },
     {
       title: "Physical Symptoms",
       description: "Do you experience any of these physical symptoms?",
       symptoms: [
-        { id: "joint-pain", label: "Joint or muscle pain", tests: ["Inflammatory Markers", "Vitamin D", "Rheumatoid Factor"] },
-        { id: "skin-issues", label: "Skin problems or rashes", tests: ["Allergy Panel", "Inflammatory Markers", "Vitamin Levels"] },
-        { id: "digestive", label: "Digestive issues", tests: ["Coeliac Screen", "Inflammatory Markers", "H. Pylori"] },
-        { id: "breathing", label: "Shortness of breath", tests: ["Full Blood Count", "Iron Studies", "Thyroid Function"] },
-        { id: "heart-palpitations", label: "Heart palpitations", tests: ["Thyroid Function", "Electrolytes", "Cardiac Markers"] }
+        { id: "joint-pain", label: "Joint or muscle pain", tests: ["Inflammation Markers", "Vitamin D", "Advanced Wellness Blood Panel"] },
+        { id: "skin-issues", label: "Skin problems or rashes", tests: ["Food Intolerance Test", "Inflammation Markers", "Vitamin Levels"] },
+        { id: "digestive", label: "Digestive issues or stomach problems", tests: ["Food Intolerance Test", "Inflammation Markers", "Advanced Wellness Blood Panel"] },
+        { id: "breathing", label: "Shortness of breath or low energy", tests: ["Iron Studies", "Thyroid Function Tests", "Advanced Wellness Blood Panel"] },
+        { id: "heart-palpitations", label: "Heart palpitations or chest discomfort", tests: ["Thyroid Function Tests", "Heart Health Check", "Advanced Wellness Blood Panel"] }
       ]
     },
     {
       title: "Lifestyle & Risk Factors",
-      description: "Help us understand your lifestyle and risk factors",
+      description: "Help us understand your lifestyle and health risks",
       symptoms: [
-        { id: "family-diabetes", label: "Family history of diabetes", tests: ["Diabetes Panel", "HbA1c", "Insulin Resistance"] },
-        { id: "family-heart", label: "Family history of heart disease", tests: ["Cholesterol Panel", "Cardiac Risk Assessment"] },
-        { id: "high-stress", label: "High stress levels", tests: ["Cortisol", "Inflammatory Markers", "Vitamin B"] },
-        { id: "poor-diet", label: "Poor diet or eating habits", tests: ["Cholesterol Panel", "Diabetes Panel", "Vitamin Levels"] },
-        { id: "little-exercise", label: "Sedentary lifestyle", tests: ["Cholesterol Panel", "Diabetes Panel", "Vitamin D"] }
+        { id: "family-diabetes", label: "Family history of diabetes", tests: ["Diabetes Health Check", "HbA1c", "Advanced Wellness Blood Panel"] },
+        { id: "family-heart", label: "Family history of heart disease", tests: ["Heart Health Check", "Cholesterol Panel", "Advanced Wellness Blood Panel"] },
+        { id: "high-stress", label: "High stress levels or demanding job", tests: ["Cortisol", "Inflammation Markers", "Advanced Wellness Blood Panel"] },
+        { id: "poor-diet", label: "Poor diet or irregular eating habits", tests: ["Diabetes Health Check", "Vitamin Levels", "Advanced Wellness Blood Panel"] },
+        { id: "little-exercise", label: "Sedentary lifestyle or lack of exercise", tests: ["Heart Health Check", "Diabetes Health Check", "Vitamin D"] }
+      ]
+    },
+    {
+      title: "Women's Health & Hormones",
+      description: "For women: Select any hormonal or reproductive health concerns",
+      symptoms: [
+        { id: "irregular-periods", label: "Irregular or painful periods", tests: ["Hormone Health Panel", "PCOS Profile", "Thyroid Function Tests"] },
+        { id: "fertility-concerns", label: "Trying to conceive or fertility concerns", tests: ["Fertility Health Check", "Hormone Health Panel", "Thyroid Function Tests"] },
+        { id: "menopause-symptoms", label: "Menopause symptoms (hot flashes, night sweats)", tests: ["Menopause Health Check", "Hormone Health Panel", "Advanced Wellness Blood Panel"] },
+        { id: "low-libido", label: "Decreased sex drive or energy", tests: ["Hormone Health Panel", "Thyroid Function Tests", "Advanced Wellness Blood Panel"] },
+        { id: "hair-skin-changes", label: "Hair loss, acne, or skin changes", tests: ["PCOS Profile", "Hormone Health Panel", "Thyroid Function Tests"] }
+      ]
+    },
+    {
+      title: "Performance & Wellness Goals",
+      description: "What are your health and performance goals?",
+      symptoms: [
+        { id: "athletic-performance", label: "Improve athletic performance", tests: ["Sports Performance Panel", "Iron Studies", "Vitamin D"] },
+        { id: "weight-management", label: "Weight loss or muscle building goals", tests: ["Metabolism Check", "Thyroid Function Tests", "Sports Performance Panel"] },
+        { id: "energy-optimization", label: "Optimize energy and mental clarity", tests: ["Advanced Wellness Blood Panel", "Vitamin B12 & Folate", "Iron Studies"] },
+        { id: "aging-concerns", label: "Anti-aging and longevity focus", tests: ["Advanced Wellness Blood Panel", "Hormone Health Panel", "Inflammation Markers"] },
+        { id: "preventive-health", label: "Preventive health screening", tests: ["Advanced Wellness Blood Panel", "Heart Health Check", "Cancer Markers"] }
       ]
     }
   ];

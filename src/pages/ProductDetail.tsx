@@ -167,7 +167,7 @@ const ProductDetail = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Biomarkers:</span>
-                    <span className="font-medium">{test.biomarkers.length} markers tested</span>
+                    <span className="font-medium">{test.biomarkerDetails.length} markers tested</span>
                   </div>
                 </CardContent>
               </Card>

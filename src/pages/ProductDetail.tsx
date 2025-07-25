@@ -265,28 +265,6 @@ const ProductDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Traditional Biomarkers List */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TestTube2 className="w-5 h-5 text-primary" />
-                  Quick Reference - All Biomarkers
-                </CardTitle>
-                <CardDescription>
-                  Complete list of biomarkers for easy reference
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-3">
-                  {test.biomarkers.map((marker, index) => (
-                    <div key={index} className="flex items-center gap-2 p-2 bg-secondary/50 rounded">
-                      <TestTube2 className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-medium">{marker}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Suitable For Section */}
             <Card>

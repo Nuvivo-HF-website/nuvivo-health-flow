@@ -7,9 +7,10 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   ArrowLeft, Calendar, Clock, TestTube2, CheckCircle, AlertTriangle, 
-  Users, Heart, Zap, Brain, Shield, Star, Info, Droplets, Building2, Home, MapPin
+  Users, Heart, Zap, Brain, Shield, Star, Info, Droplets, Building2, Home, MapPin, ChevronDown, ChevronRight
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -21,8 +22,17 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedOption, setSelectedOption] = useState<string>("clinic");
+  const [expandedBiomarkers, setExpandedBiomarkers] = useState<number[]>([]);
   
   const test = id ? getTestById(id) : undefined;
+
+  const toggleBiomarker = (index: number) => {
+    setExpandedBiomarkers(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
+  };
 
   if (!test) {
     return (
@@ -193,7 +203,7 @@ const ProductDetail = () => {
               </Alert>
             )}
 
-            {/* Comprehensive Biomarkers Section */}
+            {/* Interactive Biomarkers Section */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -201,38 +211,51 @@ const ProductDetail = () => {
                   Comprehensive Biomarker Analysis ({test.biomarkerDetails.length} markers)
                 </CardTitle>
                 <CardDescription>
-                  Detailed breakdown of all biomarkers included in this test panel with clinical significance and normal ranges
+                  Click on any biomarker below to view detailed information, normal ranges, and clinical significance
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
+                <div className="space-y-3">
                   {test.biomarkerDetails.map((biomarker, index) => (
-                    <div key={index} className="border-l-4 border-primary/20 pl-4 py-3 bg-secondary/20 rounded-r-lg">
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-primary text-lg">{biomarker.name}</h4>
-                        <Badge variant="outline" className="ml-2 text-xs">
-                          {biomarker.normalRange ? "Reference Available" : "Complex Range"}
-                        </Badge>
-                      </div>
-                      
-                      <p className="text-muted-foreground mb-3 leading-relaxed">
-                        {biomarker.description}
-                      </p>
-                      
-                      {biomarker.normalRange && (
-                        <div className="mb-3 p-2 bg-green-50 border border-green-200 rounded">
-                          <p className="text-sm text-green-800">
-                            <strong>Normal Range:</strong> {biomarker.normalRange}
+                    <Collapsible key={index} open={expandedBiomarkers.includes(index)} onOpenChange={() => toggleBiomarker(index)}>
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-between p-4 h-auto hover:bg-secondary/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <TestTube2 className="w-4 h-4 text-primary" />
+                            <span className="font-semibold text-left">{biomarker.name}</span>
+                          </div>
+                          {expandedBiomarkers.includes(index) ? (
+                            <ChevronDown className="w-4 h-4" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="mt-2">
+                        <div className="border-l-4 border-primary/20 pl-4 py-3 bg-secondary/20 rounded-r-lg">
+                          <p className="text-muted-foreground mb-3 leading-relaxed">
+                            {biomarker.description}
                           </p>
+                          
+                          {biomarker.normalRange && (
+                            <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded">
+                              <p className="text-sm text-green-800">
+                                <strong>Normal Range:</strong> {biomarker.normalRange}
+                              </p>
+                            </div>
+                          )}
+                          
+                          <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+                            <p className="text-sm text-blue-800">
+                              <strong>Clinical Significance:</strong> {biomarker.significance}
+                            </p>
+                          </div>
                         </div>
-                      )}
-                      
-                      <div className="p-3 bg-blue-50 border border-blue-200 rounded">
-                        <p className="text-sm text-blue-800">
-                          <strong>Clinical Significance:</strong> {biomarker.significance}
-                        </p>
-                      </div>
-                    </div>
+                      </CollapsibleContent>
+                    </Collapsible>
                   ))}
                 </div>
               </CardContent>

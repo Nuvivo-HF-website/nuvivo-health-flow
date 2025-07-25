@@ -167,7 +167,7 @@ const ProductDetail = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Biomarkers:</span>
-                    <span className="font-medium">{test.biomarkerDetails.length} markers tested</span>
+                    <span className="font-medium">{test.biomarkers.length} markers tested</span>
                   </div>
                 </CardContent>
               </Card>
@@ -208,7 +208,7 @@ const ProductDetail = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Droplets className="w-5 h-5 text-red-500" />
-                  Comprehensive Biomarker Analysis ({test.biomarkerDetails.length} markers)
+                  Comprehensive Biomarker Analysis ({test.biomarkers.length} markers)
                 </CardTitle>
                 <CardDescription>
                   Click on any biomarker below to view detailed information, normal ranges, and clinical significance
@@ -216,39 +216,51 @@ const ProductDetail = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {test.biomarkerDetails.map((biomarker, index) => (
-                    <Collapsible key={index} open={expandedBiomarkers.includes(index)} onOpenChange={() => toggleBiomarker(index)}>
-                      <CollapsibleTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-between p-4 h-auto hover:bg-secondary/50 transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <TestTube2 className="w-4 h-4 text-primary" />
-                            <span className="font-semibold text-left">{biomarker.name}</span>
-                          </div>
-                          {expandedBiomarkers.includes(index) ? (
-                            <ChevronDown className="w-4 h-4" />
-                          ) : (
-                            <ChevronRight className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="mt-2">
-                        <div className="border-l-4 border-primary/20 pl-4 py-3 bg-secondary/20 rounded-r-lg">
-                          <p className="text-muted-foreground mb-3 leading-relaxed">
-                            {biomarker.description}
-                          </p>
-                          
-                          <div className="p-3 bg-secondary/30 border border-border rounded">
-                            <p className="text-sm text-foreground">
-                              {biomarker.significance}
+                  {test.biomarkers.map((biomarkerName, index) => {
+                    // Find detailed info for this biomarker
+                    const detailedBiomarker = test.biomarkerDetails.find(
+                      detail => detail.name.toLowerCase().includes(biomarkerName.toLowerCase()) || 
+                                biomarkerName.toLowerCase().includes(detail.name.toLowerCase())
+                    );
+                    
+                    return (
+                      <Collapsible key={index} open={expandedBiomarkers.includes(index)} onOpenChange={() => toggleBiomarker(index)}>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-between p-4 h-auto hover:bg-secondary/50 transition-colors"
+                          >
+                            <div className="flex items-center gap-3">
+                              <TestTube2 className="w-4 h-4 text-primary" />
+                              <span className="font-semibold text-left">
+                                {detailedBiomarker ? detailedBiomarker.name : biomarkerName}
+                              </span>
+                            </div>
+                            {expandedBiomarkers.includes(index) ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-2">
+                          <div className="border-l-4 border-primary/20 pl-4 py-3 bg-secondary/20 rounded-r-lg">
+                            <p className="text-muted-foreground mb-3 leading-relaxed">
+                              {detailedBiomarker?.description || 
+                               `${biomarkerName} analysis provides important insights into your health status and overall wellbeing.`}
                             </p>
+                            
+                            <div className="p-3 bg-secondary/30 border border-border rounded">
+                              <p className="text-sm text-foreground">
+                                {detailedBiomarker?.significance || 
+                                 `This biomarker helps assess your current health status and identify potential areas for optimization.`}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  ))}
+                        </CollapsibleContent>
+                      </Collapsible>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>

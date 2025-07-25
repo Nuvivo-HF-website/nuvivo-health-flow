@@ -333,10 +333,20 @@ const ProductDetail = () => {
                 </div>
                 <div>
                   <h4 className="font-medium mb-2">Quality Assurance</h4>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground mb-3">
                     All tests are processed in accredited laboratories following strict quality 
                     control measures and international standards.
                   </p>
+                  <div className="flex items-center gap-4 mt-3">
+                    <div className="flex items-center gap-2 p-2 bg-secondary/30 rounded-lg">
+                      <Shield className="w-4 h-4 text-blue-600" />
+                      <span className="text-xs font-medium text-blue-600">HIS Registered</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 bg-secondary/30 rounded-lg">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-xs font-medium text-green-600">ACAS Accredited</span>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -421,6 +431,20 @@ const ProductDetail = () => {
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-500" />
                     <span>Personalized insights</span>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Certification Badges */}
+                <div className="flex justify-center gap-3">
+                  <div className="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                    <Shield className="w-4 h-4 text-blue-600" />
+                    <span className="text-xs font-medium text-blue-600">HIS Registered</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span className="text-xs font-medium text-green-600">ACAS Accredited</span>
                   </div>
                 </div>
 

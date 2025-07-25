@@ -29,7 +29,7 @@ const Services = () => {
       suitable: "Athletes, office workers, those with chronic pain or muscle tension"
     },
     "Sports Massage": {
-      description: "Specialized massage therapy designed for athletes and active individuals to enhance performance and prevent injury.",
+      description: "Specialised massage therapy designed for athletes and active individuals to enhance performance and prevent injury.",
       duration: "45-75 minutes",
       price: "£75",
       benefits: [
@@ -283,7 +283,7 @@ const Services = () => {
           </div>
           <div className="text-center">
             <Award className="w-8 h-8 text-primary mx-auto mb-3" />
-            <h3 className="font-semibold text-accent mb-2">Accredited Labs</h3>
+            <h3 className="font-semibold text-accent mb-2">Accredited Laboratories</h3>
             <p className="text-sm text-muted-foreground">
               All tests processed in fully accredited medical laboratories
             </p>

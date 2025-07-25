@@ -58,7 +58,7 @@ export const bloodTests: BloodTest[] = [
         name: "Full Blood Count (FBC)",
         description: "Comprehensive analysis of blood cells including red blood cells, white blood cells, and platelets",
         normalRange: "RBC: 4.5-5.5 x10¹²/L, WBC: 4-11 x10⁹/L, Platelets: 150-400 x10⁹/L",
-        significance: "Detects anemia, infections, clotting disorders, blood cancers, and immune system disorders"
+        significance: "Detects anaemia, infections, clotting disorders, blood cancers, and immune system disorders"
       },
       {
         name: "Liver Function Tests (LFTs)",
@@ -94,7 +94,7 @@ export const bloodTests: BloodTest[] = [
         name: "Vitamin B12 (Cobalamin)",
         description: "Essential vitamin for nerve function and red blood cell formation",
         normalRange: "Normal: 200-900 ng/L, Deficient: <200 ng/L",
-        significance: "Prevents pernicious anemia, supports nervous system, and energy metabolism"
+        significance: "Prevents pernicious anaemia, supports nervous system, and energy metabolism"
       },
       {
         name: "Folate (Folic Acid)",
@@ -124,7 +124,7 @@ export const bloodTests: BloodTest[] = [
     features: [
       "65+ biomarkers tested",
       "Doctor-reviewed results with detailed analysis", 
-      "Personalized health insights and recommendations",
+      "Personalised health insights and recommendations",
       "Nutritional guidance and supplement advice"
     ],
     suitableFor: ["Adults seeking comprehensive health overview", "Preventive health monitoring", "Annual health checks", "Executive health screenings"],
@@ -160,7 +160,7 @@ export const bloodTests: BloodTest[] = [
     category: "Performance & Sports",
     basePrice: 240,
     duration: "25 min",
-    description: "Specialized testing for athletes and active individuals to optimize performance, enhance recovery, and prevent sports-related injuries through comprehensive biomarker analysis.",
+    description: "Specialised testing for athletes and active individuals to optimise performance, enhance recovery, and prevent sports-related injuries through comprehensive biomarker analysis.",
     biomarkers: [
       "Testosterone", "Cortisol", "Growth Hormone", "Iron Studies", "Vitamin D",
       "Magnesium", "CK (Muscle Damage)", "LDH", "Inflammatory Markers", "Metabolic Panel"
@@ -625,7 +625,7 @@ export const bloodTests: BloodTest[] = [
       "200+ allergens tested comprehensively",
       "Food intolerance identification and guidance",
       "Environmental trigger detection",
-      "Personalized avoidance recommendations and management plans"
+      "Personalised avoidance recommendations and management plans"
     ],
     suitableFor: ["Unexplained symptoms", "Digestive issues", "Skin problems", "Respiratory symptoms", "Eczema and dermatitis"],
     turnaroundTime: "7-10 business days",
@@ -754,7 +754,7 @@ export const bloodTests: BloodTest[] = [
     category: "Cancer Screening",
     basePrice: 199,
     duration: "20 min",
-    description: "Early detection cancer markers for proactive health monitoring and peace of mind through comprehensive tumor marker analysis and risk assessment.",
+    description: "Early detection cancer markers for proactive health monitoring and peace of mind through comprehensive tumour marker analysis and risk assessment.",
     biomarkers: [
       "PSA (Prostate)", "CA 125 (Ovarian)", "CA 15-3 (Breast)", "CA 19-9 (Pancreatic)",
       "CEA (Colorectal)", "AFP (Liver)", "Beta-hCG", "LDH"
@@ -782,7 +782,7 @@ export const bloodTests: BloodTest[] = [
         name: "CA 19-9 (Cancer Antigen 19-9)",
         description: "Carbohydrate antigen elevated in pancreatic and biliary cancers",
         normalRange: "<37 U/mL",
-        significance: "Pancreatic cancer screening and monitoring digestive tract tumors"
+        significance: "Pancreatic cancer screening and monitoring digestive tract tumours"
       },
       {
         name: "CEA (Carcinoembryonic Antigen)",
@@ -806,7 +806,7 @@ export const bloodTests: BloodTest[] = [
         name: "LDH (Lactate Dehydrogenase)",
         description: "Enzyme elevated in various cancers and tissue damage",
         normalRange: "120-246 U/L",
-        significance: "General tumor marker for various cancers and treatment monitoring"
+        significance: "General tumour marker for various cancers and treatment monitoring"
       }
     ],
     features: [

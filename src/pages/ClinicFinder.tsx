@@ -248,7 +248,7 @@ const clinics = [
     distance: "462.7 miles",
     openingHours: "Mon-Fri: 8:00-17:00, Sat: 9:00-14:00",
     services: ["Standard Testing", "Offshore Worker Health", "Oil Industry Medicals"],
-    facilities: ["Industrial Access", "Quick Service", "Specialized Testing"],
+    facilities: ["Industrial Access", "Quick Service", "Specialised Testing"],
     appointments: ["Same Day", "Next Day", "Weekly"],
     lat: 57.1497,
     lng: -2.0943

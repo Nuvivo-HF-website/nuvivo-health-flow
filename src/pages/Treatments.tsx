@@ -46,7 +46,7 @@ const treatments: Treatment[] = [
   {
     id: "sports-massage-joint-mobilisation",
     name: "Sports Massage with Joint Mobilisation",
-    description: "Specialized sports massage combined with joint mobilization techniques for enhanced performance and recovery.",
+    description: "Specialised sports massage combined with joint mobilisation techniques for enhanced performance and recovery.",
     price: 57,
     duration: "75 min",
     category: "Sports Therapy",
@@ -86,13 +86,13 @@ const treatments: Treatment[] = [
   {
     id: "injury-treatment-rehabilitation",
     name: "Injury Treatment & Rehabilitation",
-    description: "Comprehensive injury assessment and treatment with personalized rehabilitation program.",
+    description: "Comprehensive injury assessment and treatment with personalised rehabilitation programme.",
     price: 70,
     duration: "90 min",
     category: "Rehabilitation",
     features: [
       "Injury assessment",
-      "Personalized treatment plan",
+      "Personalised treatment plan",
       "Rehabilitation exercises",
       "Progress monitoring"
     ],

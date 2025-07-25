@@ -90,7 +90,7 @@ const radiologyServices = [
     id: 6,
     name: "Mammography",
     category: "Women's Health",
-    description: "Specialized breast imaging for screening and diagnosis",
+    description: "Specialised breast imaging for screening and diagnosis",
     price: "£180",
     duration: "20-30 minutes",
     preparation: "Schedule for week after menstrual period",

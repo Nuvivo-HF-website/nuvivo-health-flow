@@ -18,7 +18,7 @@ const HowItWorks = () => {
     {
       icon: FlaskConical,
       title: "Lab Analysis",
-      description: "Your sample is analyzed in our accredited laboratories with precision.",
+      description: "Your sample is analysed in our accredited laboratories with precision.",
       step: "03"
     },
     {

@@ -103,7 +103,7 @@ const UploadResults = () => {
 
         <div class="section">
           <h2>Executive Summary</h2>
-          <p>This comprehensive health report provides an AI-powered analysis of your recent test results. Our advanced algorithms have analyzed your biomarkers and provided personalized insights and recommendations.</p>
+          <p>This comprehensive health report provides an AI-powered analysis of your recent test results. Our advanced algorithms have analysed your biomarkers and provided personalised insights and recommendations.</p>
         </div>
 
         <div class="section">
@@ -179,7 +179,7 @@ const UploadResults = () => {
           <ul>
             <li>Routine follow-up testing in 6-12 months</li>
             <li>Annual comprehensive health screening</li>
-            <li>Consult with your healthcare provider for personalized advice</li>
+            <li>Consult with your healthcare provider for personalised advice</li>
           </ul>
         </div>
 
@@ -246,7 +246,7 @@ const UploadResults = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-primary mb-2">Upload Your Test Results</h1>
             <p className="text-muted-foreground">
-              Already have test results from another provider? Upload them here to get an AI-powered comprehensive health report with personalized insights.
+              Already have test results from another provider? Upload them here to get an AI-powered comprehensive health report with personalised insights.
             </p>
           </div>
 
@@ -446,7 +446,7 @@ const UploadResults = () => {
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500" />
-                      Personalized recommendations
+                      Personalised recommendations
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500" />

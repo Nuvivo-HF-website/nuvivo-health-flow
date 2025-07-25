@@ -16,17 +16,20 @@ const Header = () => {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
+            <a href="/" className="text-muted-foreground hover:text-primary transition-colors">
+              Home
+            </a>
             <a href="/blood-tests" className="text-muted-foreground hover:text-primary transition-colors">
               Blood Tests
+            </a>
+            <a href="/radiology" className="text-muted-foreground hover:text-primary transition-colors">
+              Radiology
             </a>
             <a href="/marketplace" className="text-muted-foreground hover:text-primary transition-colors">
               Doctors
             </a>
             <a href="/upload-results" className="text-muted-foreground hover:text-primary transition-colors">
               Upload Results
-            </a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-primary transition-colors">
-              How it Works
             </a>
             <a href="#about" className="text-muted-foreground hover:text-primary transition-colors">
               About

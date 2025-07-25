@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Shield, Clock } from "lucide-react";
 import heroImage from "@/assets/hero-medical-new.jpg";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <section className="pt-20 pb-16 bg-gradient-to-br from-background via-accent-soft/30 to-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -42,7 +44,7 @@ const Hero = () => {
                 variant="hero" 
                 size="lg" 
                 className="text-base px-8 py-3"
-                onClick={() => window.location.href = "/booking"}
+                onClick={() => navigate("/booking")}
               >
                 Book Your Test Today
               </Button>
@@ -50,7 +52,7 @@ const Hero = () => {
                 variant="outline" 
                 size="lg" 
                 className="text-base px-8 py-3"
-                onClick={() => window.location.href = "/blood-tests"}
+                onClick={() => navigate("/blood-tests")}
               >
                 View Test Packages
               </Button>

@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ClipboardCheck, ArrowRight, RotateCcw, TestTube } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const MedicalQuiz = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [recommendations, setRecommendations] = useState<any[]>([]);
@@ -136,7 +138,7 @@ const MedicalQuiz = () => {
                     </div>
                     
                     <div className="flex gap-4 justify-center pt-4">
-                      <Button onClick={() => window.location.href = "/blood-tests"}>
+                      <Button onClick={() => navigate("/blood-tests")}>
                         View All Tests
                       </Button>
                       <Button variant="outline" onClick={resetQuiz}>
@@ -150,7 +152,7 @@ const MedicalQuiz = () => {
                     <p className="text-muted-foreground mb-4">
                       Based on your responses, we recommend a general health check-up.
                     </p>
-                    <Button onClick={() => window.location.href = "/blood-tests"}>
+                    <Button onClick={() => navigate("/blood-tests")}>
                       Browse All Tests
                     </Button>
                   </div>

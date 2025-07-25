@@ -6,8 +6,10 @@ import {
   TestTube2, Users, Scan, Zap, ArrowRight, Star,
   Calendar, MapPin, Award
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Services = () => {
+  const navigate = useNavigate();
   const serviceCategories = [
     {
       icon: TestTube2,
@@ -166,7 +168,7 @@ const Services = () => {
                       variant={category.popular ? "hero" : "default"} 
                       className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                       size="lg"
-                      onClick={() => window.location.href = category.link}
+                      onClick={() => navigate(category.link)}
                     >
                       <div className="flex items-center justify-center gap-2">
                         Explore {category.title}
@@ -177,7 +179,7 @@ const Services = () => {
                       <Button 
                         variant="outline" 
                         size="lg"
-                        onClick={() => window.location.href = "/treatments"}
+                        onClick={() => navigate("/treatments")}
                       >
                         Read More
                       </Button>
@@ -247,7 +249,7 @@ const Services = () => {
                 variant="secondary" 
                 size="lg" 
                 className="bg-white text-accent hover:bg-white/90"
-                onClick={() => window.location.href = "/booking"}
+                onClick={() => navigate("/booking")}
               >
                 <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5" />
@@ -258,7 +260,7 @@ const Services = () => {
                 variant="outline" 
                 size="lg" 
                 className="border-white text-white hover:bg-white/10"
-                onClick={() => window.location.href = "/blood-tests"}
+                onClick={() => navigate("/blood-tests")}
               >
                 <div className="flex items-center gap-2">
                   <TestTube2 className="w-5 h-5" />

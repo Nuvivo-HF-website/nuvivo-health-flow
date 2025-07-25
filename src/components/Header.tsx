@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Shield, User } from "lucide-react";
+import { User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
   return (
     <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,10 +59,7 @@ const Header = () => {
               variant="ghost" 
               size="sm" 
               className="hidden sm:flex items-center space-x-1"
-              onClick={() => {
-                // TODO: Implement sign in functionality
-                window.location.href = "/sign-in";
-              }}
+              onClick={() => navigate("/sign-in")}
             >
               <User className="w-4 h-4" />
               <span>Sign In</span>
@@ -68,7 +67,7 @@ const Header = () => {
             <Button 
               variant="hero" 
               size="sm"
-              onClick={() => window.location.href = "/booking"}
+              onClick={() => navigate("/booking")}
             >
               Book Test
             </Button>

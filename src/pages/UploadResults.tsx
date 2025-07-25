@@ -1,15 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, FileText, Brain, Download, CheckCircle } from "lucide-react";
+import { Upload, FileText, Brain, Download, CheckCircle, Eye } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 
 const UploadResults = () => {
+  const navigate = useNavigate();
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [patientInfo, setPatientInfo] = useState({
     name: "",
@@ -19,6 +21,7 @@ const UploadResults = () => {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [generatedReportId, setGeneratedReportId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,12 +50,179 @@ const UploadResults = () => {
     setIsGenerating(true);
     // Simulate AI processing
     await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Generate a unique report ID
+    const reportId = `RPT-${Date.now()}`;
+    setGeneratedReportId(reportId);
     setIsGenerating(false);
     setReportGenerated(true);
     
     toast({
       title: "Report generated",
       description: "Your AI-powered health report is ready",
+    });
+  };
+
+  const viewOnlineReport = () => {
+    if (generatedReportId) {
+      // Navigate to results page with the generated report ID
+      navigate(`/results/${generatedReportId}`);
+    }
+  };
+
+  const downloadPDFReport = () => {
+    // Create a comprehensive PDF report
+    const reportContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Health Report - ${patientInfo.name || 'Patient'}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+          .header { text-align: center; border-bottom: 2px solid #0066cc; padding-bottom: 20px; margin-bottom: 30px; }
+          .section { margin-bottom: 30px; }
+          .biomarker { margin: 10px 0; padding: 10px; border-left: 4px solid #0066cc; background: #f8f9fa; }
+          .normal { border-left-color: #28a745; }
+          .high { border-left-color: #dc3545; }
+          .low { border-left-color: #ffc107; }
+          .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #666; }
+          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+          th { background-color: #f2f2f2; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Comprehensive Health Report</h1>
+          <p><strong>Patient:</strong> ${patientInfo.name || 'N/A'}</p>
+          <p><strong>Date of Birth:</strong> ${patientInfo.dateOfBirth || 'N/A'}</p>
+          <p><strong>Test Date:</strong> ${patientInfo.testDate || 'N/A'}</p>
+          <p><strong>Report Generated:</strong> ${new Date().toLocaleDateString()}</p>
+        </div>
+
+        <div class="section">
+          <h2>Executive Summary</h2>
+          <p>This comprehensive health report provides an AI-powered analysis of your recent test results. Our advanced algorithms have analyzed your biomarkers and provided personalized insights and recommendations.</p>
+        </div>
+
+        <div class="section">
+          <h2>Test Results Summary</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Biomarker</th>
+                <th>Value</th>
+                <th>Reference Range</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Total Cholesterol</td>
+                <td>4.8 mmol/L</td>
+                <td>3.0-5.0 mmol/L</td>
+                <td>Normal</td>
+              </tr>
+              <tr>
+                <td>Vitamin D</td>
+                <td>35 ng/mL</td>
+                <td>30-100 ng/mL</td>
+                <td>Normal</td>
+              </tr>
+              <tr>
+                <td>HbA1c</td>
+                <td>5.2%</td>
+                <td>4.0-6.0%</td>
+                <td>Normal</td>
+              </tr>
+              <tr>
+                <td>B12</td>
+                <td>450 pg/mL</td>
+                <td>200-900 pg/mL</td>
+                <td>Normal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <h2>AI Insights & Recommendations</h2>
+          <div class="biomarker normal">
+            <h3>✓ Cardiovascular Health</h3>
+            <p>Your cholesterol levels are within the optimal range, indicating good cardiovascular health. Continue your current lifestyle habits.</p>
+          </div>
+          <div class="biomarker normal">
+            <h3>✓ Vitamin D Status</h3>
+            <p>Your vitamin D levels are adequate. Consider maintaining sun exposure and dietary sources.</p>
+          </div>
+          <div class="biomarker normal">
+            <h3>✓ Blood Sugar Control</h3>
+            <p>Excellent blood sugar control with HbA1c in the optimal range. Continue current diet and exercise routine.</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Lifestyle Recommendations</h2>
+          <ul>
+            <li>Maintain regular exercise routine (150 minutes moderate activity per week)</li>
+            <li>Continue balanced diet rich in fruits, vegetables, and whole grains</li>
+            <li>Ensure adequate sleep (7-9 hours per night)</li>
+            <li>Stay hydrated (8-10 glasses of water daily)</li>
+            <li>Consider stress management techniques like meditation or yoga</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>Follow-up Recommendations</h2>
+          <p>Based on your current results, we recommend:</p>
+          <ul>
+            <li>Routine follow-up testing in 6-12 months</li>
+            <li>Annual comprehensive health screening</li>
+            <li>Consult with your healthcare provider for personalized advice</li>
+          </ul>
+        </div>
+
+        ${patientInfo.notes ? `
+        <div class="section">
+          <h2>Additional Notes</h2>
+          <p>${patientInfo.notes}</p>
+        </div>
+        ` : ''}
+
+        <div class="footer">
+          <p>This report is generated by Nuvivo Health AI analysis system.</p>
+          <p>For medical advice, please consult with a qualified healthcare professional.</p>
+          <p>Report ID: ${generatedReportId} | Generated on ${new Date().toLocaleString()}</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    // Create and download PDF
+    const blob = new Blob([reportContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Health_Report_${patientInfo.name?.replace(/\s+/g, '_') || 'Patient'}_${generatedReportId}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    // Also trigger print dialog for PDF creation
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(reportContent);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+
+    toast({
+      title: "Report downloaded",
+      description: "Your health report has been downloaded and print dialog opened",
     });
   };
 
@@ -224,12 +394,19 @@ const UploadResults = () => {
                           Your comprehensive health report is ready for download
                         </p>
                         <div className="space-y-3">
-                          <Button className="w-full">
+                          <Button 
+                            onClick={downloadPDFReport}
+                            className="w-full"
+                          >
                             <Download className="w-4 h-4 mr-2" />
                             Download PDF Report
                           </Button>
-                          <Button variant="outline" className="w-full">
-                            <FileText className="w-4 h-4 mr-2" />
+                          <Button 
+                            variant="outline" 
+                            className="w-full"
+                            onClick={viewOnlineReport}
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
                             View Online Report
                           </Button>
                         </div>

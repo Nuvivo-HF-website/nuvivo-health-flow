@@ -41,6 +41,9 @@ const Header = () => {
             <a href="/upload-results" className="text-muted-foreground hover:text-primary transition-colors">
               Upload Results
             </a>
+            <a href="/faq" className="text-muted-foreground hover:text-primary transition-colors">
+              FAQ
+            </a>
             <a href="#about" className="text-muted-foreground hover:text-primary transition-colors">
               About
             </a>

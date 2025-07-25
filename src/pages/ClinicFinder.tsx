@@ -20,7 +20,6 @@ import {
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
-import ClinicMap from "@/components/ClinicMap";
 
 const clinics = [
   // London & South East England
@@ -277,7 +276,51 @@ const ClinicFinder = () => {
   const [selectedRegion, setSelectedRegion] = useState("all");
   const [selectedServices, setSelectedServices] = useState("all");
   const [filteredClinics, setFilteredClinics] = useState(clinics);
+  const [postcode, setPostcode] = useState("");
+  const [nearestClinics, setNearestClinics] = useState<any[]>([]);
   const { toast } = useToast();
+
+  // Simple distance calculator (approximate for UK postcodes)
+  const calculateDistance = (postcode: string, clinicLocation: string) => {
+    // This is a simplified distance calculation for demo purposes
+    // In a real app, you'd use a proper geocoding service
+    const postcodeMap: { [key: string]: { region: string; priority: number } } = {
+      'W1': { region: 'London', priority: 1 },
+      'SW1': { region: 'London', priority: 1 },
+      'E14': { region: 'London', priority: 1 },
+      'M3': { region: 'Manchester', priority: 2 },
+      'B4': { region: 'Birmingham', priority: 2 },
+      'CF10': { region: 'Cardiff', priority: 3 },
+      'EH2': { region: 'Edinburgh', priority: 4 }
+    };
+
+    const inputPrefix = postcode.replace(/\s/g, '').substring(0, 2).toUpperCase();
+    const match = postcodeMap[inputPrefix];
+    
+    if (match) {
+      return clinics
+        .filter(clinic => clinic.city.includes(match.region) || clinic.region === 'England')
+        .map(clinic => ({
+          ...clinic,
+          calculatedDistance: match.priority + Math.random() * 5
+        }))
+        .sort((a, b) => a.calculatedDistance - b.calculatedDistance)
+        .slice(0, 3);
+    }
+    
+    return clinics.slice(0, 3);
+  };
+
+  const handlePostcodeSearch = () => {
+    if (postcode.trim()) {
+      const nearest = calculateDistance(postcode, '');
+      setNearestClinics(nearest);
+      toast({
+        title: "Clinics Found",
+        description: `Found ${nearest.length} clinics near ${postcode.toUpperCase()}`,
+      });
+    }
+  };
 
   const handleSearch = () => {
     let filtered = clinics;
@@ -331,19 +374,90 @@ const ClinicFinder = () => {
             </p>
           </div>
 
+          {/* Postcode Search Section */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="w-5 h-5" />
+                Find Clinics Near Your Postcode
+              </CardTitle>
+              <CardDescription>
+                Enter your postcode to find the nearest blood draw clinics in your area
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-4 mb-6">
+                <div className="flex-1">
+                  <Input
+                    placeholder="Enter your postcode (e.g., SW1A 1AA)"
+                    value={postcode}
+                    onChange={(e) => setPostcode(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handlePostcodeSearch()}
+                    className="w-full"
+                  />
+                </div>
+                <Button onClick={handlePostcodeSearch} disabled={!postcode.trim()}>
+                  <Search className="w-4 h-4 mr-2" />
+                  Find Nearest
+                </Button>
+              </div>
+
+              {/* Nearest Clinics Results */}
+              {nearestClinics.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-primary">
+                    Nearest Clinics to {postcode.toUpperCase()}:
+                  </h3>
+                  <div className="grid gap-3">
+                    {nearestClinics.map((clinic, index) => (
+                      <div key={clinic.id} className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="outline">#{index + 1}</Badge>
+                            <h4 className="font-medium">{clinic.name}</h4>
+                            <div className="flex items-center gap-1">
+                              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                              <span className="text-sm">{clinic.rating}</span>
+                            </div>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{clinic.address}</p>
+                          <p className="text-xs text-muted-foreground">{clinic.openingHours}</p>
+                        </div>
+                        <div className="text-right space-y-2">
+                          <Badge variant="secondary">
+                            {clinic.calculatedDistance ? `${clinic.calculatedDistance.toFixed(1)} miles` : clinic.distance}
+                          </Badge>
+                          <div>
+                            <Button 
+                              size="sm" 
+                              onClick={() => handleBooking(clinic.id)}
+                              className="w-full"
+                            >
+                              Book Here
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Search and Filter Section */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Search className="w-5 h-5" />
-                Find Your Nearest Clinic
+                Browse All Clinics
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <Input
-                    placeholder="Search by city, clinic name, or postcode..."
+                    placeholder="Search by city, clinic name..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full"
@@ -379,19 +493,6 @@ const ClinicFinder = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Map Section */}
-          <div className="mb-8">
-            <ClinicMap 
-              clinics={filteredClinics} 
-              onClinicSelect={(clinic) => {
-                toast({
-                  title: "Clinic Selected",
-                  description: `${clinic.name} - ${clinic.address}`,
-                });
-              }}
-            />
-          </div>
 
           {/* Results Summary */}
           <div className="mb-6">

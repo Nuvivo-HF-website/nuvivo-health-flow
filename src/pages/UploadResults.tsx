@@ -5,10 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, FileText, Brain, Download, CheckCircle, Eye } from "lucide-react";
+import { Upload, FileText, Brain, Download, CheckCircle, Eye, AlertTriangle, Stethoscope } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const UploadResults = () => {
   const navigate = useNavigate();
@@ -232,10 +233,20 @@ const UploadResults = () => {
       
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
+          {/* Medical Disclaimer Alert */}
+          <Alert className="mb-6 border-orange-200 bg-orange-50">
+            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <AlertDescription className="text-orange-800">
+              <strong>Important Medical Disclaimer:</strong> This service is for informational purposes only and does not replace professional medical advice. 
+              Always consult with your doctor or healthcare provider before making any medical decisions based on these results. 
+              If you have any concerns about your health, please seek immediate medical attention.
+            </AlertDescription>
+          </Alert>
+
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-primary mb-2">Upload Results & Generate Report</h1>
+            <h1 className="text-3xl font-bold text-primary mb-2">Upload Your Test Results</h1>
             <p className="text-muted-foreground">
-              Upload your test results and get an AI-powered comprehensive health report
+              Already have test results from another provider? Upload them here to get an AI-powered comprehensive health report with personalized insights.
             </p>
           </div>
 
@@ -298,20 +309,23 @@ const UploadResults = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Patient Information</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    <Stethoscope className="w-5 h-5" />
+                    Your Information
+                  </CardTitle>
                   <CardDescription>
-                    Provide additional context for more accurate analysis
+                    Help us provide more accurate analysis by sharing some basic information
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Patient Name</Label>
+                      <Label htmlFor="name">Your Name</Label>
                       <Input
                         id="name"
                         value={patientInfo.name}
                         onChange={(e) => setPatientInfo(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="Enter patient name"
+                        placeholder="Enter your full name"
                       />
                     </div>
                     <div>
@@ -451,6 +465,15 @@ const UploadResults = () => {
               </Card>
             </div>
           </div>
+
+          {/* Additional Medical Disclaimer */}
+          <Alert className="mt-8 border-red-200 bg-red-50">
+            <Stethoscope className="h-4 w-4 text-red-600" />
+            <AlertDescription className="text-red-800">
+              <strong>Remember:</strong> These AI-generated reports are educational tools only and should never be used as a substitute for professional medical advice, diagnosis, or treatment. 
+              Always discuss your results with a qualified healthcare provider who can interpret them in the context of your full medical history and current health status.
+            </AlertDescription>
+          </Alert>
         </div>
       </main>
 

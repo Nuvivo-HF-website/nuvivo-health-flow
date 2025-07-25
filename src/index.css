@@ -18,23 +18,23 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 20 25% 8%;
 
-    /* Primary - Vibrant blue brand color */
-    --primary: 214 100% 50%; /* Bright blue */
+    /* Primary - Luxury navy blue */
+    --primary: 225 100% 20%; /* Deep navy */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 214 100% 45%;
+    --primary-hover: 225 100% 15%;
 
-    /* Secondary - Warm beiges */
-    --secondary: 35 20% 95%;
-    --secondary-foreground: 20 25% 8%;
+    /* Secondary - Luxury cream */
+    --secondary: 45 20% 96%;
+    --secondary-foreground: 225 100% 20%;
 
     /* Muted - Soft warm neutrals */
     --muted: 35 15% 93%;
     --muted-foreground: 20 15% 45%;
 
-    /* Accent - Electric green for CTAs */
-    --accent: 142 76% 36%;
-    --accent-foreground: 0 0% 100%;
-    --accent-soft: 142 50% 95%;
+    /* Accent - Luxury gold */
+    --accent: 45 100% 60%;
+    --accent-foreground: 225 100% 20%;
+    --accent-soft: 45 50% 95%;
 
     /* Medical success - calming green */
     --success: 142 60% 45%;
@@ -53,11 +53,11 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    /* Modern gradients */
+    /* Luxury gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-soft)));
-    --gradient-hero: linear-gradient(135deg, hsl(214 50% 88%) 0%, hsl(142 30% 88%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(214 25% 95%) 0%, hsl(142 20% 92%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(45 80% 70%));
+    --gradient-hero: linear-gradient(135deg, hsl(225 30% 15%) 0%, hsl(45 30% 25%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(45 25% 97%) 0%, hsl(45 15% 94%) 100%);
     
     /* Nuvivo shadows - warm and subtle */
     --shadow-medical: 0 4px 20px -4px hsl(20 25% 15% / 0.08);

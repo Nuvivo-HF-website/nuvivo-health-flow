@@ -18,7 +18,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-card",
         ghost: "hover:bg-secondary hover:text-secondary-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-gradient-hero text-primary-foreground hover:shadow-accent transform hover:scale-[1.02] shadow-medical font-medium",
+        hero: "bg-foreground text-background hover:bg-foreground/90 shadow-medical transform hover:scale-[1.02] font-medium rounded-full px-6",
         medical: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-accent transform hover:scale-[1.02]",
         success: "bg-success text-success-foreground hover:bg-success/90 shadow-card",
         warning: "bg-warning text-warning-foreground hover:bg-warning/90 shadow-card",

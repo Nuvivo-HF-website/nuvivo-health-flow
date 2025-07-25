@@ -40,9 +40,9 @@ const App = () => (
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/faq" element={<FAQ />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="/about" element={<About />} />
           <Route path="/preparation" element={<Preparation />} />
+          <Route path="/professional-registration" element={<SignIn />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

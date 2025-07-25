@@ -98,65 +98,6 @@ const HowToPrepare = () => {
             ))}
           </div>
 
-          {/* Test Types */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <Clock className="w-5 h-5" />
-                Test-Specific Requirements
-              </CardTitle>
-              <CardDescription>
-                Different tests have different preparation requirements. Check your test type below.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-6">
-                {testTypes.map((type, index) => (
-                  <div key={index} className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold">{type.name}</h3>
-                      <Badge variant={type.color as any}>{type.badge}</Badge>
-                    </div>
-                    <div className="space-y-2">
-                      {type.tests.map((test, testIndex) => (
-                        <div key={testIndex} className="text-sm text-muted-foreground p-2 bg-muted rounded">
-                          {test}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Important Notes */}
-          <Card className="mt-8 border-orange-200 bg-orange-50/50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-orange-800">
-                <AlertTriangle className="w-5 h-5" />
-                Important Notes
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium text-orange-800">Medications</h4>
-                  <p className="text-sm text-orange-700">
-                    Continue taking prescribed medications unless specifically told otherwise by your doctor. 
-                    Bring a list of all medications and supplements.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="font-medium text-orange-800">Special Conditions</h4>
-                  <p className="text-sm text-orange-700">
-                    If you're pregnant, diabetic, or have other medical conditions, 
-                    please inform us when booking for specific guidance.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </section>

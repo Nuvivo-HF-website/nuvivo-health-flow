@@ -8,74 +8,74 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Luxury palette - soft blue-grey background */
-    --background: 210 20% 90%; /* Light blue-grey */
-    --foreground: 200 25% 15%; /* Dark navy */
+    /* Neutral palette - warm beiges and creams */
+    --background: 40 15% 92%; /* Light warm cream */
+    --foreground: 20 8% 25%; /* Dark warm brown */
 
-    --card: 0 0% 100%;
-    --card-foreground: 20 25% 8%;
+    --card: 40 20% 96%;
+    --card-foreground: 20 8% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 25% 8%;
+    --popover: 40 20% 96%;
+    --popover-foreground: 20 8% 25%;
 
-    /* Primary - Soft teal */
-    --primary: 195 35% 45%; /* Soft teal */
-    --primary-foreground: 210 20% 90%;
-    --primary-hover: 195 35% 38%;
+    /* Primary - Medium warm beige */
+    --primary: 35 12% 55%; /* Medium beige */
+    --primary-foreground: 40 15% 92%;
+    --primary-hover: 35 12% 48%;
 
-    /* Secondary - Warm taupe */
-    --secondary: 35 20% 61%; /* Warm taupe */
-    --secondary-foreground: 210 20% 90%;
+    /* Secondary - Light cream */
+    --secondary: 45 18% 82%; /* Light cream */
+    --secondary-foreground: 20 8% 25%;
 
-    /* Muted - Medium blue-grey */
-    --muted: 210 15% 75%; /* Medium blue-grey */
-    --muted-foreground: 200 25% 15%;
+    /* Muted - Soft beige */
+    --muted: 40 12% 78%; /* Soft beige */
+    --muted-foreground: 25 8% 35%;
 
-    /* Accent - Deep navy */
-    --accent: 200 25% 15%; /* Deep navy */
-    --accent-foreground: 210 20% 90%;
-    --accent-soft: 200 15% 25%;
+    /* Accent - Dark warm brown */
+    --accent: 20 8% 25%; /* Dark warm brown */
+    --accent-foreground: 40 15% 92%;
+    --accent-soft: 25 10% 40%;
 
-    /* Medical success - calming green */
-    --success: 142 60% 45%;
+    /* Medical success - muted sage green */
+    --success: 120 20% 45%;
     --success-foreground: 0 0% 100%;
 
-    /* Warning - warm orange */
-    --warning: 35 85% 55%;
+    /* Warning - warm terracotta */
+    --warning: 15 35% 55%;
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 55%;
+    --destructive: 0 50% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 85%; /* Light gray #D9D9D9 */
-    --input: 35 25% 78%;
-    --ring: 355 33% 33%;
+    --border: 35 15% 85%; /* Light warm gray */
+    --input: 40 12% 88%;
+    --ring: 35 12% 55%;
 
     --radius: 0.75rem;
 
-    /* Luxury gradients */
+    /* Neutral gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-soft)));
-    --gradient-hero: linear-gradient(135deg, hsl(30 8% 25%) 0%, hsl(355 33% 40%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(35 33% 92%) 0%, hsl(35 25% 88%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(40 15% 85%) 0%, hsl(35 12% 75%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(45 18% 88%) 0%, hsl(40 15% 85%) 100%);
     
-    /* Nuvivo shadows - warm and subtle */
-    --shadow-medical: 0 4px 20px -4px hsl(20 25% 15% / 0.08);
-    --shadow-card: 0 2px 12px -2px hsl(20 25% 15% / 0.06);
+    /* Neutral shadows - warm and subtle */
+    --shadow-medical: 0 4px 20px -4px hsl(20 8% 25% / 0.08);
+    --shadow-card: 0 2px 12px -2px hsl(20 8% 25% / 0.06);
     --shadow-accent: 0 8px 30px -8px hsl(var(--accent) / 0.15);
 
-    /* Nuvivo animations */
+    /* Smooth animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --sidebar-background: 35 20% 98%;
-    --sidebar-foreground: 20 25% 15%;
-    --sidebar-primary: 345 85% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 35 15% 93%;
-    --sidebar-accent-foreground: 20 25% 8%;
-    --sidebar-border: 35 20% 88%;
-    --sidebar-ring: 345 70% 58%;
+    --sidebar-background: 40 18% 95%;
+    --sidebar-foreground: 20 8% 25%;
+    --sidebar-primary: 35 12% 55%;
+    --sidebar-primary-foreground: 40 15% 92%;
+    --sidebar-accent: 40 15% 88%;
+    --sidebar-accent-foreground: 20 8% 25%;
+    --sidebar-border: 40 12% 82%;
+    --sidebar-ring: 35 12% 55%;
   }
 
   .dark {

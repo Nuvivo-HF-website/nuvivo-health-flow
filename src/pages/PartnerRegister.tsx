@@ -116,17 +116,39 @@ export default function PartnerRegister() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Pricing Structure */}
+            {/* Subscription & Pricing Structure */}
             <div>
-              <h3 className="font-semibold text-lg mb-3">Blood Test Pricing & Revenue Opportunity</h3>
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-medium text-blue-800 mb-2">Partner Pricing Structure</h4>
-                <p className="text-sm text-blue-700">
-                  As a Nuvivo partner, you'll receive exclusive wholesale pricing on all blood tests, significantly below retail rates. 
-                  Specific pricing will be discussed individually during your onboarding process, tailored to your practice needs and expected volume. 
-                  You have complete flexibility to set your own patient pricing, allowing you to offer competitive rates while maintaining 
-                  healthy profit margins that work for your business model.
+              <h3 className="font-semibold text-lg mb-3">Partnership Investment & White-Label Solutions</h3>
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg mb-4">
+                <h4 className="font-medium text-primary mb-3">Monthly Partnership Fee</h4>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-lg">Platform Access & Tools</span>
+                  <span className="text-2xl font-bold text-primary">£29/month</span>
+                </div>
+                <div className="flex items-center justify-between mb-3">
+                  <span>Commission on Sales</span>
+                  <span className="font-medium">+ Percentage fee</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Complete access to the world's most advanced health platform with white-label solutions, 
+                  drop-shipping services, and full lab partnership management.
                 </p>
+              </div>
+              
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <h4 className="font-medium text-green-800 mb-2">White-Label Kit Solutions</h4>
+                <p className="text-sm text-green-700 mb-3">
+                  We provide complete white-label blood test kits branded with your practice identity. 
+                  Our team handles all printing, packaging, and drop-shipping directly to your patients. 
+                  You simply place orders through your dashboard, and we take care of everything else.
+                </p>
+                <ul className="text-sm text-green-700 space-y-1">
+                  <li>• Custom branded test kits with your practice logo</li>
+                  <li>• Direct drop-shipping to your patients nationwide</li>
+                  <li>• All lab contracts and partnerships managed for you</li>
+                  <li>• Professional result delivery and reporting</li>
+                  <li>• Complete fulfillment and logistics handling</li>
+                </ul>
               </div>
             </div>
 

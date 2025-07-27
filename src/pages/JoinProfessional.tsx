@@ -10,33 +10,33 @@ export default function JoinProfessional() {
   const benefits = [
     {
       icon: <DollarSign className="h-5 w-5" />,
-      title: "Set Your Own Fees",
-      description: "List services and control your pricing"
+      title: "White-Label Solutions",
+      description: "Branded kits and materials with your practice identity"
     },
     {
       icon: <Clock className="h-5 w-5" />,
-      title: "Flexible Hours", 
-      description: "Work when it suits you with full calendar control"
+      title: "Complete Fulfillment", 
+      description: "We handle printing, shipping, and all logistics for you"
     },
     {
       icon: <Users className="h-5 w-5" />,
-      title: "Keep Independence",
-      description: "Maintain your professional autonomy"
+      title: "Lab Partnerships",
+      description: "Full lab contracts and result delivery managed"
     },
     {
       icon: <Stethoscope className="h-5 w-5" />,
       title: "AI Health Tools",
-      description: "Access our AI interpreter and testing platform"
+      description: "Access the world's most advanced health platform"
     },
     {
       icon: <Shield className="h-5 w-5" />,
-      title: "Secure Platform",
-      description: "Fully compliant and secure environment"
+      title: "Transparent Pricing",
+      description: "£29/month + percentage fee - no hidden costs"
     },
     {
       icon: <Globe className="h-5 w-5" />,
-      title: "Reach More Patients",
-      description: "Connect with patients across Scotland"
+      title: "Global Reach",
+      description: "Connect with patients worldwide through our platform"
     }
   ];
 
@@ -55,27 +55,49 @@ export default function JoinProfessional() {
             </h1>
             
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-              Join the UK's modern health platform and monetise your skills. Whether you're a doctor, nurse, 
-              physiotherapist, psychologist, or specialist — Nuvivo gives you the tools to:
+              Join the world's most advanced health platform with complete white-label solutions. Whether you're a doctor, nurse, 
+              physiotherapist, psychologist, or specialist — Nuvivo provides everything you need:
             </p>
+
+            {/* Subscription Model */}
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 mb-8 max-w-2xl mx-auto">
+              <h3 className="text-lg font-semibold text-primary mb-3">Partnership Investment</h3>
+              <div className="text-left space-y-2">
+                <div className="flex justify-between items-center">
+                  <span>Monthly Platform Access</span>
+                  <span className="font-bold text-2xl text-primary">£29/month</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Commission on Sales</span>
+                  <span className="font-medium text-lg">+ Percentage fee</span>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mt-3">
+                Full access to the world's most comprehensive health platform with white-label solutions
+              </p>
+            </div>
 
             {/* Key Benefits List */}
             <div className="text-left max-w-2xl mx-auto mb-8 space-y-3">
               <div className="flex items-center gap-3">
                 <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                <span>List services and set your own fees</span>
+                <span>White-label blood test kits with your branding</span>
               </div>
               <div className="flex items-center gap-3">
                 <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                <span>Accept bookings with full calendar control</span>
+                <span>Complete drop-shipping and fulfillment service</span>
               </div>
               <div className="flex items-center gap-3">
                 <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                <span>Order tests, access results, and use our AI interpreter</span>
+                <span>All lab contracts and result delivery handled for you</span>
               </div>
               <div className="flex items-center gap-3">
                 <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                <span>Get paid quickly with zero admin hassle</span>
+                <span>Set your own prices and keep healthy margins</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
+                <span>Access to AI interpreter and global platform tools</span>
               </div>
             </div>
 
@@ -98,15 +120,15 @@ export default function JoinProfessional() {
             <div className="flex flex-wrap justify-center gap-4 mb-12">
               <Badge className="flex items-center gap-2">
                 <Shield className="h-4 w-4" />
-                Fully secure
+                Complete white-label solution
               </Badge>
               <Badge className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
-                Zero signup fee
+                Transparent pricing model
               </Badge>
               <Badge className="flex items-center gap-2">
                 <Globe className="h-4 w-4" />
-                Reach more patients
+                Global platform access
               </Badge>
             </div>
 

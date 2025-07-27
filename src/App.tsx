@@ -13,6 +13,7 @@ import Radiology from "./pages/Radiology";
 import PrivateAmbulance from "./pages/PrivateAmbulance";
 import ClinicFinder from "./pages/ClinicFinder";
 import ProductDetail from "./pages/ProductDetail";
+import ServiceDetail from "./pages/ServiceDetail";
 import SignIn from "./pages/SignIn";
 import Treatments from "./pages/Treatments";
 import FAQ from "./pages/FAQ";
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/upload-results" element={<UploadResults />} />
           <Route path="/clinic-finder" element={<ClinicFinder />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/service/:id" element={<ServiceDetail />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/about" element={<About />} />

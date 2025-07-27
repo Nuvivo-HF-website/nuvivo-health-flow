@@ -525,12 +525,12 @@ const Treatments = () => {
                 </div>
 
                 <Button 
-                  onClick={() => handleBookTreatment(treatment)}
+                  onClick={() => navigate(`/service/${treatment.id}`)}
                   className="w-full"
                   size="lg"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
-                  Book Now - £{treatment.price}
+                  View Details - £{treatment.price}
                 </Button>
               </CardContent>
             </Card>

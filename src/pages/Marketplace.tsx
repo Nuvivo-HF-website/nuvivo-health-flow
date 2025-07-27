@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -126,6 +127,7 @@ const mockDoctors = [
 ];
 
 const Marketplace = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [likedDoctors, setLikedDoctors] = useState<Set<string>>(new Set());
@@ -278,15 +280,18 @@ const Marketplace = () => {
                     <Button 
                       className="flex-1" 
                       size="sm"
-                      onClick={() => {
-                        window.location.href = '/booking';
-                      }}
+                      onClick={() => navigate(`/service/cardiology-consultation`)}
                     >
                       Book Consultation
                     </Button>
-                    <Button variant="outline" size="sm" className="gap-1">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-1"
+                      onClick={() => navigate(`/service/cardiology-consultation`)}
+                    >
                       <MessageCircle className="w-4 h-4" />
-                      Chat
+                      View Details
                     </Button>
                   </div>
                 </div>

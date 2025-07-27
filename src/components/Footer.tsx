@@ -1,6 +1,10 @@
 import { Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
+  const navigate = useNavigate();
+  
   return (
     <footer className="bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -22,6 +26,13 @@ const Footer = () => {
               <p>📞 0333 305 9916</p>
               <p>✉️ hello@nuvivo.co.uk</p>
             </div>
+            <Button 
+              variant="outline"
+              onClick={() => navigate("/professional-registration")}
+              className="mt-4"
+            >
+              Join as Professional
+            </Button>
             <div className="text-xs text-primary-foreground/60">
               GDPR Compliant • ISO 27001 Certified
             </div>

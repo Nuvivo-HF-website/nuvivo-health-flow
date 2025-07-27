@@ -36,6 +36,9 @@ const Header = () => {
             <a href="/radiology" className="text-muted-foreground hover:text-primary transition-colors">
               Radiology
             </a>
+            <a href="/private-ambulance" className="text-muted-foreground hover:text-primary transition-colors">
+              Private Ambulance
+            </a>
             <a href="/marketplace" className="text-muted-foreground hover:text-primary transition-colors">
               Doctors
             </a>

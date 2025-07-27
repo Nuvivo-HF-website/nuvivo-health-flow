@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -231,6 +232,7 @@ const locations = [
 ];
 
 const Radiology = () => {
+  const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState<number | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string>("");
   const { toast } = useToast();
@@ -311,12 +313,10 @@ const Radiology = () => {
 
                     <Button 
                       className="w-full mt-4"
-                      onClick={() => {
-                        window.location.href = '/booking';
-                      }}
+                      onClick={() => navigate(`/service/ultrasound-scan`)}
                     >
                       <Calendar className="w-4 h-4 mr-2" />
-                      Book Now
+                      View Details
                     </Button>
                   </div>
                 </CardContent>
@@ -410,12 +410,10 @@ const Radiology = () => {
                             <Button 
                               size="lg" 
                               className="w-full"
-                              onClick={() => {
-                                window.location.href = '/booking';
-                              }}
+                              onClick={() => navigate(`/service/ultrasound-scan`)}
                             >
                               <Calendar className="w-4 h-4 mr-2" />
-                              Book {service.name}
+                              View Details - {service.name}
                             </Button>
                           </div>
                         </div>

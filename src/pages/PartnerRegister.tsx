@@ -119,23 +119,14 @@ export default function PartnerRegister() {
             {/* Pricing Structure */}
             <div>
               <h3 className="font-semibold text-lg mb-3">Blood Test Pricing & Revenue Opportunity</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <h4 className="font-medium text-green-800 mb-2">Your Partner Pricing</h4>
-                  <p className="text-sm text-green-700">
-                    As a Nuvivo partner, you'll receive significant discounts on all blood tests. Basic panels start at just £45 (normally £89), 
-                    comprehensive tests at £85 (normally £179), hormone panels at £65 (normally £129), and vitamin panels at £35 (normally £69). 
-                    These wholesale prices allow you to offer competitive rates while maintaining healthy profit margins.
-                  </p>
-                </div>
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h4 className="font-medium text-blue-800 mb-2">Revenue Potential</h4>
-                  <p className="text-sm text-blue-700">
-                    You have complete flexibility to set your own patient pricing. Most partners apply a 40-80% markup, generating 
-                    an average profit of £25-50 per test. With monthly volume discounts available for practices ordering 20+ tests, 
-                    this can become a significant additional revenue stream for your clinic.
-                  </p>
-                </div>
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-medium text-blue-800 mb-2">Partner Pricing Structure</h4>
+                <p className="text-sm text-blue-700">
+                  As a Nuvivo partner, you'll receive exclusive wholesale pricing on all blood tests, significantly below retail rates. 
+                  Specific pricing will be discussed individually during your onboarding process, tailored to your practice needs and expected volume. 
+                  You have complete flexibility to set your own patient pricing, allowing you to offer competitive rates while maintaining 
+                  healthy profit margins that work for your business model.
+                </p>
               </div>
             </div>
 
@@ -176,8 +167,7 @@ export default function PartnerRegister() {
                   <p className="text-sm">
                     To maintain market integrity and professional standards, partners must adhere to our pricing guidelines. 
                     You're free to set competitive prices but cannot advertise below our recommended retail prices without prior approval. 
-                    We offer attractive volume discounts for practices ordering 20 or more tests monthly, with flexible payment terms 
-                    of Net 30 days for established partners who demonstrate consistent ordering patterns.
+                    Payment terms are flexible and will be discussed individually based on your practice requirements and partnership agreement.
                   </p>
                 </div>
 

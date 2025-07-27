@@ -25,11 +25,58 @@ import {
   Download,
   CheckCircle,
   Clock,
-  XCircle
+  XCircle,
+  Users,
+  Share2,
+  Copy,
+  Gift
 } from "lucide-react";
 
 export default function PartnerDashboard() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [copySuccess, setCopySuccess] = useState(false);
+  
+  // Generate unique referral code (in real app, this would come from backend)
+  const referralCode = "NUV-JS123";
+  const referralUrl = `${window.location.origin}/join-professional?ref=${referralCode}`;
+  
+  const copyReferralLink = async () => {
+    try {
+      await navigator.clipboard.writeText(referralUrl);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
+
+  // Mock referral data
+  const mockReferrals = [
+    {
+      id: 1,
+      referredName: "Dr. Sarah Wilson",
+      joinedDate: "2024-01-10",
+      bookingsCompleted: 7,
+      rewardPaid: true,
+      status: "Active"
+    },
+    {
+      id: 2,
+      referredName: "Nurse Emma Taylor", 
+      joinedDate: "2024-01-20",
+      bookingsCompleted: 3,
+      rewardPaid: false,
+      status: "Active"
+    },
+    {
+      id: 3,
+      referredName: "Dr. Michael Chen",
+      joinedDate: "2024-01-25", 
+      bookingsCompleted: 5,
+      rewardPaid: false,
+      status: "Pending Reward"
+    }
+  ];
 
   // Mock data for demonstration
   const mockServices = [
@@ -149,7 +196,7 @@ export default function PartnerDashboard() {
 
         {/* Main Dashboard */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Profile
@@ -173,6 +220,10 @@ export default function PartnerDashboard() {
             <TabsTrigger value="earnings" className="flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
               Earnings
+            </TabsTrigger>
+            <TabsTrigger value="referrals" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Refer & Earn
             </TabsTrigger>
             <TabsTrigger value="support" className="flex items-center gap-2">
               <HelpCircle className="h-4 w-4" />
@@ -482,6 +533,126 @@ export default function PartnerDashboard() {
                     <Download className="mr-2 h-4 w-4" />
                     Download Invoice Summary
                   </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Referrals Tab */}
+          <TabsContent value="referrals" className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium mb-4">Refer & Earn</h3>
+              
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <Card className="bg-gradient-to-br from-primary/10 to-primary/20 border-primary/20">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Gift className="h-5 w-5" />
+                      Referral Program
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="text-sm text-muted-foreground">
+                      💸 Invite another healthcare professional to join Nuvivo and get £100 when they complete 5 bookings.
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Share your personal invite link:</Label>
+                      <div className="flex gap-2">
+                        <Input 
+                          value={referralUrl} 
+                          readOnly
+                          className="text-xs"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={copyReferralLink}
+                          className="shrink-0"
+                        >
+                          {copySuccess ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                      {copySuccess && (
+                        <p className="text-xs text-green-600">Link copied to clipboard!</p>
+                      )}
+                    </div>
+                    <Button className="w-full">
+                      <Share2 className="mr-2 h-4 w-4" />
+                      Share Referral Link
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Referral Stats</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <div className="text-2xl font-bold text-green-600">2</div>
+                        <div className="text-xs text-green-700">Total Referrals</div>
+                      </div>
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-2xl font-bold text-blue-600">1</div>
+                        <div className="text-xs text-blue-700">Pending Rewards</div>
+                      </div>
+                    </div>
+                    <div className="text-center p-4 bg-primary/10 rounded-lg">
+                      <div className="text-3xl font-bold text-primary">£100</div>
+                      <div className="text-sm text-primary">Total Earned</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>My Referrals</CardTitle>
+                  <CardDescription>Track your referred partners and rewards</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {mockReferrals.map((referral) => (
+                      <div key={referral.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-3">
+                            <h4 className="font-medium">{referral.referredName}</h4>
+                            <Badge 
+                              variant={referral.status === "Pending Reward" ? "default" : "secondary"}
+                            >
+                              {referral.status}
+                            </Badge>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Joined: {referral.joinedDate} • {referral.bookingsCompleted}/5 bookings completed
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          {referral.rewardPaid ? (
+                            <Badge variant="default" className="bg-green-100 text-green-800">
+                              £100 Paid
+                            </Badge>
+                          ) : referral.bookingsCompleted >= 5 ? (
+                            <Badge variant="default" className="bg-yellow-100 text-yellow-800">
+                              £100 Pending
+                            </Badge>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">
+                              {5 - referral.bookingsCompleted} more bookings
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Separator className="my-6" />
+                  
+                  <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                    <strong>Terms:</strong> Only verified partners with a minimum of 5 completed bookings are eligible to refer. 
+                    Referred partners must also complete 5 bookings to trigger the reward. Self-referrals and duplicate emails are automatically blocked.
+                  </div>
                 </CardContent>
               </Card>
             </div>

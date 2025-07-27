@@ -33,6 +33,7 @@ import MobileCorporate from "./pages/MobileCorporate";
 import JoinProfessional from "./pages/JoinProfessional";
 import PartnerRegister from "./pages/PartnerRegister";
 import PartnerDashboard from "./pages/PartnerDashboard";
+import AdminReferrals from "./pages/AdminReferrals";
 import AIReportGenerator from "./pages/AIReportGenerator";
 
 const queryClient = new QueryClient();
@@ -74,6 +75,7 @@ const App = () => (
           <Route path="/join-professional" element={<JoinProfessional />} />
           <Route path="/partner-register" element={<PartnerRegister />} />
           <Route path="/partner-dashboard" element={<PartnerDashboard />} />
+          <Route path="/admin-referrals" element={<AdminReferrals />} />
           <Route path="/ai-report-generator" element={<AIReportGenerator />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

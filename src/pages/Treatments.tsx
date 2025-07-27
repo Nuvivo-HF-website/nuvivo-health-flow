@@ -23,13 +23,14 @@ interface Treatment {
 }
 
 const treatments: Treatment[] = [
+  // Physiotherapy & Sports Therapy
   {
     id: "deep-tissue-massage",
     name: "Deep Tissue Massage",
     description: "Targeted massage therapy focusing on deep muscle layers to relieve chronic tension and pain.",
     price: 45,
     duration: "60 min",
-    category: "Massage Therapy",
+    category: "Physiotherapy",
     features: [
       "Deep muscle manipulation",
       "Pain relief focused",
@@ -64,32 +65,12 @@ const treatments: Treatment[] = [
     ]
   },
   {
-    id: "therapeutic-massage",
-    name: "Therapeutic Massage",
-    description: "Holistic massage therapy designed to promote overall wellness and stress relief.",
-    price: 60,
-    duration: "60 min",
-    category: "Wellness Therapy",
-    features: [
-      "Stress reduction",
-      "Overall wellness focus",
-      "Relaxation therapy",
-      "Improved sleep quality"
-    ],
-    suitable: [
-      "Stress management needs",
-      "General wellness maintenance",
-      "Sleep improvement goals",
-      "Mental health support"
-    ]
-  },
-  {
     id: "injury-treatment-rehabilitation",
     name: "Injury Treatment & Rehabilitation",
     description: "Comprehensive injury assessment and treatment with personalised rehabilitation programme.",
     price: 70,
     duration: "90 min",
-    category: "Rehabilitation",
+    category: "Physiotherapy",
     features: [
       "Injury assessment",
       "Personalised treatment plan",
@@ -109,7 +90,7 @@ const treatments: Treatment[] = [
     description: "Precision needle therapy targeting trigger points for effective pain relief and muscle function improvement.",
     price: 65,
     duration: "45 min",
-    category: "Specialist Therapy",
+    category: "Sports Therapy",
     features: [
       "Trigger point release",
       "Pain relief focused",
@@ -123,24 +104,272 @@ const treatments: Treatment[] = [
       "Sports injury recovery"
     ]
   },
+
+  // IV Vitamin Drips & B12 Shots
   {
-    id: "cryotherapy-session",
-    name: "Cryotherapy Session",
-    description: "Advanced cold therapy treatment for recovery, pain relief, and performance enhancement.",
-    price: 40,
-    duration: "15 min",
-    category: "Recovery Therapy",
+    id: "iv-vitamin-energy-boost",
+    name: "Energy Boost IV Drip",
+    description: "High-dose vitamin B complex with vitamin C to combat fatigue and boost energy levels naturally.",
+    price: 120,
+    duration: "45 min",
+    category: "IV Vitamin Therapy",
     features: [
-      "Rapid recovery",
-      "Inflammation reduction",
-      "Pain relief",
-      "Performance boost"
+      "Vitamin B12, B6, B1 complex",
+      "High-dose vitamin C",
+      "Immediate energy boost",
+      "Enhanced mental clarity"
     ],
     suitable: [
-      "Post-workout recovery",
-      "Inflammation management",
-      "Athletic performance",
-      "Pain management"
+      "Chronic fatigue sufferers",
+      "Busy professionals",
+      "Post-illness recovery",
+      "Athletic performance"
+    ]
+  },
+  {
+    id: "iv-immunity-booster",
+    name: "Immunity Booster IV",
+    description: "Powerful immune system support with high-dose vitamin C, zinc, and antioxidants.",
+    price: 135,
+    duration: "60 min",
+    category: "IV Vitamin Therapy",
+    features: [
+      "High-dose vitamin C (2000mg)",
+      "Zinc and selenium",
+      "Glutathione antioxidant",
+      "Immune system enhancement"
+    ],
+    suitable: [
+      "Frequent illness",
+      "Stress-related immunity",
+      "Seasonal support",
+      "Pre-travel protection"
+    ]
+  },
+  {
+    id: "iv-hangover-recovery",
+    name: "Hangover Recovery IV",
+    description: "Rapid rehydration and detoxification to relieve hangover symptoms and restore wellness.",
+    price: 99,
+    duration: "30 min",
+    category: "IV Vitamin Therapy",
+    features: [
+      "Rapid rehydration",
+      "Anti-nausea medication",
+      "B-vitamin replenishment",
+      "Electrolyte balance"
+    ],
+    suitable: [
+      "Hangover relief",
+      "Event recovery",
+      "Dehydration treatment",
+      "Quick wellness boost"
+    ]
+  },
+  {
+    id: "b12-injection",
+    name: "Vitamin B12 Injection",
+    description: "Quick and effective B12 boost for energy, mood, and cognitive function improvement.",
+    price: 25,
+    duration: "10 min",
+    category: "B12 Injections",
+    features: [
+      "1000mcg methylcobalamin",
+      "Instant absorption",
+      "Energy enhancement",
+      "Mood improvement"
+    ],
+    suitable: [
+      "B12 deficiency",
+      "Vegetarians/vegans",
+      "Low energy levels",
+      "Cognitive support"
+    ]
+  },
+
+  // HRT & TRT Support
+  {
+    id: "hrt-consultation",
+    name: "HRT Consultation & Treatment",
+    description: "Comprehensive hormone replacement therapy assessment, monitoring, and ongoing support.",
+    price: 150,
+    duration: "60 min",
+    category: "Hormone Therapy",
+    features: [
+      "Hormone level assessment",
+      "Personalised HRT plan",
+      "Ongoing monitoring",
+      "Side effect management"
+    ],
+    suitable: [
+      "Menopausal symptoms",
+      "Hormonal imbalance",
+      "Low estrogen/progesterone",
+      "Quality of life issues"
+    ]
+  },
+  {
+    id: "trt-consultation",
+    name: "TRT Consultation & Treatment",
+    description: "Testosterone replacement therapy assessment, treatment planning, and continuous monitoring.",
+    price: 175,
+    duration: "75 min",
+    category: "Hormone Therapy",
+    features: [
+      "Testosterone level testing",
+      "Treatment protocol design",
+      "Regular monitoring",
+      "Lifestyle optimization"
+    ],
+    suitable: [
+      "Low testosterone",
+      "Fatigue and low energy",
+      "Decreased libido",
+      "Muscle mass loss"
+    ]
+  },
+  {
+    id: "hormone-monitoring",
+    name: "Hormone Level Monitoring",
+    description: "Regular hormone level checks and treatment adjustments for optimal therapy outcomes.",
+    price: 85,
+    duration: "30 min",
+    category: "Hormone Therapy",
+    features: [
+      "Comprehensive hormone panel",
+      "Treatment adjustment",
+      "Progress tracking",
+      "Side effect assessment"
+    ],
+    suitable: [
+      "Current HRT/TRT patients",
+      "Treatment optimization",
+      "Ongoing monitoring",
+      "Dosage adjustments"
+    ]
+  },
+
+  // Chronic Conditions Management
+  {
+    id: "thyroid-management",
+    name: "Thyroid Condition Management",
+    description: "Comprehensive thyroid assessment, treatment, and ongoing monitoring for optimal thyroid health.",
+    price: 120,
+    duration: "60 min",
+    category: "Chronic Conditions",
+    features: [
+      "Complete thyroid panel",
+      "Medication optimization",
+      "Lifestyle guidance",
+      "Regular monitoring"
+    ],
+    suitable: [
+      "Hypothyroidism",
+      "Hyperthyroidism",
+      "Hashimoto's disease",
+      "Thyroid nodules"
+    ]
+  },
+  {
+    id: "diabetes-support",
+    name: "Diabetes Management Support",
+    description: "Comprehensive diabetes care including monitoring, medication management, and lifestyle support.",
+    price: 95,
+    duration: "45 min",
+    category: "Chronic Conditions",
+    features: [
+      "Blood glucose monitoring",
+      "HbA1c tracking",
+      "Medication review",
+      "Dietary guidance"
+    ],
+    suitable: [
+      "Type 1 diabetes",
+      "Type 2 diabetes",
+      "Pre-diabetes",
+      "Gestational diabetes"
+    ]
+  },
+  {
+    id: "pcos-management",
+    name: "PCOS Management Programme",
+    description: "Holistic PCOS care including hormone balancing, symptom management, and fertility support.",
+    price: 135,
+    duration: "75 min",
+    category: "Chronic Conditions",
+    features: [
+      "Hormone level assessment",
+      "Insulin resistance testing",
+      "Weight management support",
+      "Fertility guidance"
+    ],
+    suitable: [
+      "PCOS diagnosis",
+      "Irregular periods",
+      "Fertility issues",
+      "Metabolic syndrome"
+    ]
+  },
+
+  // Smoking Cessation
+  {
+    id: "smoking-cessation-programme",
+    name: "Complete Smoking Cessation Programme",
+    description: "Comprehensive 12-week programme combining medical support, behavioral therapy, and ongoing monitoring.",
+    price: 299,
+    duration: "12 weeks",
+    category: "Smoking Cessation",
+    features: [
+      "Medical assessment",
+      "Nicotine replacement therapy",
+      "Behavioral counseling",
+      "Weekly support sessions"
+    ],
+    suitable: [
+      "Heavy smokers",
+      "Multiple quit attempts",
+      "Health concerns",
+      "Strong motivation to quit"
+    ]
+  },
+  {
+    id: "nicotine-replacement-therapy",
+    name: "Nicotine Replacement Therapy",
+    description: "Medical-grade nicotine replacement therapy with professional monitoring and support.",
+    price: 89,
+    duration: "30 min",
+    category: "Smoking Cessation",
+    features: [
+      "Prescription NRT options",
+      "Dosage optimization",
+      "Side effect monitoring",
+      "Progress tracking"
+    ],
+    suitable: [
+      "Nicotine dependence",
+      "Withdrawal symptoms",
+      "Previous failed attempts",
+      "Medical supervision needed"
+    ]
+  },
+  {
+    id: "quit-smoking-consultation",
+    name: "Quit Smoking Consultation",
+    description: "Initial assessment and personalized quit plan development with ongoing support options.",
+    price: 65,
+    duration: "45 min",
+    category: "Smoking Cessation",
+    features: [
+      "Smoking habit assessment",
+      "Personalized quit plan",
+      "Medication options review",
+      "Support resource access"
+    ],
+    suitable: [
+      "Ready to quit smoking",
+      "Need professional guidance",
+      "Previous failed attempts",
+      "Health motivation"
     ]
   }
 ];
@@ -158,12 +387,13 @@ const Treatments = () => {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case "Massage Therapy": return <Heart className="w-5 h-5" />;
+      case "Physiotherapy": return <Heart className="w-5 h-5" />;
       case "Sports Therapy": return <Zap className="w-5 h-5" />;
-      case "Wellness Therapy": return <Star className="w-5 h-5" />;
-      case "Rehabilitation": return <Shield className="w-5 h-5" />;
-      case "Specialist Therapy": return <Users className="w-5 h-5" />;
-      case "Recovery Therapy": return <Zap className="w-5 h-5" />;
+      case "IV Vitamin Therapy": return <Zap className="w-5 h-5" />;
+      case "B12 Injections": return <Zap className="w-5 h-5" />;
+      case "Hormone Therapy": return <Users className="w-5 h-5" />;
+      case "Chronic Conditions": return <Shield className="w-5 h-5" />;
+      case "Smoking Cessation": return <CheckCircle className="w-5 h-5" />;
       default: return <Heart className="w-5 h-5" />;
     }
   };
@@ -196,11 +426,11 @@ const Treatments = () => {
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-primary mb-4">
-            Professional Treatment Services
+            Comprehensive Treatment Services
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Discover our comprehensive range of musculoskeletal therapy treatments designed to relieve pain, 
-            aid recovery, and improve mobility. Each session is tailored to support your body's needs and performance goals.
+            From physiotherapy and sports therapy to IV vitamin treatments, hormone support, and chronic condition management. 
+            Our expert practitioners provide personalized care to optimize your health and wellbeing.
           </p>
         </div>
 

@@ -31,6 +31,7 @@ import {
   Copy,
   Gift
 } from "lucide-react";
+import BookingCalendar from "@/components/BookingCalendar";
 
 export default function PartnerDashboard() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -328,40 +329,8 @@ export default function PartnerDashboard() {
           {/* Appointments Tab */}
           <TabsContent value="appointments" className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium mb-4">Upcoming Appointments</h3>
-              <div className="space-y-4">
-                {mockAppointments.map((appointment) => (
-                  <Card key={appointment.id}>
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-3">
-                            <h4 className="font-medium">{appointment.patientName}</h4>
-                            <Badge variant="outline">{appointment.type}</Badge>
-                            <div className="flex items-center gap-1">
-                              {getStatusIcon(appointment.status)}
-                              <span className="text-sm">{appointment.status}</span>
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground">{appointment.service}</p>
-                          <div className="flex items-center gap-4 text-sm">
-                            <span><strong>Date:</strong> {appointment.date}</span>
-                            <span><strong>Time:</strong> {appointment.time}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button variant="outline" size="sm">
-                            <MessageSquare className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <h3 className="text-lg font-medium mb-4">Appointment Management</h3>
+              <BookingCalendar />
             </div>
           </TabsContent>
 

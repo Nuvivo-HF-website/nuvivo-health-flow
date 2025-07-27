@@ -106,6 +106,122 @@ export default function PartnerRegister() {
           <p className="text-muted-foreground">Complete your application to start offering services on our platform</p>
         </div>
 
+        {/* Partnership Benefits & Rules */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                Partnership Benefits
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Pricing Structure */}
+            <div>
+              <h3 className="font-semibold text-lg mb-3">Blood Test Pricing & Revenue</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <h4 className="font-medium text-green-800 mb-2">Your Cost (Partner Price)</h4>
+                  <ul className="text-sm text-green-700 space-y-1">
+                    <li>• Basic Panel: £45 (RRP £89)</li>
+                    <li>• Comprehensive: £85 (RRP £179)</li>
+                    <li>• Hormone Panel: £65 (RRP £129)</li>
+                    <li>• Vitamin Panel: £35 (RRP £69)</li>
+                  </ul>
+                </div>
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h4 className="font-medium text-blue-800 mb-2">Your Revenue Potential</h4>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• Set your own patient prices</li>
+                    <li>• Typical markup: 40-80%</li>
+                    <li>• Average profit: £25-50 per test</li>
+                    <li>• Monthly volume discounts available</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* How It Works */}
+            <div>
+              <h3 className="font-semibold text-lg mb-3">How the Partnership Works</h3>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto mb-2 font-bold">1</div>
+                  <h4 className="font-medium mb-2">Order Tests</h4>
+                  <p className="text-sm text-muted-foreground">Order blood tests through your dashboard at partner prices</p>
+                </div>
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto mb-2 font-bold">2</div>
+                  <h4 className="font-medium mb-2">Set Your Prices</h4>
+                  <p className="text-sm text-muted-foreground">Customize pricing for your patients with recommended markups</p>
+                </div>
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center mx-auto mb-2 font-bold">3</div>
+                  <h4 className="font-medium mb-2">Earn Revenue</h4>
+                  <p className="text-sm text-muted-foreground">Keep the difference as additional revenue for your practice</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Partnership Rules */}
+            <div>
+              <h3 className="font-semibold text-lg mb-3">Partnership Terms & Rules</h3>
+              <div className="space-y-4">
+                <div className="p-4 border-l-4 border-primary bg-muted/50">
+                  <h4 className="font-medium mb-2">Pricing Guidelines</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>• You must maintain professional pricing standards</li>
+                    <li>• Cannot advertise below our RRP without approval</li>
+                    <li>• Volume discounts apply for 20+ tests per month</li>
+                    <li>• Payment terms: Net 30 days for established partners</li>
+                  </ul>
+                </div>
+
+                <div className="p-4 border-l-4 border-orange-500 bg-orange-50">
+                  <h4 className="font-medium mb-2">Quality Requirements</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>• Valid professional registration required</li>
+                    <li>• Current indemnity insurance mandatory</li>
+                    <li>• Must follow NICE guidelines for test recommendations</li>
+                    <li>• Regular CPD compliance checks</li>
+                  </ul>
+                </div>
+
+                <div className="p-4 border-l-4 border-blue-500 bg-blue-50">
+                  <h4 className="font-medium mb-2">Patient Care Standards</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>• Provide clear consultation before recommending tests</li>
+                    <li>• Explain test results and implications thoroughly</li>
+                    <li>• Offer appropriate follow-up care or referrals</li>
+                    <li>• Maintain patient confidentiality and GDPR compliance</li>
+                  </ul>
+                </div>
+
+                <div className="p-4 border-l-4 border-green-500 bg-green-50">
+                  <h4 className="font-medium mb-2">Business Benefits</h4>
+                  <ul className="text-sm space-y-1">
+                    <li>• Access to our lab network nationwide</li>
+                    <li>• Automated result delivery and reporting</li>
+                    <li>• Marketing support and co-branded materials</li>
+                    <li>• Dedicated partner support team</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Agreement Confirmation */}
+            <div className="p-4 bg-muted border rounded-lg">
+              <p className="text-sm font-medium mb-2">By proceeding with registration, you agree to:</p>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Maintain professional standards in all patient interactions</li>
+                <li>• Use our services ethically and in patients' best interests</li>
+                <li>• Comply with all relevant medical regulations and guidelines</li>
+                <li>• Participate in quarterly partner reviews and feedback sessions</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Account Type Selection */}
         <Card className="mb-6">
           <CardHeader>

@@ -6,20 +6,24 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Shield, Check, ArrowLeft } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Upload, Shield, Check, ArrowLeft, User, Building, Stethoscope } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
 export default function PartnerRegister() {
   const navigate = useNavigate();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [accountType, setAccountType] = useState<"individual" | "clinic">("individual");
   const [formData, setFormData] = useState({
     fullName: "",
+    clinicName: "",
     email: "",
     mobile: "",
     profession: "",
     registrationNumber: "",
     clinicAddress: "",
+    teamSize: "",
     password: "",
     confirmPassword: ""
   });
@@ -102,6 +106,46 @@ export default function PartnerRegister() {
           <p className="text-muted-foreground">Complete your application to start offering services on our platform</p>
         </div>
 
+        {/* Account Type Selection */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Choose Account Type</CardTitle>
+            <CardDescription>Are you joining as an individual or representing a clinic?</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RadioGroup 
+              value={accountType} 
+              onValueChange={(value: "individual" | "clinic") => setAccountType(value)}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
+              <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer">
+                <RadioGroupItem value="individual" id="individual" />
+                <div className="flex items-center gap-3 flex-1">
+                  <Stethoscope className="h-6 w-6 text-primary" />
+                  <div>
+                    <Label htmlFor="individual" className="font-medium cursor-pointer">
+                      🧑‍⚕️ Individual Professional
+                    </Label>
+                    <p className="text-sm text-muted-foreground">Doctor, nurse, therapist, or specialist</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer">
+                <RadioGroupItem value="clinic" id="clinic" />
+                <div className="flex items-center gap-3 flex-1">
+                  <Building className="h-6 w-6 text-primary" />
+                  <div>
+                    <Label htmlFor="clinic" className="font-medium cursor-pointer">
+                      🏥 Clinic or Health Centre
+                    </Label>
+                    <p className="text-sm text-muted-foreground">Manage multiple professionals & locations</p>
+                  </div>
+                </div>
+              </div>
+            </RadioGroup>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -114,30 +158,68 @@ export default function PartnerRegister() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Personal Information */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name *</Label>
-                  <Input
-                    id="fullName"
-                    value={formData.fullName}
-                    onChange={(e) => handleInputChange("fullName", e.target.value)}
-                    placeholder="Dr. John Smith"
-                    required
-                  />
+              {/* Conditional Fields Based on Account Type */}
+              {accountType === "individual" ? (
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Input
+                      id="fullName"
+                      value={formData.fullName}
+                      onChange={(e) => handleInputChange("fullName", e.target.value)}
+                      placeholder="Dr. John Smith"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      placeholder="john.smith@example.com"
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="john.smith@example.com"
-                    required
-                  />
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="clinicName">Clinic Name *</Label>
+                    <Input
+                      id="clinicName"
+                      value={formData.clinicName}
+                      onChange={(e) => handleInputChange("clinicName", e.target.value)}
+                      placeholder="Active Health Clinic"
+                      required
+                    />
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName">Admin Contact Name *</Label>
+                      <Input
+                        id="fullName"
+                        value={formData.fullName}
+                        onChange={(e) => handleInputChange("fullName", e.target.value)}
+                        placeholder="Dr. Sarah Johnson"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Contact Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange("email", e.target.value)}
+                        placeholder="admin@activehealthclinic.co.uk"
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -270,7 +352,7 @@ export default function PartnerRegister() {
               </div>
 
               <Button type="submit" className="w-full" size="lg">
-                Submit Application
+                {accountType === "clinic" ? "Submit Clinic Application" : "Submit Application"}
               </Button>
             </form>
           </CardContent>

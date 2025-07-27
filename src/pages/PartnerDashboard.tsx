@@ -208,7 +208,7 @@ export default function PartnerDashboard() {
         {/* Main Dashboard - Simplified Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="flex items-center justify-between">
-            <TabsList className="grid w-full max-w-md grid-cols-4">
+            <TabsList className="grid w-full max-w-lg grid-cols-5">
               <TabsTrigger value="calendar" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 <span className="hidden sm:inline">Calendar</span>
@@ -217,6 +217,12 @@ export default function PartnerDashboard() {
                 <Briefcase className="h-4 w-4" />
                 <span className="hidden sm:inline">Services</span>
               </TabsTrigger>
+              {!isSimpleMode && (
+                <TabsTrigger value="tests" className="flex items-center gap-2">
+                  <TestTube className="h-4 w-4" />
+                  <span className="hidden sm:inline">Tests</span>
+                </TabsTrigger>
+              )}
               <TabsTrigger value="earnings" className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
                 <span className="hidden sm:inline">Earnings</span>
@@ -313,6 +319,55 @@ export default function PartnerDashboard() {
               ))}
             </div>
           </TabsContent>
+
+          {/* Test Orders Tab - Now between Services and Earnings */}
+          {!isSimpleMode && (
+            <TabsContent value="tests" className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-medium">Test Orders</h3>
+                  <p className="text-sm text-muted-foreground">Order tests for patients and access results</p>
+                </div>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Order Test
+                </Button>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Order New Test</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Patient Email/Name</Label>
+                      <Input placeholder="patient@example.com or John Doe" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Test Type</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select test type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="basic">Basic Health Panel</SelectItem>
+                          <SelectItem value="comprehensive">Comprehensive Health</SelectItem>
+                          <SelectItem value="hormones">Hormone Panel</SelectItem>
+                          <SelectItem value="vitamins">Vitamin Deficiency</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Clinical Notes</Label>
+                    <Textarea placeholder="Add any relevant clinical information..." />
+                  </div>
+                  <Button>Order Test</Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
 
           {/* Earnings Tab - Simplified */}
           <TabsContent value="earnings" className="space-y-6">

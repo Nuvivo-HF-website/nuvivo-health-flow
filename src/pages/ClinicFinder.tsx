@@ -38,7 +38,9 @@ const clinics = [
     facilities: ["Parking Available", "Wheelchair Access", "Air Conditioning", "WiFi"],
     appointments: ["Same Day", "Next Day", "Weekly"],
     lat: 51.5194,
-    lng: -0.1448
+    lng: -0.1448,
+    registrationNumber: "HBC2019001",
+    certifications: ["CQC Registered", "ISO 15189", "UKAS Accredited"]
   },
   {
     id: 2,
@@ -54,7 +56,9 @@ const clinics = [
     facilities: ["Underground Parking", "Cafe", "Express Service"],
     appointments: ["Same Day", "Next Day"],
     lat: 51.5045,
-    lng: -0.0194
+    lng: -0.0194,
+    registrationNumber: "CWH2020002",
+    certifications: ["CQC Registered", "ISO 15189"]
   },
   {
     id: 3,
@@ -70,10 +74,158 @@ const clinics = [
     facilities: ["Street Parking", "Wheelchair Access"],
     appointments: ["Next Day", "Weekly"],
     lat: 50.8225,
-    lng: -0.1372
+    lng: -0.1372,
+    registrationNumber: "BMC2018003",
+    certifications: ["CQC Registered", "UKAS Accredited"]
+  },
+  {
+    id: 16,
+    name: "Westminster Health Labs",
+    address: "67 Victoria Street, London SW1H 0HW",
+    city: "London",
+    region: "England",
+    phone: "020 7834 5678",
+    rating: 4.8,
+    distance: "1.2 miles",
+    openingHours: "Mon-Fri: 7:30-18:30, Sat: 8:30-15:00",
+    services: ["Executive Health Checks", "STI Testing", "Travel Medicine"],
+    facilities: ["Valet Parking", "Private Rooms", "Same Day Results"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 51.4975,
+    lng: -0.1357,
+    registrationNumber: "WHL2021004",
+    certifications: ["CQC Outstanding", "ISO 15189", "UKAS Accredited"]
+  },
+  {
+    id: 17,
+    name: "Kensington Health Suite",
+    address: "123 High Street Kensington, London W8 5SF",
+    city: "London",
+    region: "England",
+    phone: "020 7937 2468",
+    rating: 4.9,
+    distance: "2.8 miles",
+    openingHours: "Mon-Fri: 8:00-19:00, Sat: 9:00-17:00, Sun: 10:00-14:00",
+    services: ["Premium Health Screenings", "Genetic Testing", "Wellness Programs"],
+    facilities: ["Luxury Waiting Area", "Concierge Service", "Refreshments"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 51.5008,
+    lng: -0.1925,
+    registrationNumber: "KHS2022005",
+    certifications: ["CQC Outstanding", "ISO 15189", "UKAS Accredited", "Private Healthcare UK"]
+  },
+  {
+    id: 18,
+    name: "Greenwich Peninsula Medical",
+    address: "89 Greenwich High Road, London SE10 8JL",
+    city: "London",
+    region: "England",
+    phone: "020 8858 1234",
+    rating: 4.6,
+    distance: "8.5 miles",
+    openingHours: "Mon-Fri: 7:00-18:00, Sat: 8:00-16:00",
+    services: ["Community Health", "Family Testing", "Preventive Care"],
+    facilities: ["Free Parking", "Play Area", "Family Friendly"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 51.4892,
+    lng: 0.0648,
+    registrationNumber: "GPM2019006",
+    certifications: ["CQC Good", "ISO 15189"]
+  },
+  {
+    id: 19,
+    name: "Richmond Upon Thames Clinic",
+    address: "45 The Quadrant, Richmond TW9 1DN",
+    city: "Richmond",
+    region: "England",
+    phone: "020 8940 3456",
+    rating: 4.7,
+    distance: "12.3 miles",
+    openingHours: "Mon-Fri: 8:00-17:30, Sat: 9:00-13:00",
+    services: ["Standard Testing", "Sports Medicine", "Occupational Health"],
+    facilities: ["Riverside Location", "Public Transport", "Wheelchair Access"],
+    appointments: ["Next Day", "Weekly"],
+    lat: 51.4613,
+    lng: -0.3037,
+    registrationNumber: "RTC2020007",
+    certifications: ["CQC Good", "ISO 15189", "UKAS Accredited"]
+  },
+  {
+    id: 20,
+    name: "Oxford Street Medical Centre",
+    address: "234 Oxford Street, London W1C 1DE",
+    city: "London",
+    region: "England",
+    phone: "020 7629 7890",
+    rating: 4.5,
+    distance: "0.8 miles",
+    openingHours: "Mon-Fri: 7:00-20:00, Sat: 8:00-18:00",
+    services: ["Walk-in Services", "Tourist Health", "Emergency Testing"],
+    facilities: ["Central Location", "Extended Hours", "Multilingual Staff"],
+    appointments: ["Same Day", "Walk-in"],
+    lat: 51.5154,
+    lng: -0.1447,
+    registrationNumber: "OSM2018008",
+    certifications: ["CQC Registered", "ISO 15189"]
   },
 
-  // Midlands & North England
+  // South East England Extended
+  {
+    id: 21,
+    name: "Canterbury Cathedral Medical",
+    address: "78 St. Margaret's Street, Canterbury CT1 2TG",
+    city: "Canterbury",
+    region: "England",
+    phone: "01227 456 789",
+    rating: 4.6,
+    distance: "58.2 miles",
+    openingHours: "Mon-Fri: 8:00-17:00, Sat: 9:00-13:00",
+    services: ["Heritage Health Checks", "Pilgrimage Medical", "Standard Testing"],
+    facilities: ["Historic Building", "Tourist Friendly", "Parking Available"],
+    appointments: ["Next Day", "Weekly"],
+    lat: 51.2802,
+    lng: 1.0789,
+    registrationNumber: "CCM2019009",
+    certifications: ["CQC Good", "ISO 15189"]
+  },
+  {
+    id: 22,
+    name: "Guildford Health Plaza",
+    address: "156 High Street, Guildford GU1 3HZ",
+    city: "Guildford",
+    region: "England",
+    phone: "01483 567 890",
+    rating: 4.8,
+    distance: "32.1 miles",
+    openingHours: "Mon-Fri: 7:30-18:30, Sat: 8:00-16:00",
+    services: ["Corporate Wellness", "University Health", "Comprehensive Panels"],
+    facilities: ["Shopping Centre Location", "Student Discounts", "Express Service"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 51.2362,
+    lng: -0.5704,
+    registrationNumber: "GHP2021010",
+    certifications: ["CQC Outstanding", "ISO 15189", "UKAS Accredited"]
+  },
+  {
+    id: 23,
+    name: "Eastbourne Seafront Clinic",
+    address: "67 Terminus Road, Eastbourne BN21 3NW",
+    city: "Eastbourne",
+    region: "England",
+    phone: "01323 789 012",
+    rating: 4.4,
+    distance: "67.8 miles",
+    openingHours: "Mon-Fri: 8:30-17:00, Sat: 9:00-13:00",
+    services: ["Retirement Health", "Seasonal Testing", "Basic Panels"],
+    facilities: ["Seafront Views", "Senior Friendly", "Ground Floor Access"],
+    appointments: ["Next Day", "Weekly"],
+    lat: 50.7687,
+    lng: 0.2854,
+    registrationNumber: "ESC2018011",
+    certifications: ["CQC Good", "ISO 15189"]
+  },
+
+  // Midlands & North England Extended
   {
     id: 4,
     name: "Birmingham Blood Lab",
@@ -88,7 +240,9 @@ const clinics = [
     facilities: ["Multi-storey Parking", "Wheelchair Access", "Children's Area"],
     appointments: ["Same Day", "Next Day", "Weekly"],
     lat: 52.4814,
-    lng: -1.8998
+    lng: -1.8998,
+    registrationNumber: "BBL2019012",
+    certifications: ["CQC Good", "ISO 15189", "UKAS Accredited"]
   },
   {
     id: 5,
@@ -104,7 +258,9 @@ const clinics = [
     facilities: ["Secure Parking", "Fast Track Service", "Online Results"],
     appointments: ["Same Day", "Next Day", "Weekly"],
     lat: 53.4794,
-    lng: -2.2453
+    lng: -2.2453,
+    registrationNumber: "MML2020013",
+    certifications: ["CQC Outstanding", "ISO 15189", "UKAS Accredited"]
   },
   {
     id: 6,
@@ -120,7 +276,9 @@ const clinics = [
     facilities: ["Public Transport Links", "Wheelchair Access"],
     appointments: ["Next Day", "Weekly"],
     lat: 53.4048,
-    lng: -2.9916
+    lng: -2.9916,
+    registrationNumber: "LHC2018014",
+    certifications: ["CQC Good", "ISO 15189"]
   },
   {
     id: 7,
@@ -136,7 +294,9 @@ const clinics = [
     facilities: ["City Centre Parking", "Express Results", "Comfortable Waiting Area"],
     appointments: ["Same Day", "Next Day", "Weekly"],
     lat: 53.7997,
-    lng: -1.5492
+    lng: -1.5492,
+    registrationNumber: "LDC2019015",
+    certifications: ["CQC Good", "ISO 15189", "UKAS Accredited"]
   },
   {
     id: 8,
@@ -152,10 +312,84 @@ const clinics = [
     facilities: ["Metro Access", "Wheelchair Access", "Family Friendly"],
     appointments: ["Next Day", "Weekly"],
     lat: 54.9738,
-    lng: -1.6131
+    lng: -1.6131,
+    registrationNumber: "NBS2020016",
+    certifications: ["CQC Good", "ISO 15189"]
+  },
+  {
+    id: 24,
+    name: "Nottingham City Health Lab",
+    address: "45 Market Square, Nottingham NG1 2DR",
+    city: "Nottingham",
+    region: "England",
+    phone: "0115 876 5432",
+    rating: 4.7,
+    distance: "123.4 miles",
+    openingHours: "Mon-Fri: 8:00-18:00, Sat: 9:00-15:00",
+    services: ["University Health", "Research Studies", "Student Wellness"],
+    facilities: ["City Centre", "Student Rates", "Research Partnership"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 52.9548,
+    lng: -1.1581,
+    registrationNumber: "NCH2021017",
+    certifications: ["CQC Outstanding", "ISO 15189", "UKAS Accredited"]
+  },
+  {
+    id: 25,
+    name: "Sheffield Steel City Labs",
+    address: "78 Fargate, Sheffield S1 2HD",
+    city: "Sheffield",
+    region: "England",
+    phone: "0114 567 8901",
+    rating: 4.6,
+    distance: "167.2 miles",
+    openingHours: "Mon-Fri: 7:30-18:00, Sat: 8:30-14:00",
+    services: ["Industrial Health", "Metalworkers Testing", "Environmental Health"],
+    facilities: ["Industrial Access", "Occupational Focus", "Quick Turnaround"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 53.3811,
+    lng: -1.4701,
+    registrationNumber: "SCL2019018",
+    certifications: ["CQC Good", "ISO 15189", "HSE Approved"]
+  },
+  {
+    id: 26,
+    name: "Derby County Medical",
+    address: "67 Iron Gate, Derby DE1 3GL",
+    city: "Derby",
+    region: "England",
+    phone: "01332 345 678",
+    rating: 4.5,
+    distance: "128.7 miles",
+    openingHours: "Mon-Fri: 8:00-17:30, Sat: 9:00-13:00",
+    services: ["Automotive Industry Health", "Standard Testing", "Pre-employment"],
+    facilities: ["Industry Partnerships", "Quick Service", "Parking Available"],
+    appointments: ["Next Day", "Weekly"],
+    lat: 52.9225,
+    lng: -1.4746,
+    registrationNumber: "DCM2020019",
+    certifications: ["CQC Good", "ISO 15189"]
+  },
+  {
+    id: 27,
+    name: "Leicester Royal Health",
+    address: "123 Granby Street, Leicester LE1 6FB",
+    city: "Leicester",
+    region: "England",
+    phone: "0116 234 5678",
+    rating: 4.8,
+    distance: "108.9 miles",
+    openingHours: "Mon-Fri: 7:00-19:00, Sat: 8:00-16:00",
+    services: ["Multicultural Health", "Community Outreach", "Diabetes Screening"],
+    facilities: ["Multilingual Staff", "Cultural Sensitivity", "Community Focus"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 52.6369,
+    lng: -1.1398,
+    registrationNumber: "LRH2021020",
+    certifications: ["CQC Outstanding", "ISO 15189", "UKAS Accredited"]
   },
 
-  // Wales
+  // Wales Extended
   {
     id: 9,
     name: "Cardiff Bay Health Lab",
@@ -170,7 +404,9 @@ const clinics = [
     facilities: ["Waterfront Parking", "Bay Views", "Modern Equipment"],
     appointments: ["Same Day", "Next Day", "Weekly"],
     lat: 51.4816,
-    lng: -3.1791
+    lng: -3.1791,
+    registrationNumber: "CBH2019021",
+    certifications: ["HIW Registered", "ISO 15189", "UKAS Accredited"]
   },
   {
     id: 10,
@@ -186,7 +422,9 @@ const clinics = [
     facilities: ["Town Centre Location", "Public Parking", "Bilingual Service"],
     appointments: ["Next Day", "Weekly"],
     lat: 51.6214,
-    lng: -3.9436
+    lng: -3.9436,
+    registrationNumber: "SML2018022",
+    certifications: ["HIW Registered", "ISO 15189"]
   },
   {
     id: 11,
@@ -202,10 +440,48 @@ const clinics = [
     facilities: ["Free Parking", "Wheelchair Access"],
     appointments: ["Weekly"],
     lat: 51.5842,
-    lng: -2.9977
+    lng: -2.9977,
+    registrationNumber: "NBC2020023",
+    certifications: ["HIW Registered", "ISO 15189"]
+  },
+  {
+    id: 28,
+    name: "Bangor University Health",
+    address: "45 High Street, Bangor LL57 1UL",
+    city: "Bangor",
+    region: "Wales",
+    phone: "01248 567 890",
+    rating: 4.6,
+    distance: "245.7 miles",
+    openingHours: "Mon-Fri: 8:00-17:00, Sat: 9:00-13:00",
+    services: ["Student Health", "Research Participation", "Academic Studies"],
+    facilities: ["University Campus", "Student Discounts", "Research Facilities"],
+    appointments: ["Next Day", "Weekly"],
+    lat: 53.2280,
+    lng: -4.1291,
+    registrationNumber: "BUH2021024",
+    certifications: ["HIW Registered", "ISO 15189", "Academic Partnership"]
+  },
+  {
+    id: 29,
+    name: "Wrexham Border Health",
+    address: "78 Regent Street, Wrexham LL11 1SA",
+    city: "Wrexham",
+    region: "Wales",
+    phone: "01978 234 567",
+    rating: 4.3,
+    distance: "198.4 miles",
+    openingHours: "Mon-Fri: 8:30-17:00",
+    services: ["Cross-border Health", "Industrial Testing", "Community Health"],
+    facilities: ["Border Location", "English/Welsh Service", "Industrial Access"],
+    appointments: ["Next Day", "Weekly"],
+    lat: 53.0478,
+    lng: -2.9916,
+    registrationNumber: "WBH2019025",
+    certifications: ["HIW Registered", "ISO 15189"]
   },
 
-  // Scotland
+  // Scotland Extended
   {
     id: 12,
     name: "Edinburgh Royal Lab",
@@ -220,7 +496,9 @@ const clinics = [
     facilities: ["City Centre", "Valet Parking", "Historic Building", "Premium Service"],
     appointments: ["Same Day", "Next Day", "Weekly"],
     lat: 55.9533,
-    lng: -3.1883
+    lng: -3.1883,
+    registrationNumber: "ERL2019026",
+    certifications: ["Healthcare Improvement Scotland", "ISO 15189", "UKAS Accredited"]
   },
   {
     id: 13,
@@ -236,7 +514,9 @@ const clinics = [
     facilities: ["Shopping District", "Public Transport", "Modern Facilities"],
     appointments: ["Same Day", "Next Day", "Weekly"],
     lat: 55.8642,
-    lng: -4.2518
+    lng: -4.2518,
+    registrationNumber: "GHH2020027",
+    certifications: ["Healthcare Improvement Scotland", "ISO 15189", "UKAS Accredited"]
   },
   {
     id: 14,
@@ -252,7 +532,9 @@ const clinics = [
     facilities: ["Industrial Access", "Quick Service", "Specialised Testing"],
     appointments: ["Same Day", "Next Day", "Weekly"],
     lat: 57.1497,
-    lng: -2.0943
+    lng: -2.0943,
+    registrationNumber: "AMC2018028",
+    certifications: ["Healthcare Improvement Scotland", "ISO 15189", "HSE Approved"]
   },
   {
     id: 15,
@@ -268,7 +550,139 @@ const clinics = [
     facilities: ["University District", "Student Discounts", "Research Partnership"],
     appointments: ["Next Day", "Weekly"],
     lat: 56.4620,
-    lng: -2.9707
+    lng: -2.9707,
+    registrationNumber: "DBL2019029",
+    certifications: ["Healthcare Improvement Scotland", "ISO 15189"]
+  },
+  {
+    id: 30,
+    name: "Stirling Castle Medical",
+    address: "56 Port Street, Stirling FK8 2EJ",
+    city: "Stirling",
+    region: "Scotland",
+    phone: "01786 345 678",
+    rating: 4.7,
+    distance: "378.5 miles",
+    openingHours: "Mon-Fri: 8:00-17:30, Sat: 9:00-14:00",
+    services: ["Highland Health", "Tourism Medicine", "Historic Health Tours"],
+    facilities: ["Historic Location", "Tourist Services", "Scenic Views"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 56.1165,
+    lng: -3.9369,
+    registrationNumber: "SCM2021030",
+    certifications: ["Healthcare Improvement Scotland", "ISO 15189", "Tourism Approved"]
+  },
+  {
+    id: 31,
+    name: "Inverness Highland Health",
+    address: "89 High Street, Inverness IV1 1HY",
+    city: "Inverness",
+    region: "Scotland",
+    phone: "01463 567 890",
+    rating: 4.4,
+    distance: "456.8 miles",
+    openingHours: "Mon-Fri: 8:30-17:00, Sat: 9:00-13:00",
+    services: ["Highland Community Health", "Rural Medicine", "Remote Diagnostics"],
+    facilities: ["Highland Access", "Remote Consultation", "Telemedicine"],
+    appointments: ["Next Day", "Weekly"],
+    lat: 57.4778,
+    lng: -4.2247,
+    registrationNumber: "IHH2020031",
+    certifications: ["Healthcare Improvement Scotland", "ISO 15189", "Rural Health Certified"]
+  },
+
+  // Northern Ireland
+  {
+    id: 32,
+    name: "Belfast City Health Centre",
+    address: "123 Royal Avenue, Belfast BT1 1DA",
+    city: "Belfast",
+    region: "Northern Ireland",
+    phone: "028 9032 4567",
+    rating: 4.8,
+    distance: "312.5 miles",
+    openingHours: "Mon-Fri: 8:00-18:00, Sat: 9:00-15:00",
+    services: ["Comprehensive Health Checks", "Peace Process Health", "Community Wellness"],
+    facilities: ["City Centre", "Secure Parking", "Cultural Sensitivity"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 54.5973,
+    lng: -5.9301,
+    registrationNumber: "BCH2019032",
+    certifications: ["RQIA Registered", "ISO 15189", "UKAS Accredited"]
+  },
+  {
+    id: 33,
+    name: "Derry-Londonderry Border Lab",
+    address: "45 Strand Road, Derry BT48 7AB",
+    city: "Derry",
+    region: "Northern Ireland", 
+    phone: "028 7126 7890",
+    rating: 4.5,
+    distance: "378.9 miles",
+    openingHours: "Mon-Fri: 8:30-17:30",
+    services: ["Cross-border Health", "EU Health Cards", "Travel Medicine"],
+    facilities: ["Border Crossing", "EU Standards", "Bilingual Service"],
+    appointments: ["Next Day", "Weekly"],
+    lat: 54.9966,
+    lng: -7.3086,
+    registrationNumber: "DLB2020033",
+    certifications: ["RQIA Registered", "ISO 15189", "EU Compliant"]
+  },
+
+  // South West England
+  {
+    id: 34,
+    name: "Plymouth Naval Medical",
+    address: "67 Union Street, Plymouth PL1 3EZ",
+    city: "Plymouth",
+    region: "England",
+    phone: "01752 567 890",
+    rating: 4.6,
+    distance: "234.7 miles",
+    openingHours: "Mon-Fri: 7:30-18:00, Sat: 8:00-14:00",
+    services: ["Naval Health", "Maritime Medicine", "Seafarer Medicals"],
+    facilities: ["Naval Access", "Maritime Certified", "Quick Turnaround"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 50.3755,
+    lng: -4.1427,
+    registrationNumber: "PNM2019034",
+    certifications: ["CQC Good", "ISO 15189", "MCA Approved"]
+  },
+  {
+    id: 35,
+    name: "Bath Royal Crescent Health",
+    address: "45 Gay Street, Bath BA1 2NT",
+    city: "Bath",
+    region: "England",
+    phone: "01225 345 678",
+    rating: 4.9,
+    distance: "97.8 miles",
+    openingHours: "Mon-Fri: 8:00-18:00, Sat: 9:00-16:00",
+    services: ["Heritage Health", "Spa Wellness", "Luxury Health Checks"],
+    facilities: ["Historic Building", "Spa Services", "Luxury Amenities"],
+    appointments: ["Same Day", "Next Day", "Weekly"],
+    lat: 51.3811,
+    lng: -2.3590,
+    registrationNumber: "BRC2021035",
+    certifications: ["CQC Outstanding", "ISO 15189", "UKAS Accredited", "UNESCO Heritage"]
+  },
+  {
+    id: 36,
+    name: "Exeter Cathedral Medical",
+    address: "78 High Street, Exeter EX4 3LS",
+    city: "Exeter",
+    region: "England",
+    phone: "01392 234 567",
+    rating: 4.5,
+    distance: "178.3 miles",
+    openingHours: "Mon-Fri: 8:30-17:30, Sat: 9:00-13:00",
+    services: ["Regional Health Hub", "University Health", "Rural Outreach"],
+    facilities: ["University Partnership", "Rural Access", "Student Services"],
+    appointments: ["Next Day", "Weekly"],
+    lat: 50.7184,
+    lng: -3.5339,
+    registrationNumber: "ECM2020036",
+    certifications: ["CQC Good", "ISO 15189", "University Accredited"]
   }
 ];
 

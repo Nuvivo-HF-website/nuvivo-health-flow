@@ -19,6 +19,16 @@ import FAQ from "./pages/FAQ";
 import About from "./pages/About";
 import Preparation from "./pages/Preparation";
 import NotFound from "./pages/NotFound";
+import MedicalReports from "./pages/MedicalReports";
+import ConsultationsMentalHealth from "./pages/ConsultationsMentalHealth";
+import ConsultationsNutrition from "./pages/ConsultationsNutrition";
+import ConsultationsSexualHealth from "./pages/ConsultationsSexualHealth";
+import ConsultationsSecondOpinions from "./pages/ConsultationsSecondOpinions";
+import ScansECG from "./pages/ScansECG";
+import ScansCancer from "./pages/ScansCancer";
+import MobileHomeCollection from "./pages/MobileHomeCollection";
+import MobileSampleDropoff from "./pages/MobileSampleDropoff";
+import MobileCorporate from "./pages/MobileCorporate";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +55,16 @@ const App = () => (
           <Route path="/about" element={<About />} />
           <Route path="/preparation" element={<Preparation />} />
           <Route path="/professional-registration" element={<SignIn />} />
+          <Route path="/medical-reports" element={<MedicalReports />} />
+          <Route path="/consultations/mental-health" element={<ConsultationsMentalHealth />} />
+          <Route path="/consultations/nutrition" element={<ConsultationsNutrition />} />
+          <Route path="/consultations/sexual-health" element={<ConsultationsSexualHealth />} />
+          <Route path="/consultations/second-opinions" element={<ConsultationsSecondOpinions />} />
+          <Route path="/scans/ecg" element={<ScansECG />} />
+          <Route path="/scans/cancer" element={<ScansCancer />} />
+          <Route path="/mobile/home-collection" element={<MobileHomeCollection />} />
+          <Route path="/mobile/sample-dropoff" element={<MobileSampleDropoff />} />
+          <Route path="/mobile/corporate" element={<MobileCorporate />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

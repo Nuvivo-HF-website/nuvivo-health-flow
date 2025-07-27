@@ -74,48 +74,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Health Professionals Section */}
-      <section className="py-16 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">Join 500+ Health Professionals</h2>
-            <p className="text-xl text-muted-foreground mb-8">Expand your practice, increase your income, and help more patients with our platform</p>
-            
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">💰</span>
-                </div>
-                <h3 className="font-semibold mb-2">Earn More</h3>
-                <p className="text-sm text-muted-foreground">Up to 70% commission on all consultations and services</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">⏰</span>
-                </div>
-                <h3 className="font-semibold mb-2">Flexible Hours</h3>
-                <p className="text-sm text-muted-foreground">Set your own schedule, work from anywhere</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl">👥</span>
-                </div>
-                <h3 className="font-semibold mb-2">More Patients</h3>
-                <p className="text-sm text-muted-foreground">Access our growing patient base nationwide</p>
-              </div>
-            </div>
-            
-            <Button 
-              size="lg" 
-              onClick={() => window.location.href = '/professional-registration'}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Join as Professional - Start Earning Today
-            </Button>
-          </div>
-        </div>
-      </section>
-
       <MedicalQuiz />
       
       {/* Final CTA Section */}

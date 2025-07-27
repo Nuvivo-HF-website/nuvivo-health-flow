@@ -42,11 +42,11 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Services</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><a href="#" className="hover:text-accent transition-colors">Essential Health</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Advanced Wellness</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Performance Plus</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Home Visits</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Clinic Locations</a></li>
+              <li><button onClick={() => navigate("/blood-tests")} className="hover:text-accent transition-colors text-left">Essential Health</button></li>
+              <li><button onClick={() => navigate("/treatments")} className="hover:text-accent transition-colors text-left">Advanced Wellness</button></li>
+              <li><button onClick={() => navigate("/marketplace")} className="hover:text-accent transition-colors text-left">Performance Plus</button></li>
+              <li><button onClick={() => navigate("/mobile/home-collection")} className="hover:text-accent transition-colors text-left">Home Visits</button></li>
+              <li><button onClick={() => navigate("/clinic-finder")} className="hover:text-accent transition-colors text-left">Clinic Locations</button></li>
             </ul>
           </div>
 
@@ -54,11 +54,11 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Support</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><a href="#" className="hover:text-accent transition-colors">How It Works</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">FAQ</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Contact Us</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Book Appointment</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Track Results</a></li>
+              <li><button onClick={() => navigate("/")} className="hover:text-accent transition-colors text-left">How It Works</button></li>
+              <li><button onClick={() => navigate("/faq")} className="hover:text-accent transition-colors text-left">FAQ</button></li>
+              <li><button onClick={() => navigate("/clinic-finder")} className="hover:text-accent transition-colors text-left">Contact Us</button></li>
+              <li><button onClick={() => navigate("/booking")} className="hover:text-accent transition-colors text-left">Book Appointment</button></li>
+              <li><button onClick={() => navigate("/results/track")} className="hover:text-accent transition-colors text-left">Track Results</button></li>
             </ul>
           </div>
 
@@ -66,11 +66,11 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><a href="#" className="hover:text-accent transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">GDPR Compliance</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Medical Disclaimer</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Data Protection</a></li>
+              <li><button onClick={() => navigate("/privacy")} className="hover:text-accent transition-colors text-left">Privacy Policy</button></li>
+              <li><button onClick={() => navigate("/terms")} className="hover:text-accent transition-colors text-left">Terms of Service</button></li>
+              <li><button onClick={() => navigate("/gdpr")} className="hover:text-accent transition-colors text-left">GDPR Compliance</button></li>
+              <li><button onClick={() => navigate("/disclaimer")} className="hover:text-accent transition-colors text-left">Medical Disclaimer</button></li>
+              <li><button onClick={() => navigate("/data-protection")} className="hover:text-accent transition-colors text-left">Data Protection</button></li>
             </ul>
           </div>
         </div>
@@ -81,15 +81,15 @@ const Footer = () => {
             © 2024 Nuvivo Health. All rights reserved.
           </div>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
+            <button onClick={() => navigate("/certifications")} className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
               Medical Certification
-            </a>
-            <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
+            </button>
+            <button onClick={() => navigate("/accreditation")} className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
               Lab Accreditation
-            </a>
-            <a href="#" className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
+            </button>
+            <button onClick={() => navigate("/quality")} className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
               Quality Standards
-            </a>
+            </button>
           </div>
         </div>
       </div>

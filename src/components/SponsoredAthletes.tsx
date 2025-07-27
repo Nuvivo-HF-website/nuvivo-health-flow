@@ -2,8 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Trophy, Heart, Target, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SponsoredAthletes = () => {
+  const navigate = useNavigate();
   const athletes = [
     {
       name: "Emma Thompson",
@@ -166,7 +168,7 @@ const SponsoredAthletes = () => {
                 <Button 
                   variant="secondary" 
                   size="lg"
-                  onClick={() => window.location.href = "/blood-tests"}
+                  onClick={() => navigate("/blood-tests")}
                 >
                   Explore Sports Testing
                 </Button>
@@ -174,7 +176,7 @@ const SponsoredAthletes = () => {
                   variant="outline" 
                   size="lg"
                   className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-                  onClick={() => window.location.href = "/booking"}
+                  onClick={() => navigate("/booking")}
                 >
                   Book Consultation
                 </Button>

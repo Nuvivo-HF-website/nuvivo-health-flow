@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +14,7 @@ import Footer from "@/components/Footer";
 import { bloodTests, bloodTestCategories, getTestsByCategory, type BloodTest, type BloodTestOption } from "@/data/bloodTests";
 
 const BloodTests = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedTests, setSelectedTests] = useState<Set<string>>(new Set());
@@ -232,7 +234,7 @@ const BloodTests = () => {
                         className="w-full"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.location.href = `/product/${test.id}`;
+                          navigate(`/product/${test.id}`);
                         }}
                       >
                         View Details & Book

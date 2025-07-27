@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 
 const SignIn = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +41,7 @@ const SignIn = () => {
         description: "Welcome back to Nuvivo Health",
       });
       // In a real app, redirect to dashboard or previous page
-      window.location.href = "/";
+      navigate("/");
     }, 1500);
   };
 
@@ -66,7 +68,7 @@ const SignIn = () => {
           {/* Back Button */}
           <Button 
             variant="ghost" 
-            onClick={() => window.history.back()}
+            onClick={() => navigate(-1)}
             className="mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

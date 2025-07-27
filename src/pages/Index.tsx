@@ -5,8 +5,11 @@ import HowItWorks from "@/components/HowItWorks";
 import MedicalQuiz from "@/components/MedicalQuiz";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen bg-background font-inter">
       <Header />
@@ -66,7 +69,7 @@ const Index = () => {
           <p className="text-muted-foreground mb-8">Upload your existing blood test results and get an AI-powered analysis and personalized health insights.</p>
           <Button 
             size="lg" 
-            onClick={() => window.location.href = '/upload-results'}
+            onClick={() => navigate('/upload-results')}
             className="bg-primary hover:bg-primary/90"
           >
             Generate Your Report
@@ -85,7 +88,7 @@ const Index = () => {
             <Button 
               size="lg" 
               variant="secondary"
-              onClick={() => window.location.href = '/booking'}
+              onClick={() => navigate('/booking')}
               className="min-w-[200px]"
             >
               Book Your Test Now
@@ -93,7 +96,7 @@ const Index = () => {
             <Button 
               size="lg" 
               variant="outline"
-              onClick={() => window.location.href = '/clinic-finder'}
+              onClick={() => navigate('/clinic-finder')}
               className="min-w-[200px] border-white text-white hover:bg-white hover:text-primary"
             >
               Find Nearest Clinic

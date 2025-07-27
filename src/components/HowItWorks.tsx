@@ -1,7 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Search, Calendar, Users, FileCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const HowItWorks = () => {
+  const navigate = useNavigate();
+  
   const steps = [
     {
       icon: Search,
@@ -90,12 +94,20 @@ const HowItWorks = () => {
               from preventive testing to specialist treatments.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-gradient-hero text-primary-foreground hover:shadow-accent transform hover:scale-[1.02] shadow-medical font-medium inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 px-8">
+              <Button
+                size="lg"
+                onClick={() => navigate('/blood-tests')}
+                className="bg-primary hover:bg-primary/90"
+              >
                 Browse All Services
-              </button>
-              <button className="border border-border bg-background hover:bg-secondary hover:text-secondary-foreground shadow-card hover:shadow-medical inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-11 px-8">
+              </Button>
+              <Button 
+                variant="outline"
+                size="lg"
+                onClick={() => navigate('/clinic-finder')}
+              >
                 Contact Us
-              </button>
+              </Button>
             </div>
           </div>
         </div>

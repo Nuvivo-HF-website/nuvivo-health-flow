@@ -296,7 +296,11 @@ const BloodTests = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Button className="w-full" size="lg">
+                      <Button 
+                        className="w-full" 
+                        size="lg"
+                        onClick={() => navigate('/booking')}
+                      >
                         <Calendar className="w-4 h-4 mr-2" />
                         Book Appointment
                       </Button>

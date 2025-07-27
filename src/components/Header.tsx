@@ -254,11 +254,9 @@ const Header = () => {
 
           {/* Right side items */}
           <div className="flex items-center space-x-3">
-            <NavigationMenuLink asChild>
-              <NavigationLink to="/upload-results" className="text-muted-foreground hover:text-primary transition-colors px-3 py-2 hidden lg:flex">
-                Generate Your Report 🆕
-              </NavigationLink>
-            </NavigationMenuLink>
+            <Link to="/upload-results" className="text-muted-foreground hover:text-primary transition-colors px-3 py-2 hidden lg:flex">
+              Generate Your Report 🆕
+            </Link>
             
             <Button 
               variant="outline" 

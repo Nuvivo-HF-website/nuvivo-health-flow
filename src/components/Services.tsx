@@ -136,10 +136,10 @@ const Services = () => {
   ];
 
   const stats = [
-    { number: "50,000+", label: "Tests Completed", icon: TestTube2 },
-    { number: "200+", label: "Medical Experts", icon: Users },
+    { number: "2.5M+", label: "Global Users", icon: TestTube2 },
+    { number: "5,000+", label: "World-Class Experts", icon: Users },
     { number: "24hrs", label: "Average Results", icon: Clock },
-    { number: "4.9/5", label: "Patient Rating", icon: Star }
+    { number: "4.9/5", label: "Global Rating", icon: Star }
   ];
 
   return (
@@ -148,11 +148,11 @@ const Services = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-primary mb-4">
-            Complete Healthcare Services
+            The World's Most Comprehensive Health Platform
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            From blood tests to specialist consultations, radiology to treatments - 
-            everything you need for optimal health in one place.
+            Access the global leader in precision health - from advanced diagnostics to world-class treatments. 
+            Everything the world's top institutions offer, now in one revolutionary platform.
           </p>
         </div>
 
@@ -254,8 +254,8 @@ const Services = () => {
         {/* Stats Section */}
         <div className="bg-secondary/30 rounded-2xl p-8 mb-16">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-accent mb-2">Trusted by Thousands</h3>
-            <p className="text-muted-foreground">Join our growing community of health-conscious individuals</p>
+            <h3 className="text-2xl font-bold text-accent mb-2">The Global Standard in Health</h3>
+            <p className="text-muted-foreground">Join millions worldwide who trust the most advanced health platform</p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -300,9 +300,9 @@ const Services = () => {
         {/* CTA Section */}
         <div className="text-center mt-16">
           <div className="bg-gradient-primary rounded-2xl p-8 text-primary-foreground">
-            <h3 className="text-2xl font-bold mb-4">Ready to Take Control of Your Health?</h3>
+            <h3 className="text-2xl font-bold mb-4">Join the World's Leading Health Platform</h3>
             <p className="text-primary-foreground/80 mb-6 max-w-2xl mx-auto">
-              Get started with a comprehensive health assessment or book a consultation with one of our specialists.
+              Access the most advanced health ecosystem on Earth. Connect with world-renowned specialists and cutting-edge diagnostics.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 

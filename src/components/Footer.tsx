@@ -18,8 +18,8 @@ const Footer = () => {
               <span className="text-xl font-semibold">Nuvivo Health</span>
             </div>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">
-              Private, secure, and professional blood testing services 
-              with results reviewed by qualified doctors and delivered through secure links.
+              The world's most advanced health platform - connecting millions to precision diagnostics, 
+              world-class specialists, and breakthrough treatments through cutting-edge technology.
             </p>
             <div className="space-y-1 text-sm text-primary-foreground/80">
               <p>📍 8 Carmondean Centre Road, EH54 8PT, Livingston</p>

@@ -39,11 +39,11 @@ const HowItWorks = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-primary mb-4">
-            How It Works
+            The World's Most Advanced Health Experience
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Access comprehensive healthcare services in four simple steps. 
-            From blood tests to specialist consultations - we make healthcare convenient.
+            Experience the global standard in precision health. Four simple steps to access 
+            the world's most comprehensive medical platform - trusted by millions worldwide.
           </p>
         </div>
 
@@ -87,11 +87,11 @@ const HowItWorks = () => {
         <div className="text-center mt-16">
           <div className="bg-gradient-to-r from-accent-soft/50 to-primary/5 rounded-2xl p-8 border border-accent/20">
             <h3 className="text-2xl font-bold text-primary mb-4">
-              Ready to Start Your Health Journey?
+              Ready to Join the Global Health Revolution?
             </h3>
             <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              Join thousands who trust Nuvivo Health for comprehensive healthcare services - 
-              from preventive testing to specialist treatments.
+              Join millions worldwide who trust the most powerful health platform on Earth - 
+              from breakthrough diagnostics to world-class treatments.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

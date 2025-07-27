@@ -13,12 +13,12 @@ const Hero = () => {
           <div className="space-y-12 animate-fade-in">
             <div className="space-y-8">
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-playfair font-normal text-primary leading-[1.1] tracking-tight">
-                Evidence First.
+                The World's Most
                 <br />
-                <em className="text-accent not-italic">Action Next.</em>
+                <em className="text-accent not-italic">Advanced Health Platform.</em>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed font-inter max-w-lg">
-                Browse trusted doctors, order the right blood tests, and get hands-on treatments—connected through one powerful platform.
+                Join millions who trust the global leader in precision health. Access world-class doctors, advanced diagnostics, and breakthrough treatments—all in one revolutionary platform.
               </p>
             </div>
 

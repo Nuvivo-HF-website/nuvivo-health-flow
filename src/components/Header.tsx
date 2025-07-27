@@ -159,7 +159,7 @@ const Header = () => {
                 <NavigationMenuContent>
                   <div className="grid w-[300px] gap-3 p-4">
                     <NavigationMenuLink asChild>
-                      <NavigationLink to="/treatments" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                      <NavigationLink to="/treatments?category=physio" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
                         <div className="text-sm font-medium leading-none">Physiotherapy & Sports Therapy</div>
                       </NavigationLink>
                     </NavigationMenuLink>

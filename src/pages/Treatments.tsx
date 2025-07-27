@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -377,9 +377,32 @@ const treatments: Treatment[] = [
 const Treatments = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   const categories = ["All", ...Array.from(new Set(treatments.map(t => t.category)))];
+  
+  // Handle URL parameters for category filtering
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      // Map URL parameter to actual category names
+      const categoryMap: { [key: string]: string } = {
+        'iv-drips': 'IV Vitamin Therapy',
+        'b12-shots': 'B12 Injections', 
+        'hormones': 'Hormone Therapy',
+        'chronic': 'Chronic Conditions',
+        'smoking': 'Smoking Cessation',
+        'physio': 'Physiotherapy',
+        'sports': 'Sports Therapy'
+      };
+      
+      const mappedCategory = categoryMap[categoryParam];
+      if (mappedCategory && categories.includes(mappedCategory)) {
+        setSelectedCategory(mappedCategory);
+      }
+    }
+  }, [searchParams, categories]);
   
   const filteredTreatments = selectedCategory === "All" 
     ? treatments 

@@ -6,79 +6,67 @@ import { useNavigate } from "react-router-dom";
 const Hero = () => {
   const navigate = useNavigate();
   return (
-    <section className="pt-20 pb-16 bg-gradient-to-br from-background via-accent-soft/30 to-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+    <section className="pt-32 pb-24 bg-background">
+      <div className="container mx-auto px-8 lg:px-16">
+        <div className="grid lg:grid-cols-2 gap-20 items-center max-w-7xl mx-auto">
           {/* Content */}
-          <div className="space-y-8 animate-fade-in">
-            <div className="space-y-4">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-primary leading-tight">
+          <div className="space-y-12 animate-fade-in">
+            <div className="space-y-8">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-playfair font-normal text-primary leading-[1.1] tracking-tight">
                 Evidence First.
-                <span className="text-accent"> Action Next.</span>
+                <br />
+                <em className="text-accent not-italic">Action Next.</em>
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <p className="text-xl text-muted-foreground leading-relaxed font-inter max-w-lg">
                 Browse trusted doctors, order the right blood tests, and get hands-on treatments—connected through one powerful platform.
               </p>
             </div>
 
             {/* Trust indicators */}
-            <div className="flex flex-wrap gap-6">
-              <div className="flex items-center space-x-2">
-                <Shield className="w-5 h-5 text-success" />
-                <span className="text-sm text-muted-foreground">GDPR Compliant</span>
+            <div className="grid grid-cols-3 gap-8 py-4">
+              <div className="text-center">
+                <Shield className="w-6 h-6 text-primary mx-auto mb-2" />
+                <span className="text-xs text-muted-foreground font-inter uppercase tracking-wide">GDPR Compliant</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-success" />
-                <span className="text-sm text-muted-foreground">Doctor Reviewed</span>
+              <div className="text-center">
+                <CheckCircle className="w-6 h-6 text-primary mx-auto mb-2" />
+                <span className="text-xs text-muted-foreground font-inter uppercase tracking-wide">Doctor Reviewed</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Clock className="w-5 h-5 text-success" />
-                <span className="text-sm text-muted-foreground">From 3 working days Results</span>
+              <div className="text-center">
+                <Clock className="w-6 h-6 text-primary mx-auto mb-2" />
+                <span className="text-xs text-muted-foreground font-inter uppercase tracking-wide">3 Day Results</span>
               </div>
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-6 pt-4">
               <Button 
-                variant="hero" 
+                variant="default" 
                 size="lg" 
-                className="text-base px-8 py-3"
+                className="text-lg px-12 py-4 font-inter"
                 onClick={() => navigate("/booking")}
               >
-                Book Your Test Today
+                Book Your Test
               </Button>
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="text-base px-8 py-3"
+                className="text-lg px-12 py-4 font-inter"
                 onClick={() => navigate("/blood-tests")}
               >
-                View Test Packages
+                View Tests
               </Button>
-            </div>
-
-            {/* Social proof */}
-            <div className="pt-8 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-2">Trusted by thousands of patients</p>
-              <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="w-4 h-4 bg-warning rounded-sm"></div>
-                ))}
-                <span className="ml-2 text-sm font-medium text-primary">4.9/5</span>
-                <span className="text-sm text-muted-foreground">(2,847 reviews)</span>
-              </div>
             </div>
           </div>
 
           {/* Hero Image */}
-          <div className="relative animate-slide-up">
-            <div className="relative rounded-2xl overflow-hidden shadow-medical">
+          <div className="relative animate-slide-up lg:justify-self-end">
+            <div className="relative w-full max-w-md mx-auto lg:mx-0">
               <img 
                 src={heroImage} 
                 alt="Blood test vials and laboratory analysis"
-                className="w-full h-auto object-cover"
+                className="w-full h-auto object-cover rounded-sm shadow-card"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-accent/10"></div>
             </div>
           </div>
         </div>

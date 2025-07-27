@@ -8,61 +8,61 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Luxury palette with white background */
+    /* Minimalist palette - crisp whites and deep charcoal */
     --background: 0 0% 100%; /* Pure white */
-    --foreground: 330 28% 25%; /* Dark burgundy #633043 */
+    --foreground: 0 0% 15%; /* Deep charcoal */
 
     --card: 0 0% 100%;
-    --card-foreground: 330 28% 25%;
+    --card-foreground: 0 0% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 330 28% 25%;
+    --popover-foreground: 0 0% 15%;
 
-    /* Primary - Dusty rose */
-    --primary: 330 20% 60%; /* Dusty rose #ac8294 */
+    /* Primary - Elegant dark charcoal */
+    --primary: 0 0% 15%; /* Deep charcoal */
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 330 20% 52%;
+    --primary-hover: 0 0% 25%;
 
-    /* Secondary - Light beige */
-    --secondary: 30 15% 88%; /* Light beige #e6ddd8 */
-    --secondary-foreground: 330 28% 25%;
+    /* Secondary - Subtle off-white */
+    --secondary: 0 0% 97%; /* Almost white */
+    --secondary-foreground: 0 0% 15%;
 
-    /* Muted - Medium beige */
-    --muted: 25 18% 78%; /* Medium beige #cbbab4 */
-    --muted-foreground: 330 28% 25%;
+    /* Muted - Light grey */
+    --muted: 0 0% 94%; /* Very light grey */
+    --muted-foreground: 0 0% 40%;
 
-    /* Accent - Dark burgundy */
-    --accent: 330 28% 25%; /* Dark burgundy #633043 */
+    /* Accent - Pure black for emphasis */
+    --accent: 0 0% 10%; /* Almost black */
     --accent-foreground: 0 0% 100%;
-    --accent-soft: 280 15% 45%; /* Purple-grey #736474 */
+    --accent-soft: 0 0% 60%; /* Medium grey */
 
-    /* Medical success - muted sage green */
-    --success: 120 20% 45%;
+    /* Medical success - minimal green */
+    --success: 140 30% 40%;
     --success-foreground: 0 0% 100%;
 
-    /* Warning - warm terracotta */
-    --warning: 15 35% 55%;
+    /* Warning - minimal amber */
+    --warning: 35 90% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 50% 55%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%; /* Light grey border */
-    --input: 30 15% 95%;
-    --ring: 330 20% 60%;
+    --border: 0 0% 92%; /* Very light border */
+    --input: 0 0% 98%;
+    --ring: 0 0% 15%;
 
-    --radius: 0.75rem;
+    --radius: 0.25rem; /* Sharp, minimal corners */
 
-    /* Luxury gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-soft)));
-    --gradient-hero: linear-gradient(135deg, hsl(30 15% 95%) 0%, hsl(25 18% 85%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(30 15% 98%) 0%, hsl(30 15% 92%) 100%);
+    /* Minimalist gradients - very subtle */
+    --gradient-primary: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
+    --gradient-accent: linear-gradient(180deg, hsl(0 0% 15%) 0%, hsl(0 0% 25%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 99%) 100%);
+    --gradient-warm: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 97%) 100%);
     
-    /* Elegant shadows */
-    --shadow-medical: 0 4px 20px -4px hsl(330 28% 25% / 0.08);
-    --shadow-card: 0 2px 12px -2px hsl(330 28% 25% / 0.06);
-    --shadow-accent: 0 8px 30px -8px hsl(var(--accent) / 0.15);
+    /* Clean, minimal shadows */
+    --shadow-medical: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
+    --shadow-card: 0 1px 2px 0 hsl(0 0% 0% / 0.03);
+    --shadow-accent: 0 4px 12px -4px hsl(0 0% 0% / 0.08);
 
     /* Smooth animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

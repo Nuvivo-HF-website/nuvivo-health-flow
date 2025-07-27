@@ -254,6 +254,14 @@ const Header = () => {
 
           {/* Right side items */}
           <div className="flex items-center space-x-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="hidden sm:flex"
+              onClick={() => navigate("/join-professional")}
+            >
+              Join as a Professional
+            </Button>
             
             <Button 
               variant="ghost" 

@@ -118,30 +118,34 @@ export default function PartnerRegister() {
               onValueChange={(value: "individual" | "clinic") => setAccountType(value)}
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
             >
-              <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer">
-                <RadioGroupItem value="individual" id="individual" />
-                <div className="flex items-center gap-3 flex-1">
-                  <Stethoscope className="h-6 w-6 text-primary" />
-                  <div>
-                    <Label htmlFor="individual" className="font-medium cursor-pointer">
-                      🧑‍⚕️ Individual Professional
-                    </Label>
-                    <p className="text-sm text-muted-foreground">Doctor, nurse, therapist, or specialist</p>
+              <Label htmlFor="individual" className="cursor-pointer">
+                <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value="individual" id="individual" />
+                  <div className="flex items-center gap-3 flex-1">
+                    <Stethoscope className="h-6 w-6 text-primary" />
+                    <div>
+                      <div className="font-medium">
+                        Individual Professional
+                      </div>
+                      <p className="text-sm text-muted-foreground">Doctor, nurse, therapist, or specialist</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-muted/50 cursor-pointer">
-                <RadioGroupItem value="clinic" id="clinic" />
-                <div className="flex items-center gap-3 flex-1">
-                  <Building className="h-6 w-6 text-primary" />
-                  <div>
-                    <Label htmlFor="clinic" className="font-medium cursor-pointer">
-                      🏥 Clinic or Health Centre
-                    </Label>
-                    <p className="text-sm text-muted-foreground">Manage multiple professionals & locations</p>
+              </Label>
+              <Label htmlFor="clinic" className="cursor-pointer">
+                <div className="flex items-center space-x-2 border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                  <RadioGroupItem value="clinic" id="clinic" />
+                  <div className="flex items-center gap-3 flex-1">
+                    <Building className="h-6 w-6 text-primary" />
+                    <div>
+                      <div className="font-medium">
+                        Clinic or Health Centre
+                      </div>
+                      <p className="text-sm text-muted-foreground">Manage multiple professionals & locations</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Label>
             </RadioGroup>
           </CardContent>
         </Card>

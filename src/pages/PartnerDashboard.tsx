@@ -8,34 +8,54 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
-  User, 
-  Briefcase, 
-  Calendar, 
-  TestTube, 
-  FileText, 
-  DollarSign, 
-  HelpCircle, 
+  Calendar,
+  Briefcase,
+  DollarSign,
+  HelpCircle,
   Plus,
   Edit,
   Trash2,
-  Eye,
-  MessageSquare,
-  Upload,
-  Download,
   CheckCircle,
   Clock,
   XCircle,
+  MoreHorizontal,
+  Settings,
+  FileText,
   Users,
-  Share2,
+  TestTube,
+  Upload,
+  Download,
+  Gift,
+  MessageCircle,
   Copy,
-  Gift
+  Share2,
+  MessageSquare
 } from "lucide-react";
+import SimplifiedBookingCalendar from "@/components/SimplifiedBookingCalendar";
 import BookingCalendar from "@/components/BookingCalendar";
+import ModeToggle from "@/components/ModeToggle";
+import MicroAutomations from "@/components/MicroAutomations";
 
 export default function PartnerDashboard() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("calendar");
+  const [isSimpleMode, setIsSimpleMode] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
+  
+  // Mock user data for micro-automations
+  const userData = {
+    completedBookings: 7,
+    profileComplete: false, // Trigger automation
+    hasAvailability: true,
+    name: "Dr. John Smith",
+    isActive: true
+  };
   
   // Generate unique referral code (in real app, this would come from backend)
   const referralCode = "NUV-JS123";
@@ -68,14 +88,6 @@ export default function PartnerDashboard() {
       bookingsCompleted: 3,
       rewardPaid: false,
       status: "Active"
-    },
-    {
-      id: 3,
-      referredName: "Dr. Michael Chen",
-      joinedDate: "2024-01-25", 
-      bookingsCompleted: 5,
-      rewardPaid: false,
-      status: "Pending Reward"
     }
   ];
 
@@ -101,27 +113,6 @@ export default function PartnerDashboard() {
     }
   ];
 
-  const mockAppointments = [
-    {
-      id: 1,
-      patientName: "Sarah Johnson",
-      service: "General Consultation",
-      date: "2024-01-15",
-      time: "14:00",
-      status: "Confirmed",
-      type: "Video"
-    },
-    {
-      id: 2,
-      patientName: "Michael Brown",
-      service: "Blood Pressure Check",
-      date: "2024-01-16", 
-      time: "10:30",
-      status: "Pending",
-      type: "Home Visit"
-    }
-  ];
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "Confirmed":
@@ -137,22 +128,41 @@ export default function PartnerDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold">Partner Dashboard</h1>
-              <p className="text-muted-foreground">Welcome back, Dr. John Smith</p>
+              <p className="text-muted-foreground">Welcome back, {userData.name}</p>
             </div>
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              Profile Active
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-green-100 text-green-800">
+                Profile Active
+              </Badge>
+              {/* WhatsApp Support */}
+              <Button variant="outline" size="sm" className="md:hidden">
+                <MessageCircle className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        {/* Mode Toggle */}
+        <ModeToggle 
+          isSimpleMode={isSimpleMode} 
+          onModeChange={setIsSimpleMode}
+        />
+
+        {/* Micro Automations */}
+        <MicroAutomations
+          completedBookings={userData.completedBookings}
+          profileComplete={userData.profileComplete}
+          hasAvailability={userData.hasAvailability}
+        />
+
+        {/* Quick Stats - Mobile optimized */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">This Month</CardTitle>
@@ -160,7 +170,7 @@ export default function PartnerDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">£2,340</div>
-              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+              <p className="text-xs text-muted-foreground">+20.1%</p>
             </CardContent>
           </Card>
           <Card>
@@ -170,132 +180,110 @@ export default function PartnerDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">23</div>
-              <p className="text-xs text-muted-foreground">+12% from last month</p>
+              <p className="text-xs text-muted-foreground">+12%</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Services</CardTitle>
+              <CardTitle className="text-sm font-medium">Services</CardTitle>
               <Briefcase className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">5</div>
-              <p className="text-xs text-muted-foreground">2 pending review</p>
+              <p className="text-xs text-muted-foreground">2 pending</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tests Ordered</CardTitle>
-              <TestTube className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Rating</CardTitle>
+              <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground">+3 this week</p>
+              <div className="text-2xl font-bold">4.8</div>
+              <p className="text-xs text-muted-foreground">⭐⭐⭐⭐⭐</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main Dashboard */}
+        {/* Main Dashboard - Simplified Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Profile
-            </TabsTrigger>
-            <TabsTrigger value="services" className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4" />
-              Services
-            </TabsTrigger>
-            <TabsTrigger value="appointments" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Appointments
-            </TabsTrigger>
-            <TabsTrigger value="tests" className="flex items-center gap-2">
-              <TestTube className="h-4 w-4" />
-              Test Orders
-            </TabsTrigger>
-            <TabsTrigger value="documents" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Documents
-            </TabsTrigger>
-            <TabsTrigger value="earnings" className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
-              Earnings
-            </TabsTrigger>
-            <TabsTrigger value="referrals" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Refer & Earn
-            </TabsTrigger>
-            <TabsTrigger value="support" className="flex items-center gap-2">
-              <HelpCircle className="h-4 w-4" />
-              Support
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-between">
+            <TabsList className="grid w-full max-w-md grid-cols-4">
+              <TabsTrigger value="calendar" className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span className="hidden sm:inline">Calendar</span>
+              </TabsTrigger>
+              <TabsTrigger value="services" className="flex items-center gap-2">
+                <Briefcase className="h-4 w-4" />
+                <span className="hidden sm:inline">Services</span>
+              </TabsTrigger>
+              <TabsTrigger value="earnings" className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4" />
+                <span className="hidden sm:inline">Earnings</span>
+              </TabsTrigger>
+              <TabsTrigger value="support" className="flex items-center gap-2">
+                <HelpCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Support</span>
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Profile Tab */}
-          <TabsContent value="profile" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>My Profile</CardTitle>
-                <CardDescription>Manage your professional profile and settings</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Full Name</Label>
-                    <Input defaultValue="Dr. John Smith" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Email</Label>
-                    <Input defaultValue="john.smith@example.com" />
-                  </div>
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Mobile Number</Label>
-                    <Input defaultValue="+44 7123 456789" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>GMC Number</Label>
-                    <Input defaultValue="GMC123456" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Professional Bio</Label>
-                  <Textarea 
-                    placeholder="Tell patients about your experience and specialties..."
-                    rows={4}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Clinic Address</Label>
-                  <Textarea 
-                    placeholder="Enter your clinic address or service area..."
-                    rows={3}
-                  />
-                </div>
-                <Button>Update Profile</Button>
-              </CardContent>
-            </Card>
+            {/* More Menu - Desktop */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="hidden md:flex">
+                  <MoreHorizontal className="h-4 w-4 mr-2" />
+                  More
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => setActiveTab("profile")}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Profile Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveTab("documents")}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  Documents
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveTab("referrals")}>
+                  <Users className="mr-2 h-4 w-4" />
+                  Refer & Earn
+                </DropdownMenuItem>
+                {!isSimpleMode && (
+                  <DropdownMenuItem onClick={() => setActiveTab("tests")}>
+                    <TestTube className="mr-2 h-4 w-4" />
+                    Test Orders
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Calendar Tab - Main Focus */}
+          <TabsContent value="calendar" className="space-y-6">
+            {isSimpleMode ? (
+              <SimplifiedBookingCalendar isSimpleMode={isSimpleMode} />
+            ) : (
+              <BookingCalendar />
+            )}
           </TabsContent>
 
-          {/* Services Tab */}
+          {/* Services Tab - Streamlined */}
           <TabsContent value="services" className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-medium">My Services</h3>
-                <p className="text-sm text-muted-foreground">Manage the services you offer</p>
+                <p className="text-sm text-muted-foreground">Services you offer to patients</p>
               </div>
-              <Button>
+              <Button className="animate-fade-in">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Service
               </Button>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid gap-4">
               {mockServices.map((service) => (
-                <Card key={service.id}>
-                  <CardContent className="p-6">
+                <Card key={service.id} className="hover-scale">
+                  <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
@@ -326,59 +314,65 @@ export default function PartnerDashboard() {
             </div>
           </TabsContent>
 
-          {/* Appointments Tab */}
-          <TabsContent value="appointments" className="space-y-6">
+          {/* Earnings Tab - Simplified */}
+          <TabsContent value="earnings" className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium mb-4">Appointment Management</h3>
-              <BookingCalendar />
-            </div>
-          </TabsContent>
-
-          {/* Test Orders Tab */}
-          <TabsContent value="tests" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-medium">Test Orders</h3>
-                <p className="text-sm text-muted-foreground">Order tests for patients and access results</p>
+              <h3 className="text-lg font-medium mb-4">Earnings Overview</h3>
+              
+              <div className="grid md:grid-cols-3 gap-4 mb-6">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">This Month</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">£1,950</div>
+                    <p className="text-sm text-muted-foreground">12 completed appointments</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Next Payout</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">£875</div>
+                    <p className="text-sm text-muted-foreground">15th January 2024</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Total Earned</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">£8,420</div>
+                    <p className="text-sm text-muted-foreground">Since joining</p>
+                  </CardContent>
+                </Card>
               </div>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Order Test
-              </Button>
-            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Order New Test</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Patient Email/Name</Label>
-                    <Input placeholder="patient@example.com or John Doe" />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Transactions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <p className="font-medium">General Consultation</p>
+                          <p className="text-sm text-muted-foreground">Sarah Johnson - 12/01/2024</p>
+                        </div>
+                        <Badge variant="default">£65</Badge>
+                      </div>
+                    ))}
                   </div>
-                  <div className="space-y-2">
-                    <Label>Test Type</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select test type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="basic">Basic Health Panel</SelectItem>
-                        <SelectItem value="comprehensive">Comprehensive Health</SelectItem>
-                        <SelectItem value="hormones">Hormone Panel</SelectItem>
-                        <SelectItem value="vitamins">Vitamin Deficiency</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Clinical Notes</Label>
-                  <Textarea placeholder="Add any relevant clinical information..." />
-                </div>
-                <Button>Order Test</Button>
-              </CardContent>
-            </Card>
+                  <Separator className="my-4" />
+                  <Button variant="outline" className="w-full">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Statement
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Documents Tab */}

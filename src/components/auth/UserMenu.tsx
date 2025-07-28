@@ -70,7 +70,7 @@ export function UserMenu() {
         
         <DropdownMenuItem onClick={() => navigate('/profile')}>
           <User className="mr-2 h-4 w-4" />
-          <span>Profile</span>
+          <span>My Profile</span>
         </DropdownMenuItem>
         
         {userProfile?.user_type === 'patient' && (

@@ -1,6 +1,10 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, ChevronDown } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { AuthModal } from "./auth/AuthModal";
+import { UserMenu } from "./auth/UserMenu";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,7 +14,6 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import React from "react";
 
 // Custom navigation link component to avoid full page reloads
 const NavigationLink = React.forwardRef<
@@ -31,6 +34,8 @@ NavigationLink.displayName = "NavigationLink";
 
 const Header = () => {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   return (
     <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -263,15 +268,21 @@ const Header = () => {
               Join as a Professional
             </Button>
             
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="hidden sm:flex items-center space-x-1"
-              onClick={() => navigate("/sign-in")}
-            >
-              <User className="w-4 h-4" />
-              <span>Sign In</span>
-            </Button>
+            {!loading && (
+              user ? (
+                <UserMenu />
+              ) : (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="hidden sm:flex items-center space-x-1"
+                  onClick={() => setAuthModalOpen(true)}
+                >
+                  <User className="w-4 h-4" />
+                  <span>Sign In</span>
+                </Button>
+              )
+            )}
             <Button 
               variant="hero" 
               size="sm"
@@ -282,6 +293,11 @@ const Header = () => {
           </div>
         </div>
       </div>
+      
+      <AuthModal 
+        isOpen={authModalOpen} 
+        onClose={() => setAuthModalOpen(false)} 
+      />
     </header>
   );
 };

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Shield, DollarSign, Globe, Clock, Users, Stethoscope, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function JoinProfessional() {
   const navigate = useNavigate();
@@ -42,6 +42,19 @@ export default function JoinProfessional() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+      {/* Simple Header with Logo */}
+      <header className="bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="container mx-auto px-4 py-4">
+          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity w-fit">
+            <img 
+              src="/lovable-uploads/d10bf310-8418-438d-af09-376e2c242db8.png" 
+              alt="Nuvivo Health Logo" 
+              className="w-12 h-12 object-contain"
+            />
+          </Link>
+        </div>
+      </header>
+      
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="container mx-auto px-4 py-16 sm:py-24">

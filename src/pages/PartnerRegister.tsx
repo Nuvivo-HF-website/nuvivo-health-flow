@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Upload, Shield, Check, ArrowLeft, User, Building, Stethoscope } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
 export default function PartnerRegister() {
@@ -97,7 +97,20 @@ export default function PartnerRegister() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 py-8">
-      <div className="container mx-auto px-4 max-w-2xl">
+      {/* Simple Header with Logo */}
+      <header className="bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="container mx-auto px-4 py-4">
+          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity w-fit">
+            <img 
+              src="/lovable-uploads/d10bf310-8418-438d-af09-376e2c242db8.png" 
+              alt="Nuvivo Health Logo" 
+              className="w-12 h-12 object-contain"
+            />
+          </Link>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 max-w-2xl pt-8">
         <div className="text-center mb-8">
           <Badge variant="secondary" className="mb-4">
             Partner Registration

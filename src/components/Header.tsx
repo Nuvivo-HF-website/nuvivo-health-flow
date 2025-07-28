@@ -37,12 +37,15 @@ const Header = () => {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="w-8 h-8 rounded-lg flex items-center justify-center">
+            <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
               <img 
                 src="/lovable-uploads/d10bf310-8418-438d-af09-376e2c242db8.png" 
                 alt="Nuvivo Health Logo" 
-                className="w-8 h-8 object-contain"
+                className="w-10 h-10 object-contain"
               />
+              <span className="text-2xl font-bold text-primary hidden sm:block">
+                Nuvivo
+              </span>
             </Link>
           </div>
 

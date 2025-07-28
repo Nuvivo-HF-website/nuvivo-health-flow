@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { bookingService, BookingRequest } from '@/services/bookingService'
 import { patientService } from '@/services/patientService'
 import { toast } from '@/hooks/use-toast'
+import { PaymentButton } from '@/components/PaymentButton'
 import { Loader2, Calendar as CalendarIcon, Clock, MapPin, Home, Video, Stethoscope } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -383,10 +384,34 @@ export function BookingForm() {
               </Card>
             )}
 
-            <Button type="submit" disabled={loading} className="w-full" size="lg">
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Book Appointment
-            </Button>
+            <div className="space-y-2">
+              <Button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full" 
+                size="lg"
+                variant="outline"
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Book Appointment (Pay Later)
+              </Button>
+              {selectedService && (
+                <PaymentButton
+                  amount={selectedService.price}
+                  description={`${selectedService.label} - Health Service`}
+                  metadata={{
+                    service: formData.service_type,
+                    date: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : '',
+                    time: formData.appointment_time,
+                    location: formData.location_type
+                  }}
+                  className="w-full"
+                  size="lg"
+                >
+                  Book & Pay Now
+                </PaymentButton>
+              )}
+            </div>
           </form>
         </CardContent>
       </Card>

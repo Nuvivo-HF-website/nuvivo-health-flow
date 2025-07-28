@@ -83,6 +83,10 @@ export function UserMenu() {
               <FileText className="mr-2 h-4 w-4" />
               <span>Test Results</span>
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/my-files')}>
+              <FileText className="mr-2 h-4 w-4" />
+              <span>My Documents</span>
+            </DropdownMenuItem>
           </>
         )}
         

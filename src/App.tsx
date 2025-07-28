@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import PatientProfile from "./pages/PatientProfile";
 import MyBookings from "./pages/MyBookings";
+import MyFiles from "./pages/MyFiles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Results from "./pages/Results";
@@ -85,6 +86,7 @@ const App = () => (
           <Route path="/ai-report-generator" element={<AIReportGenerator />} />
           <Route path="/profile" element={<PatientProfile />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/my-files" element={<MyFiles />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

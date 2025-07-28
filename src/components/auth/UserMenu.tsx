@@ -75,9 +75,9 @@ export function UserMenu() {
         
         {userProfile?.user_type === 'patient' && (
           <>
-            <DropdownMenuItem onClick={() => navigate('/booking')}>
+            <DropdownMenuItem onClick={() => navigate('/my-bookings')}>
               <Calendar className="mr-2 h-4 w-4" />
-              <span>My Bookings</span>
+              <span>My Appointments</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate('/results')}>
               <FileText className="mr-2 h-4 w-4" />

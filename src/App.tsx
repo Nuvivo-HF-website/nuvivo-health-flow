@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import PatientProfile from "./pages/PatientProfile";
+import MyBookings from "./pages/MyBookings";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Results from "./pages/Results";
@@ -83,6 +84,7 @@ const App = () => (
           <Route path="/admin-referrals" element={<AdminReferrals />} />
           <Route path="/ai-report-generator" element={<AIReportGenerator />} />
           <Route path="/profile" element={<PatientProfile />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

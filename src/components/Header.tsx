@@ -36,6 +36,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  
   return (
     <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -278,18 +279,11 @@ const Header = () => {
                   className="hidden sm:flex items-center space-x-1"
                   onClick={() => setAuthModalOpen(true)}
                 >
-                  <User className="w-4 h-4" />
+                  <User className="h-4 w-4" />
                   <span>Sign In</span>
                 </Button>
               )
             )}
-            <Button 
-              variant="hero" 
-              size="sm"
-              onClick={() => navigate("/booking")}
-            >
-              Book Test
-            </Button>
           </div>
         </div>
       </div>

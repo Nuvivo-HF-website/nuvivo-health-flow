@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useAuth } from '@/contexts/AuthContext'
 import { toast } from '@/hooks/use-toast'
-import { User, Settings, LogOut, FileText, Calendar } from 'lucide-react'
+import { User, Settings, LogOut, FileText, Calendar, CreditCard } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 export function UserMenu() {
@@ -87,14 +87,24 @@ export function UserMenu() {
               <FileText className="mr-2 h-4 w-4" />
               <span>My Documents</span>
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/payment-dashboard')}>
+              <CreditCard className="mr-2 h-4 w-4" />
+              <span>Payments</span>
+            </DropdownMenuItem>
           </>
         )}
         
         {userProfile?.user_type === 'healthcare_professional' && (
-          <DropdownMenuItem onClick={() => navigate('/clinic-dashboard')}>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Dashboard</span>
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem onClick={() => navigate('/clinic-dashboard')}>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Dashboard</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/testing')}>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>System Testing</span>
+            </DropdownMenuItem>
+          </>
         )}
         
         <DropdownMenuSeparator />

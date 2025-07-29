@@ -31,12 +31,31 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export default function ComprehensivePatientPortal() {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, loading } = useAuth();
   const navigate = useNavigate();
 
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your portal...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to sign-in if not authenticated
   if (!user) {
     navigate('/sign-in');
-    return null;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Redirecting to sign in...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -21,7 +21,9 @@ export default function PatientProfile() {
     )
   }
 
-  if (userProfile?.user_type !== 'patient') {
+  // If no profile exists yet, allow access so they can create one
+  // If profile exists but isn't a patient, restrict access
+  if (userProfile && userProfile.user_type !== 'patient') {
     return (
       <div className="min-h-screen">
         <Header />

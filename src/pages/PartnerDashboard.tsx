@@ -155,11 +155,7 @@ export default function PartnerDashboard() {
         />
 
         {/* Micro Automations */}
-        <MicroAutomations
-          completedBookings={userData.completedBookings}
-          profileComplete={userData.profileComplete}
-          hasAvailability={userData.hasAvailability}
-        />
+        <MicroAutomations />
 
         {/* Quick Stats - Mobile optimized */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

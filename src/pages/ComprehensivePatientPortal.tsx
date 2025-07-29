@@ -32,6 +32,9 @@ import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
 import { AIHealthAssistant } from '@/components/AIHealthAssistant';
 import { PredictiveHealthAnalytics } from '@/components/PredictiveHealthAnalytics';
 import { WearableIntegration } from '@/components/WearableIntegration';
+import { EmergencyAlertSystem } from '@/components/EmergencyAlertSystem';
+import { EnhancedTelemedicine } from '@/components/EnhancedTelemedicine';
+import { ClinicalDecisionSupport } from '@/components/ClinicalDecisionSupport';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -242,6 +245,7 @@ export default function ComprehensivePatientPortal() {
             <TabsContent value="overview" className="space-y-6">
               <AnalyticsDashboard />
               <PredictiveHealthAnalytics />
+              <EmergencyAlertSystem />
             </TabsContent>
 
             <TabsContent value="ai-assistant" className="space-y-6">
@@ -258,7 +262,8 @@ export default function ComprehensivePatientPortal() {
             </TabsContent>
 
             <TabsContent value="telemedicine" className="space-y-6">
-              <TelemedicineSession />
+              <EnhancedTelemedicine />
+              <ClinicalDecisionSupport />
             </TabsContent>
 
             <TabsContent value="prescriptions" className="space-y-6">

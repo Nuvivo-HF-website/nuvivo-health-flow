@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle, TestTube, Stethoscope, Activity, Calendar } from 'lucide-react';
 
 export function TestingSuite() {
+  console.log('TestingSuite rendering...');
+  
   const testServices = [
     {
       title: 'Basic Blood Test',

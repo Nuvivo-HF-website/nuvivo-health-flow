@@ -4,6 +4,8 @@ import Footer from '@/components/Footer';
 import { TestingSuite } from '@/components/TestingSuite';
 
 export default function Testing() {
+  console.log('Testing page rendering...');
+  
   return (
     <div className="min-h-screen">
       <Header />

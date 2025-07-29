@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,26 @@ import Footer from '@/components/Footer';
 export default function ComprehensivePatientPortal() {
   const { user, userProfile, loading } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'appointment':
+        setActiveTab('appointments');
+        break;
+      case 'health-data':
+        setActiveTab('health-metrics');
+        break;
+      case 'telemedicine':
+        setActiveTab('telemedicine');
+        break;
+      case 'goals':
+        setActiveTab('goals');
+        break;
+      default:
+        break;
+    }
+  };
 
   // Show loading state while checking authentication
   if (loading) {
@@ -88,7 +108,10 @@ export default function ComprehensivePatientPortal() {
 
           {/* Quick Actions */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow" 
+              onClick={() => handleQuickAction('appointment')}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-blue-100 rounded-lg">
@@ -102,7 +125,10 @@ export default function ComprehensivePatientPortal() {
               </CardContent>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => handleQuickAction('health-data')}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-green-100 rounded-lg">
@@ -116,7 +142,10 @@ export default function ComprehensivePatientPortal() {
               </CardContent>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => handleQuickAction('telemedicine')}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-purple-100 rounded-lg">
@@ -130,7 +159,10 @@ export default function ComprehensivePatientPortal() {
               </CardContent>
             </Card>
 
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => handleQuickAction('goals')}
+            >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-orange-100 rounded-lg">
@@ -146,7 +178,7 @@ export default function ComprehensivePatientPortal() {
           </div>
 
           {/* Main Content Tabs */}
-          <Tabs defaultValue="overview" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />

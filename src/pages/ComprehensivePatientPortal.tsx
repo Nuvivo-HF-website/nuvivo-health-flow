@@ -18,7 +18,10 @@ import {
   Bell,
   Plus,
   Brain,
-  Bot
+  Bot,
+  AlertTriangle,
+  Zap,
+  Dna
 } from 'lucide-react';
 
 // Import all Phase 2-4 components
@@ -30,7 +33,9 @@ import { PrescriptionManager } from '@/components/PrescriptionManager';
 import { HealthGoalsTracker } from '@/components/HealthGoalsTracker';
 import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
 import { AIHealthAssistant } from '@/components/AIHealthAssistant';
-import { PredictiveHealthAnalytics } from '@/components/PredictiveHealthAnalytics';
+import PredictiveHealthAnalytics from '@/components/PredictiveHealthAnalytics';
+import MicroAutomations from '@/components/MicroAutomations';
+import GenomicsAnalyzer from '@/components/GenomicsAnalyzer';
 import { WearableIntegration } from '@/components/WearableIntegration';
 import { EmergencyAlertSystem } from '@/components/EmergencyAlertSystem';
 import { EnhancedTelemedicine } from '@/components/EnhancedTelemedicine';
@@ -207,7 +212,7 @@ export default function ComprehensivePatientPortal() {
 
           {/* Main Content Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-8">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
                 Overview
@@ -241,6 +246,32 @@ export default function ComprehensivePatientPortal() {
                 Records
               </TabsTrigger>
             </TabsList>
+
+            {/* Phase 2 & 3 Tabs */}
+            <div className="mt-4">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+                <TabsTrigger value="emergency" className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  Emergency
+                </TabsTrigger>
+                <TabsTrigger value="clinical-support" className="flex items-center gap-2">
+                  <Brain className="h-4 w-4" />
+                  Clinical Support
+                </TabsTrigger>
+                <TabsTrigger value="predictive-analytics" className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Predictive Analytics
+                </TabsTrigger>
+                <TabsTrigger value="automations" className="flex items-center gap-2">
+                  <Zap className="h-4 w-4" />
+                  Automations
+                </TabsTrigger>
+                <TabsTrigger value="genomics" className="flex items-center gap-2">
+                  <Dna className="h-4 w-4" />
+                  Genomics
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="overview" className="space-y-6">
               <AnalyticsDashboard />
@@ -276,6 +307,27 @@ export default function ComprehensivePatientPortal() {
 
             <TabsContent value="records" className="space-y-6">
               <EnhancedMedicalRecords />
+            </TabsContent>
+
+            {/* Phase 2 & 3 Tab Content */}
+            <TabsContent value="emergency" className="space-y-6">
+              <EmergencyAlertSystem />
+            </TabsContent>
+
+            <TabsContent value="clinical-support" className="space-y-6">
+              <ClinicalDecisionSupport />
+            </TabsContent>
+
+            <TabsContent value="predictive-analytics" className="space-y-6">
+              <PredictiveHealthAnalytics />
+            </TabsContent>
+
+            <TabsContent value="automations" className="space-y-6">
+              <MicroAutomations />
+            </TabsContent>
+
+            <TabsContent value="genomics" className="space-y-6">
+              <GenomicsAnalyzer />
             </TabsContent>
           </Tabs>
         </div>

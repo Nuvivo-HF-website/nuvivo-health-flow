@@ -74,12 +74,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (data.user && !error) {
       // Create profile in profiles table
-      await supabase.from('profiles').insert({
+      const profileData = {
         id: data.user.id,
+        user_id: data.user.id,
         email: data.user.email,
-        ...userData,
-        created_at: new Date().toISOString()
-      })
+        user_type: 'patient',
+        ...userData
+      }
+      
+      await supabase.from('profiles').insert(profileData)
     }
 
     return { data, error }

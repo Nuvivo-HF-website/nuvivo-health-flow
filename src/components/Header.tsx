@@ -275,9 +275,9 @@ const Header = () => {
               ) : (
                 <>
                   <Button 
-                    variant="outline" 
+                    variant="default" 
                     size="sm" 
-                    className="hidden sm:flex items-center space-x-1"
+                    className="hidden sm:flex items-center space-x-2"
                     onClick={() => navigate("/sign-in")}
                   >
                     <User className="h-4 w-4" />

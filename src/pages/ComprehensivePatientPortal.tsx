@@ -16,7 +16,9 @@ import {
   Heart,
   Settings,
   Bell,
-  Plus
+  Plus,
+  Brain,
+  Bot
 } from 'lucide-react';
 
 // Import all Phase 2-4 components
@@ -27,6 +29,9 @@ import { TelemedicineSession } from '@/components/TelemedicineSession';
 import { PrescriptionManager } from '@/components/PrescriptionManager';
 import { HealthGoalsTracker } from '@/components/HealthGoalsTracker';
 import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
+import { AIHealthAssistant } from '@/components/AIHealthAssistant';
+import { PredictiveHealthAnalytics } from '@/components/PredictiveHealthAnalytics';
+import { WearableIntegration } from '@/components/WearableIntegration';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -48,6 +53,9 @@ export default function ComprehensivePatientPortal() {
         break;
       case 'goals':
         setActiveTab('goals');
+        break;
+      case 'ai-assistant':
+        setActiveTab('ai-assistant');
         break;
       default:
         break;
@@ -107,7 +115,24 @@ export default function ComprehensivePatientPortal() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <Card 
+              className="cursor-pointer hover:shadow-md transition-shadow" 
+              onClick={() => handleQuickAction('ai-assistant')}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <Brain className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <div className="font-medium">AI Assistant</div>
+                    <div className="text-sm text-muted-foreground">Ask health questions</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card 
               className="cursor-pointer hover:shadow-md transition-shadow" 
               onClick={() => handleQuickAction('appointment')}
@@ -148,8 +173,8 @@ export default function ComprehensivePatientPortal() {
             >
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Video className="h-5 w-5 text-purple-600" />
+                  <div className="p-2 bg-indigo-100 rounded-lg">
+                    <Video className="h-5 w-5 text-indigo-600" />
                   </div>
                   <div>
                     <div className="font-medium">Start Session</div>
@@ -179,10 +204,14 @@ export default function ComprehensivePatientPortal() {
 
           {/* Main Content Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-7">
+            <TabsList className="grid w-full grid-cols-8">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
                 Overview
+              </TabsTrigger>
+              <TabsTrigger value="ai-assistant" className="flex items-center gap-2">
+                <Brain className="h-4 w-4" />
+                AI Assistant
               </TabsTrigger>
               <TabsTrigger value="appointments" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
@@ -212,6 +241,11 @@ export default function ComprehensivePatientPortal() {
 
             <TabsContent value="overview" className="space-y-6">
               <AnalyticsDashboard />
+              <PredictiveHealthAnalytics />
+            </TabsContent>
+
+            <TabsContent value="ai-assistant" className="space-y-6">
+              <AIHealthAssistant />
             </TabsContent>
 
             <TabsContent value="appointments" className="space-y-6">
@@ -220,6 +254,7 @@ export default function ComprehensivePatientPortal() {
 
             <TabsContent value="health-metrics" className="space-y-6">
               <HealthMetricsTracker />
+              <WearableIntegration />
             </TabsContent>
 
             <TabsContent value="telemedicine" className="space-y-6">

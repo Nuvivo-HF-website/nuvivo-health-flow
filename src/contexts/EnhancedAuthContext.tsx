@@ -1,0 +1,313 @@
+// Enhanced authentication context with role-based access
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
+
+export type UserRole = 'patient' | 'doctor' | 'admin' | 'clinic_staff';
+
+interface AuthContextType {
+  user: User | null;
+  session: Session | null;
+  userRoles: UserRole[];
+  loading: boolean;
+  userProfile: any;
+  signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signOut: () => Promise<void>;
+  updateProfile: (updates: any) => Promise<void>;
+  hasRole: (role: UserRole) => boolean;
+  isAdmin: () => boolean;
+  isDoctor: () => boolean;
+  isPatient: () => boolean;
+  requestDataExport: () => Promise<void>;
+  requestDataDeletion: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user roles and profile after authentication
+          setTimeout(async () => {
+            await fetchUserRoles(session.user.id);
+            await fetchUserProfile(session.user.id);
+          }, 0);
+        } else {
+          setUserRoles([]);
+          setUserProfile(null);
+        }
+        
+        setLoading(false);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        setTimeout(async () => {
+          await fetchUserRoles(session.user.id);
+          await fetchUserProfile(session.user.id);
+        }, 0);
+      }
+      
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const fetchUserRoles = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId);
+
+      if (error) throw error;
+      
+      setUserRoles(data?.map(r => r.role) || ['patient']);
+    } catch (error) {
+      console.error('Error fetching user roles:', error);
+      setUserRoles(['patient']); // Default to patient role
+    }
+  };
+
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      setUserProfile(data);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+    }
+  };
+
+  const signUp = async (email: string, password: string, userData?: any) => {
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: userData
+        }
+      });
+
+      if (error) throw error;
+
+      // Create profile if user is created
+      if (data.user && userData) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: data.user.id,
+            email: email,
+            full_name: userData.full_name || email,
+            user_type: 'patient'
+          });
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+        }
+      }
+
+      if (!error) {
+        toast({
+          title: "Account created successfully!",
+          description: "Please check your email to verify your account.",
+        });
+      }
+
+      return { error };
+    } catch (error: any) {
+      return { error };
+    }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (!error) {
+        toast({
+          title: "Welcome back!",
+          description: "You have been signed in successfully.",
+        });
+      }
+
+      return { error };
+    } catch (error: any) {
+      return { error };
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      setUser(null);
+      setSession(null);
+      setUserRoles([]);
+      setUserProfile(null);
+
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error signing out:', error);
+      toast({
+        title: "Error signing out",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateProfile = async (updates: any) => {
+    try {
+      if (!user) throw new Error('No user logged in');
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setUserProfile((prev: any) => ({ ...prev, ...updates }));
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Error updating profile",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Role checking utilities
+  const hasRole = (role: UserRole): boolean => {
+    return userRoles.includes(role);
+  };
+
+  const isAdmin = (): boolean => hasRole('admin');
+  const isDoctor = (): boolean => hasRole('doctor');
+  const isPatient = (): boolean => hasRole('patient');
+
+  // GDPR compliance functions
+  const requestDataExport = async () => {
+    try {
+      if (!user) throw new Error('No user logged in');
+
+      const { error } = await supabase
+        .from('gdpr_requests')
+        .insert({
+          user_id: user.id,
+          request_type: 'data_export',
+          details: { timestamp: new Date().toISOString() }
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Data export requested",
+        description: "Your data export request has been submitted. You will receive an email when ready.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error requesting data export",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const requestDataDeletion = async () => {
+    try {
+      if (!user) throw new Error('No user logged in');
+
+      const { error } = await supabase
+        .from('gdpr_requests')
+        .insert({
+          user_id: user.id,
+          request_type: 'data_deletion',
+          details: { timestamp: new Date().toISOString() }
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Data deletion requested",
+        description: "Your data deletion request has been submitted. This may take up to 30 days to process.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error requesting data deletion",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const value = {
+    user,
+    session,
+    userRoles,
+    loading,
+    userProfile,
+    signUp,
+    signIn,
+    signOut,
+    updateProfile,
+    hasRole,
+    isAdmin,
+    isDoctor,
+    isPatient,
+    requestDataExport,
+    requestDataDeletion,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}

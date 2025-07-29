@@ -4,7 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import PatientProfile from "./pages/PatientProfile";
+import PatientDashboard from "./pages/PatientDashboard";
 import MyBookings from "./pages/MyBookings";
+import MyTestResults from "./pages/MyTestResults";
+import MyMedications from "./pages/MyMedications";
 import MyFiles from "./pages/MyFiles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
@@ -93,7 +96,10 @@ const App = () => (
           <Route path="/admin-referrals" element={<AdminReferrals />} />
           <Route path="/ai-report-generator" element={<AIReportGenerator />} />
           <Route path="/profile" element={<PatientProfile />} />
+          <Route path="/patient-dashboard" element={<PatientDashboard />} />
           <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/my-test-results" element={<MyTestResults />} />
+          <Route path="/my-medications" element={<MyMedications />} />
           <Route path="/my-files" element={<MyFiles />} />
           <Route path="/payment-dashboard" element={<PaymentDashboard />} />
           <Route path="/testing" element={<Testing />} />

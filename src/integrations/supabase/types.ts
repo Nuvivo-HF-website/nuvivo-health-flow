@@ -14,20 +14,70 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointment_history: {
+        Row: {
+          action: string
+          appointment_id: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          new_date: string | null
+          old_date: string | null
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          appointment_id: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_date?: string | null
+          old_date?: string | null
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          appointment_id?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_date?: string | null
+          old_date?: string | null
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_history_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           appointment_date: string
           appointment_type: string
+          booking_source: string | null
+          cancellation_reason: string | null
+          consultation_type: string | null
           created_at: string
           doctor_id: string | null
           duration_minutes: number | null
           fee: number | null
+          feedback: string | null
+          follow_up_required: boolean | null
           id: string
           location: string | null
           meeting_link: string | null
           notes: string | null
           payment_status: string | null
+          preparation_instructions: string | null
+          rating: number | null
           reminder_sent: boolean | null
+          reschedule_count: number | null
+          specialist_id: string | null
           status: string
           updated_at: string
           user_id: string
@@ -35,16 +85,25 @@ export type Database = {
         Insert: {
           appointment_date: string
           appointment_type: string
+          booking_source?: string | null
+          cancellation_reason?: string | null
+          consultation_type?: string | null
           created_at?: string
           doctor_id?: string | null
           duration_minutes?: number | null
           fee?: number | null
+          feedback?: string | null
+          follow_up_required?: boolean | null
           id?: string
           location?: string | null
           meeting_link?: string | null
           notes?: string | null
           payment_status?: string | null
+          preparation_instructions?: string | null
+          rating?: number | null
           reminder_sent?: boolean | null
+          reschedule_count?: number | null
+          specialist_id?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -52,21 +111,38 @@ export type Database = {
         Update: {
           appointment_date?: string
           appointment_type?: string
+          booking_source?: string | null
+          cancellation_reason?: string | null
+          consultation_type?: string | null
           created_at?: string
           doctor_id?: string | null
           duration_minutes?: number | null
           fee?: number | null
+          feedback?: string | null
+          follow_up_required?: boolean | null
           id?: string
           location?: string | null
           meeting_link?: string | null
           notes?: string | null
           payment_status?: string | null
+          preparation_instructions?: string | null
+          rating?: number | null
           reminder_sent?: boolean | null
+          reschedule_count?: number | null
+          specialist_id?: string | null
           status?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "appointments_specialist_id_fkey"
+            columns: ["specialist_id"]
+            isOneToOne: false
+            referencedRelation: "specialists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       audit_logs: {
         Row: {
@@ -176,6 +252,82 @@ export type Database = {
         }
         Relationships: []
       }
+      document_categories: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          parent_category_id: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          parent_category_id?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          parent_category_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_categories_parent_category_id_fkey"
+            columns: ["parent_category_id"]
+            isOneToOne: false
+            referencedRelation: "document_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_shares: {
+        Row: {
+          created_at: string
+          document_id: string
+          expires_at: string | null
+          id: string
+          permission_level: string | null
+          shared_by: string
+          shared_with: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          expires_at?: string | null
+          id?: string
+          permission_level?: string | null
+          shared_by: string
+          shared_with: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          expires_at?: string | null
+          id?: string
+          permission_level?: string | null
+          shared_by?: string
+          shared_with?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_shares_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "medical_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gdpr_requests: {
         Row: {
           created_at: string
@@ -211,65 +363,100 @@ export type Database = {
       }
       medical_documents: {
         Row: {
+          category_id: string | null
           consultation_id: string | null
           created_at: string
           description: string | null
           doctor_id: string | null
           document_name: string
           document_type: string
+          download_count: number | null
+          expiry_date: string | null
           file_size: number | null
           file_type: string | null
           file_url: string
           id: string
           is_test_result: boolean | null
+          last_accessed: string | null
+          parent_document_id: string | null
+          priority: string | null
           tags: string[] | null
           test_result_id: string | null
           updated_at: string
           uploaded_by_doctor: boolean | null
           user_id: string
+          version_number: number | null
         }
         Insert: {
+          category_id?: string | null
           consultation_id?: string | null
           created_at?: string
           description?: string | null
           doctor_id?: string | null
           document_name: string
           document_type: string
+          download_count?: number | null
+          expiry_date?: string | null
           file_size?: number | null
           file_type?: string | null
           file_url: string
           id?: string
           is_test_result?: boolean | null
+          last_accessed?: string | null
+          parent_document_id?: string | null
+          priority?: string | null
           tags?: string[] | null
           test_result_id?: string | null
           updated_at?: string
           uploaded_by_doctor?: boolean | null
           user_id: string
+          version_number?: number | null
         }
         Update: {
+          category_id?: string | null
           consultation_id?: string | null
           created_at?: string
           description?: string | null
           doctor_id?: string | null
           document_name?: string
           document_type?: string
+          download_count?: number | null
+          expiry_date?: string | null
           file_size?: number | null
           file_type?: string | null
           file_url?: string
           id?: string
           is_test_result?: boolean | null
+          last_accessed?: string | null
+          parent_document_id?: string | null
+          priority?: string | null
           tags?: string[] | null
           test_result_id?: string | null
           updated_at?: string
           uploaded_by_doctor?: boolean | null
           user_id?: string
+          version_number?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "medical_documents_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "document_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "medical_documents_consultation_id_fkey"
             columns: ["consultation_id"]
             isOneToOne: false
             referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medical_documents_parent_document_id_fkey"
+            columns: ["parent_document_id"]
+            isOneToOne: false
+            referencedRelation: "medical_documents"
             referencedColumns: ["id"]
           },
           {
@@ -342,6 +529,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          action_label: string | null
+          action_url: string | null
+          category: string | null
+          created_at: string
+          data: Json | null
+          id: string
+          is_read: boolean | null
+          message: string
+          read_at: string | null
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          action_label?: string | null
+          action_url?: string | null
+          category?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          read_at?: string | null
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          action_label?: string | null
+          action_url?: string | null
+          category?: string | null
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          read_at?: string | null
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       patient_profiles: {
         Row: {
@@ -493,19 +725,117 @@ export type Database = {
         }
         Relationships: []
       }
+      specialist_availability: {
+        Row: {
+          created_at: string
+          date: string
+          end_time: string
+          id: string
+          is_available: boolean | null
+          reason: string | null
+          specialist_id: string
+          start_time: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          end_time: string
+          id?: string
+          is_available?: boolean | null
+          reason?: string | null
+          specialist_id: string
+          start_time: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          end_time?: string
+          id?: string
+          is_available?: boolean | null
+          reason?: string | null
+          specialist_id?: string
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specialist_availability_specialist_id_fkey"
+            columns: ["specialist_id"]
+            isOneToOne: false
+            referencedRelation: "specialists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      specialists: {
+        Row: {
+          available_days: string[] | null
+          available_hours: Json | null
+          bio: string | null
+          booking_advance_days: number | null
+          consultation_duration: number | null
+          consultation_fee: number | null
+          created_at: string
+          experience_years: number | null
+          id: string
+          is_active: boolean | null
+          qualifications: string[] | null
+          specialty: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_days?: string[] | null
+          available_hours?: Json | null
+          bio?: string | null
+          booking_advance_days?: number | null
+          consultation_duration?: number | null
+          consultation_fee?: number | null
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          is_active?: boolean | null
+          qualifications?: string[] | null
+          specialty: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_days?: string[] | null
+          available_hours?: Json | null
+          bio?: string | null
+          booking_advance_days?: number | null
+          consultation_duration?: number | null
+          consultation_fee?: number | null
+          created_at?: string
+          experience_years?: number | null
+          id?: string
+          is_active?: boolean | null
+          qualifications?: string[] | null
+          specialty?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       test_results: {
         Row: {
+          ai_interpretation: Json | null
           ai_summary: string | null
           clinic_name: string | null
+          comparison_notes: string | null
           created_at: string
           doctor_name: string | null
           doctor_notes: string | null
+          doctor_reviewed: boolean | null
           file_url: string | null
+          flagged_values: Json | null
           id: string
           order_id: string | null
           reference_ranges: Json
+          report_pdf_url: string | null
           result_status: string | null
           result_values: Json
+          review_date: string | null
           status: string
           test_date: string
           test_name: string
@@ -514,17 +844,23 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_interpretation?: Json | null
           ai_summary?: string | null
           clinic_name?: string | null
+          comparison_notes?: string | null
           created_at?: string
           doctor_name?: string | null
           doctor_notes?: string | null
+          doctor_reviewed?: boolean | null
           file_url?: string | null
+          flagged_values?: Json | null
           id?: string
           order_id?: string | null
           reference_ranges?: Json
+          report_pdf_url?: string | null
           result_status?: string | null
           result_values?: Json
+          review_date?: string | null
           status?: string
           test_date: string
           test_name: string
@@ -533,17 +869,23 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_interpretation?: Json | null
           ai_summary?: string | null
           clinic_name?: string | null
+          comparison_notes?: string | null
           created_at?: string
           doctor_name?: string | null
           doctor_notes?: string | null
+          doctor_reviewed?: boolean | null
           file_url?: string | null
+          flagged_values?: Json | null
           id?: string
           order_id?: string | null
           reference_ranges?: Json
+          report_pdf_url?: string | null
           result_status?: string | null
           result_values?: Json
+          review_date?: string | null
           status?: string
           test_date?: string
           test_name?: string
@@ -615,6 +957,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_notification: {
+        Args: {
+          _user_id: string
+          _title: string
+          _message: string
+          _type?: string
+          _category?: string
+          _action_url?: string
+          _action_label?: string
+          _data?: Json
+        }
+        Returns: string
+      }
+      get_upcoming_appointments: {
+        Args: { _user_id: string }
+        Returns: {
+          id: string
+          appointment_date: string
+          appointment_type: string
+          status: string
+          specialist_name: string
+          specialist_specialty: string
+          duration_minutes: number
+        }[]
+      }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: {

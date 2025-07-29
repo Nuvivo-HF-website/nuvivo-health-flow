@@ -271,12 +271,18 @@ const Header = () => {
             
             {!loading && (
               <>
-                {/* Always show Patient Portal for testing */}
+                {/* Patient Portal Button - shows for all users */}
                 <Button 
                   variant="default" 
                   size="sm" 
                   className="hidden sm:flex items-center space-x-2"
-                  onClick={() => navigate("/sign-in")}
+                  onClick={() => {
+                    if (user) {
+                      navigate("/patient-dashboard")
+                    } else {
+                      navigate("/sign-in")
+                    }
+                  }}
                 >
                   <User className="h-4 w-4" />
                   <span>Patient Portal</span>

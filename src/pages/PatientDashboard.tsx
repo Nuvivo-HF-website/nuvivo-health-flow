@@ -73,17 +73,22 @@ export default function PatientDashboard() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      normal: { variant: 'default', label: 'Normal' },
-      abnormal: { variant: 'destructive', label: 'Abnormal' },
-      critical: { variant: 'destructive', label: 'Critical' },
-      pending: { variant: 'secondary', label: 'Pending' },
-      scheduled: { variant: 'default', label: 'Scheduled' },
-      completed: { variant: 'default', label: 'Completed' },
-      active: { variant: 'default', label: 'Active' }
+      normal: { variant: 'default', label: 'Normal', color: 'bg-green-500' },
+      abnormal: { variant: 'destructive', label: 'Abnormal', color: 'bg-yellow-500' },
+      critical: { variant: 'destructive', label: 'Critical', color: 'bg-red-500' },
+      pending: { variant: 'secondary', label: 'Pending', color: 'bg-blue-500' },
+      scheduled: { variant: 'default', label: 'Scheduled', color: 'bg-blue-500' },
+      completed: { variant: 'default', label: 'Completed', color: 'bg-green-500' },
+      active: { variant: 'default', label: 'Active', color: 'bg-green-500' }
     }
     
-    const config = statusConfig[status as keyof typeof statusConfig] || { variant: 'secondary', label: status }
-    return <Badge variant={config.variant as any}>{config.label}</Badge>
+    const config = statusConfig[status as keyof typeof statusConfig] || { variant: 'secondary', label: status, color: 'bg-gray-500' }
+    return (
+      <div className="flex items-center gap-2">
+        <div className={`w-3 h-3 rounded-full ${config.color}`}></div>
+        <Badge variant={config.variant as any}>{config.label}</Badge>
+      </div>
+    )
   }
 
   return (
@@ -166,6 +171,97 @@ export default function PatientDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recent Consultation Notes */}
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Recent Consultation Notes
+                  </CardTitle>
+                  <CardDescription>Notes and recommendations from your recent consultations</CardDescription>
+                </div>
+                <Button variant="outline" onClick={() => navigate('/my-bookings')}>
+                  View All
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {dashboardData?.recentConsultations?.length > 0 ? (
+                  dashboardData.recentConsultations.map((consultation: any) => (
+                    <div key={consultation.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="font-medium text-lg">{consultation.consultation_type}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {format(new Date(consultation.appointment_date), 'MMM dd, yyyy • h:mm a')}
+                          </div>
+                        </div>
+                        {getStatusBadge(consultation.status)}
+                      </div>
+                      
+                      {consultation.symptoms && (
+                        <div className="mb-3">
+                          <p className="text-sm font-medium text-muted-foreground">Symptoms Discussed:</p>
+                          <p className="text-sm">{consultation.symptoms}</p>
+                        </div>
+                      )}
+                      
+                      {consultation.diagnosis && (
+                        <div className="mb-3 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
+                          <p className="text-sm font-medium text-blue-900">Diagnosis:</p>
+                          <p className="text-sm text-blue-800">{consultation.diagnosis}</p>
+                        </div>
+                      )}
+                      
+                      {consultation.doctor_notes && (
+                        <div className="mb-3 bg-green-50 p-3 rounded-lg border-l-4 border-green-400">
+                          <p className="text-sm font-medium text-green-900">Doctor's Notes:</p>
+                          <p className="text-sm text-green-800">{consultation.doctor_notes}</p>
+                        </div>
+                      )}
+                      
+                      {consultation.treatment_plan && (
+                        <div className="mb-3 bg-purple-50 p-3 rounded-lg border-l-4 border-purple-400">
+                          <p className="text-sm font-medium text-purple-900">Treatment Plan:</p>
+                          <p className="text-sm text-purple-800">{consultation.treatment_plan}</p>
+                        </div>
+                      )}
+                      
+                      {consultation.prescription && (
+                        <div className="mb-3 bg-orange-50 p-3 rounded-lg border-l-4 border-orange-400">
+                          <p className="text-sm font-medium text-orange-900">Prescription:</p>
+                          <p className="text-sm text-orange-800">{consultation.prescription}</p>
+                        </div>
+                      )}
+                      
+                      {consultation.follow_up_required && consultation.follow_up_date && (
+                        <div className="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-400">
+                          <p className="text-sm font-medium text-yellow-900">Follow-up Required:</p>
+                          <p className="text-sm text-yellow-800">
+                            Scheduled for {format(new Date(consultation.follow_up_date), 'MMM dd, yyyy')}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No consultation notes yet</p>
+                    <Button variant="outline" className="mt-2" onClick={() => navigate('/booking')}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Book Consultation
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Test Results */}
@@ -350,6 +446,7 @@ export default function PatientDashboard() {
               </div>
             </CardContent>
           </Card>
+        </div>
         </div>
       </main>
 

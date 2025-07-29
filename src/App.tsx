@@ -5,12 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/EnhancedAuthContext";
 import PatientProfile from "./pages/PatientProfile";
 import ComprehensivePatientPortal from "./pages/ComprehensivePatientPortal";
-import PatientDashboard from "./pages/PatientDashboard";
 import MyBookings from "./pages/MyBookings";
 import MyTestResults from "./pages/MyTestResults";
 import MyMedications from "./pages/MyMedications";
 import MyFiles from "./pages/MyFiles";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Results from "./pages/Results";
 import Marketplace from "./pages/Marketplace";
@@ -97,7 +96,7 @@ const App = () => (
           <Route path="/admin-referrals" element={<AdminReferrals />} />
           <Route path="/ai-report-generator" element={<AIReportGenerator />} />
           <Route path="/profile" element={<PatientProfile />} />
-          <Route path="/patient-dashboard" element={<PatientDashboard />} />
+          <Route path="/patient-dashboard" element={<Navigate to="/portal" replace />} />
           <Route path="/portal" element={<ComprehensivePatientPortal />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/my-test-results" element={<MyTestResults />} />

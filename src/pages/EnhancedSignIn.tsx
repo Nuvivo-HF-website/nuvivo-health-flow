@@ -43,7 +43,7 @@ export default function EnhancedSignIn() {
 
   // Redirect if already logged in
   useEffect(() => {
-    const redirectTo = searchParams.get('redirectTo') || '/patient-dashboard';
+    const redirectTo = searchParams.get('redirectTo') || '/portal';
     if (user) {
       navigate(redirectTo);
     }
@@ -171,7 +171,7 @@ export default function EnhancedSignIn() {
           variant: "destructive",
         });
       } else {
-        const redirectTo = searchParams.get('redirectTo') || '/patient-dashboard';
+        const redirectTo = searchParams.get('redirectTo') || '/portal';
         navigate(redirectTo);
       }
     } catch (error: any) {
@@ -200,7 +200,7 @@ export default function EnhancedSignIn() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}${searchParams.get('redirectTo') || '/patient-dashboard'}`,
+          redirectTo: `${window.location.origin}${searchParams.get('redirectTo') || '/portal'}`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

@@ -260,16 +260,6 @@ const Header = () => {
 
           {/* Right side items */}
           <div className="flex items-center space-x-3">
-            {user && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="hidden sm:flex"
-                onClick={() => navigate("/portal")}
-              >
-                My Portal
-              </Button>
-            )}
             <Button 
               variant="outline" 
               size="sm" 
@@ -281,21 +271,21 @@ const Header = () => {
             
             {!loading && (
               <>
-                {/* Patient Portal Button - shows for all users */}
+                {/* Unified Patient Portal Button */}
                 <Button 
                   variant="default" 
                   size="sm" 
                   className="flex items-center space-x-2"
                   onClick={() => {
                     if (user) {
-                      navigate("/patient-dashboard")
+                      navigate("/portal")
                     } else {
                       navigate("/sign-in")
                     }
                   }}
                 >
                   <User className="h-4 w-4" />
-                  <span className="hidden sm:inline">Patient Portal</span>
+                  <span className="hidden sm:inline">My Portal</span>
                   <span className="sm:hidden">Portal</span>
                 </Button>
                 

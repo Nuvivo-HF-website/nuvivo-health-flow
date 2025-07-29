@@ -183,6 +183,120 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_invoices: {
+        Row: {
+          amount: number
+          appointment_id: string | null
+          consultation_id: string | null
+          created_at: string
+          currency: string | null
+          due_date: string
+          id: string
+          invoice_number: string
+          issued_date: string
+          notes: string | null
+          paid_date: string | null
+          payment_method: string | null
+          payment_reference: string | null
+          service_description: string
+          status: string
+          stripe_payment_intent_id: string | null
+          tax_amount: number | null
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          appointment_id?: string | null
+          consultation_id?: string | null
+          created_at?: string
+          currency?: string | null
+          due_date: string
+          id?: string
+          invoice_number: string
+          issued_date: string
+          notes?: string | null
+          paid_date?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          service_description: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          tax_amount?: number | null
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          appointment_id?: string | null
+          consultation_id?: string | null
+          created_at?: string
+          currency?: string | null
+          due_date?: string
+          id?: string
+          invoice_number?: string
+          issued_date?: string
+          notes?: string | null
+          paid_date?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          service_description?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          tax_amount?: number | null
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      care_team: {
+        Row: {
+          access_level: string | null
+          added_date: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          is_primary: boolean | null
+          notes: string | null
+          provider_id: string
+          provider_type: string
+          relationship_type: string
+          removed_date: string | null
+          user_id: string
+        }
+        Insert: {
+          access_level?: string | null
+          added_date?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          notes?: string | null
+          provider_id: string
+          provider_type: string
+          relationship_type: string
+          removed_date?: string | null
+          user_id: string
+        }
+        Update: {
+          access_level?: string | null
+          added_date?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          notes?: string | null
+          provider_id?: string
+          provider_type?: string
+          relationship_type?: string
+          removed_date?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       consultations: {
         Row: {
           appointment_date: string
@@ -358,6 +472,102 @@ export type Database = {
           request_type?: string
           status?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      health_goals: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          current_value: number | null
+          description: string | null
+          goal_type: string
+          id: string
+          progress_percentage: number | null
+          reminder_frequency: string | null
+          reminders_enabled: boolean | null
+          status: string
+          target_date: string | null
+          target_unit: string | null
+          target_value: number | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          current_value?: number | null
+          description?: string | null
+          goal_type: string
+          id?: string
+          progress_percentage?: number | null
+          reminder_frequency?: string | null
+          reminders_enabled?: boolean | null
+          status?: string
+          target_date?: string | null
+          target_unit?: string | null
+          target_value?: number | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          current_value?: number | null
+          description?: string | null
+          goal_type?: string
+          id?: string
+          progress_percentage?: number | null
+          reminder_frequency?: string | null
+          reminders_enabled?: boolean | null
+          status?: string
+          target_date?: string | null
+          target_unit?: string | null
+          target_value?: number | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_metrics: {
+        Row: {
+          created_at: string
+          device_source: string | null
+          id: string
+          is_flagged: boolean | null
+          measured_at: string
+          metric_type: string
+          notes: string | null
+          unit: string
+          user_id: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          device_source?: string | null
+          id?: string
+          is_flagged?: boolean | null
+          measured_at: string
+          metric_type: string
+          notes?: string | null
+          unit: string
+          user_id: string
+          value: Json
+        }
+        Update: {
+          created_at?: string
+          device_source?: string | null
+          id?: string
+          is_flagged?: boolean | null
+          measured_at?: string
+          metric_type?: string
+          notes?: string | null
+          unit?: string
+          user_id?: string
+          value?: Json
         }
         Relationships: []
       }
@@ -692,6 +902,78 @@ export type Database = {
         }
         Relationships: []
       }
+      prescriptions: {
+        Row: {
+          consultation_id: string | null
+          contraindications: string | null
+          created_at: string
+          doctor_id: string | null
+          dosage: string
+          end_date: string | null
+          frequency: string
+          id: string
+          instructions: string | null
+          medication_name: string
+          pharmacy_name: string | null
+          pharmacy_phone: string | null
+          prescribed_date: string
+          prescription_number: string | null
+          quantity: number | null
+          refills_remaining: number | null
+          side_effects: string | null
+          start_date: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          consultation_id?: string | null
+          contraindications?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          dosage: string
+          end_date?: string | null
+          frequency: string
+          id?: string
+          instructions?: string | null
+          medication_name: string
+          pharmacy_name?: string | null
+          pharmacy_phone?: string | null
+          prescribed_date: string
+          prescription_number?: string | null
+          quantity?: number | null
+          refills_remaining?: number | null
+          side_effects?: string | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          consultation_id?: string | null
+          contraindications?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          dosage?: string
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          instructions?: string | null
+          medication_name?: string
+          pharmacy_name?: string | null
+          pharmacy_phone?: string | null
+          prescribed_date?: string
+          prescription_number?: string | null
+          quantity?: number | null
+          refills_remaining?: number | null
+          side_effects?: string | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -812,6 +1094,72 @@ export type Database = {
           is_active?: boolean | null
           qualifications?: string[] | null
           specialty?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      telemedicine_sessions: {
+        Row: {
+          actual_end: string | null
+          actual_start: string | null
+          appointment_id: string | null
+          created_at: string
+          doctor_id: string | null
+          doctor_rating: number | null
+          duration_minutes: number | null
+          id: string
+          patient_rating: number | null
+          recording_url: string | null
+          room_id: string | null
+          scheduled_start: string
+          session_notes: string | null
+          session_type: string
+          session_url: string | null
+          status: string
+          technical_issues: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actual_end?: string | null
+          actual_start?: string | null
+          appointment_id?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          doctor_rating?: number | null
+          duration_minutes?: number | null
+          id?: string
+          patient_rating?: number | null
+          recording_url?: string | null
+          room_id?: string | null
+          scheduled_start: string
+          session_notes?: string | null
+          session_type?: string
+          session_url?: string | null
+          status?: string
+          technical_issues?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actual_end?: string | null
+          actual_start?: string | null
+          appointment_id?: string | null
+          created_at?: string
+          doctor_id?: string | null
+          doctor_rating?: number | null
+          duration_minutes?: number | null
+          id?: string
+          patient_rating?: number | null
+          recording_url?: string | null
+          room_id?: string | null
+          scheduled_start?: string
+          session_notes?: string | null
+          session_type?: string
+          session_url?: string | null
+          status?: string
+          technical_issues?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -994,6 +1342,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      update_health_goal_progress: {
+        Args: { _goal_id: string; _current_value: number }
+        Returns: undefined
       }
     }
     Enums: {

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowLeft, User } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
@@ -151,29 +151,34 @@ const SignIn = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
           {/* Back Button */}
           <Button 
             variant="ghost" 
             onClick={() => navigate(-1)}
-            className="mb-6"
+            className="mb-6 text-muted-foreground hover:text-primary"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
 
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl">
-                {isSignUp ? 'Create Account' : 'Sign In'}
-              </CardTitle>
-              <CardDescription>
-                {isSignUp 
-                  ? 'Create your Nuvivo Health account to access all features'
-                  : 'Access your Nuvivo Health account to view test results and manage appointments'
-                }
-              </CardDescription>
+          <Card className="border-border shadow-lg">
+            <CardHeader className="text-center space-y-4">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                <User className="w-8 h-8 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-3xl font-bold">
+                  {isSignUp ? 'Join Nuvivo Health' : 'Patient Portal'}
+                </CardTitle>
+                <CardDescription className="text-base mt-2">
+                  {isSignUp 
+                    ? 'Create your patient account to access all health services'
+                    : 'Access your health records, book appointments, and manage your care'
+                  }
+                </CardDescription>
+              </div>
             </CardHeader>
             
             <CardContent className="space-y-6">
@@ -185,7 +190,7 @@ const SignIn = () => {
 
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
@@ -194,14 +199,14 @@ const SignIn = () => {
                       placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
+                      className="pl-10 h-11"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-sm font-medium">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
@@ -210,20 +215,20 @@ const SignIn = () => {
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10"
+                      className="pl-10 pr-10 h-11"
                       required
                     />
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                      className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-transparent"
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
-                        <EyeOff className="w-4 h-4" />
+                        <EyeOff className="w-4 h-4 text-muted-foreground" />
                       ) : (
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-4 h-4 text-muted-foreground" />
                       )}
                     </Button>
                   </div>
@@ -231,7 +236,7 @@ const SignIn = () => {
 
                 {isSignUp && (
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                       <Input
@@ -240,7 +245,7 @@ const SignIn = () => {
                         placeholder="Confirm your password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="pl-10"
+                        className="pl-10 h-11"
                         required={isSignUp}
                       />
                     </div>
@@ -249,13 +254,13 @@ const SignIn = () => {
 
                 <Button 
                   type="submit" 
-                  className="w-full" 
+                  className="w-full h-11 text-base font-medium" 
                   size="lg"
                   disabled={isLoading}
                 >
                   {isLoading 
                     ? (isSignUp ? "Creating account..." : "Signing in...") 
-                    : (isSignUp ? "Create Account" : "Sign In")
+                    : (isSignUp ? "Create Patient Account" : "Access Patient Portal")
                   }
                 </Button>
               </form>
@@ -265,7 +270,7 @@ const SignIn = () => {
                   <Button 
                     variant="link" 
                     onClick={handleForgotPassword}
-                    className="text-sm"
+                    className="text-sm text-muted-foreground hover:text-primary"
                     disabled={isLoading}
                   >
                     Forgot your password?
@@ -275,10 +280,10 @@ const SignIn = () => {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <Separator />
+                  <Separator className="w-full" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
+                  <span className="bg-background px-3 text-muted-foreground font-medium">
                     Or continue with
                   </span>
                 </div>
@@ -287,10 +292,10 @@ const SignIn = () => {
               <Button 
                 variant="outline" 
                 onClick={handleGoogleSignIn}
-                className="w-full"
+                className="w-full h-11 text-base font-medium border-border hover:bg-accent"
                 disabled={isLoading}
               >
-                <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                   <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -299,23 +304,23 @@ const SignIn = () => {
                 Continue with Google
               </Button>
 
-              <Alert>
-                <AlertDescription className="text-center text-sm">
-                  {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-                  <Button 
-                    variant="link" 
-                    className="p-0 h-auto"
-                    onClick={() => {
-                      setIsSignUp(!isSignUp);
-                      setError("");
-                      setConfirmPassword("");
-                    }}
-                    disabled={isLoading}
-                  >
-                    {isSignUp ? "Sign in here" : "Sign up here"}
-                  </Button>
-                </AlertDescription>
-              </Alert>
+              <div className="bg-accent/50 rounded-lg p-4 text-center">
+                <p className="text-sm text-muted-foreground mb-2">
+                  {isSignUp ? "Already have a patient account?" : "New to Nuvivo Health?"}
+                </p>
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-primary hover:text-primary/80 font-medium"
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setError("");
+                    setConfirmPassword("");
+                  }}
+                  disabled={isLoading}
+                >
+                  {isSignUp ? "Sign in to your account" : "Create a patient account"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

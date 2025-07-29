@@ -104,11 +104,16 @@ export function PatientProfileForm() {
 
     setIsSearchingPostcode(true)
     try {
+      console.log('Searching postcode:', postcode)
       // Using postcodes.io API for UK postcodes
       const response = await fetch(`https://api.postcodes.io/postcodes/${postcode}/autocomplete`)
+      console.log('Response status:', response.status)
       if (response.ok) {
         const data = await response.json()
+        console.log('Postcode data:', data)
         setPostcodeResults(data.result || [])
+      } else {
+        console.log('Response not ok:', response.statusText)
       }
     } catch (error) {
       console.error('Error searching postcode:', error)

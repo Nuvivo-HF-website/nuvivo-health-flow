@@ -61,7 +61,7 @@ const Hero = () => {
 
           {/* Hero Image */}
           <div className="relative animate-slide-up lg:justify-self-end">
-            <div className="relative w-full max-w-md mx-auto lg:mx-0">
+            <div className="relative w-full max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto lg:mx-0">
               <img 
                 src={heroImage} 
                 alt="Blood test vials and laboratory analysis"

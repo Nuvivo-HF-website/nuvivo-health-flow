@@ -275,7 +275,7 @@ const Header = () => {
                 <Button 
                   variant="default" 
                   size="sm" 
-                  className="hidden sm:flex items-center space-x-2"
+                  className="flex items-center space-x-2"
                   onClick={() => {
                     if (user) {
                       navigate("/patient-dashboard")
@@ -285,7 +285,8 @@ const Header = () => {
                   }}
                 >
                   <User className="h-4 w-4" />
-                  <span>Patient Portal</span>
+                  <span className="hidden sm:inline">Patient Portal</span>
+                  <span className="sm:hidden">Portal</span>
                 </Button>
                 
                 {/* Show user menu if logged in */}

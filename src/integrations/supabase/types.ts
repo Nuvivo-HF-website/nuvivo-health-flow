@@ -68,6 +68,45 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          table_name: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       consultations: {
         Row: {
           appointment_date: string
@@ -133,6 +172,39 @@ export type Database = {
           symptoms?: string | null
           treatment_plan?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gdpr_requests: {
+        Row: {
+          created_at: string
+          details: Json | null
+          id: string
+          processed_at: string | null
+          processed_by: string | null
+          request_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          request_type: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          request_type?: string
+          status?: string
           user_id?: string
         }
         Relationships: []
@@ -278,19 +350,35 @@ export type Database = {
           address_line_2: string | null
           allergies: string[] | null
           city: string | null
+          consent_data_processing: boolean | null
+          consent_marketing: boolean | null
+          consent_research: boolean | null
           country: string | null
           created_at: string
           current_medications: string[] | null
+          data_retention_period: number | null
           date_of_birth: string | null
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
+          family_medical_history: Json | null
           first_name: string | null
+          gdpr_consent_date: string | null
           gender: string | null
+          gender_identity: string | null
           id: string
+          insurance_details: Json | null
+          last_data_review: string | null
           last_name: string | null
+          lifestyle_factors: Json | null
+          marital_status: string | null
           medical_conditions: string[] | null
+          nationality: string | null
+          nhs_number: string | null
+          occupation: string | null
           phone: string | null
           postcode: string | null
+          preferred_language: string | null
+          sex_at_birth: string | null
           updated_at: string
           user_id: string
         }
@@ -300,19 +388,35 @@ export type Database = {
           address_line_2?: string | null
           allergies?: string[] | null
           city?: string | null
+          consent_data_processing?: boolean | null
+          consent_marketing?: boolean | null
+          consent_research?: boolean | null
           country?: string | null
           created_at?: string
           current_medications?: string[] | null
+          data_retention_period?: number | null
           date_of_birth?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
+          family_medical_history?: Json | null
           first_name?: string | null
+          gdpr_consent_date?: string | null
           gender?: string | null
+          gender_identity?: string | null
           id?: string
+          insurance_details?: Json | null
+          last_data_review?: string | null
           last_name?: string | null
+          lifestyle_factors?: Json | null
+          marital_status?: string | null
           medical_conditions?: string[] | null
+          nationality?: string | null
+          nhs_number?: string | null
+          occupation?: string | null
           phone?: string | null
           postcode?: string | null
+          preferred_language?: string | null
+          sex_at_birth?: string | null
           updated_at?: string
           user_id: string
         }
@@ -322,19 +426,35 @@ export type Database = {
           address_line_2?: string | null
           allergies?: string[] | null
           city?: string | null
+          consent_data_processing?: boolean | null
+          consent_marketing?: boolean | null
+          consent_research?: boolean | null
           country?: string | null
           created_at?: string
           current_medications?: string[] | null
+          data_retention_period?: number | null
           date_of_birth?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
+          family_medical_history?: Json | null
           first_name?: string | null
+          gdpr_consent_date?: string | null
           gender?: string | null
+          gender_identity?: string | null
           id?: string
+          insurance_details?: Json | null
+          last_data_review?: string | null
           last_name?: string | null
+          lifestyle_factors?: Json | null
+          marital_status?: string | null
           medical_conditions?: string[] | null
+          nationality?: string | null
+          nhs_number?: string | null
+          occupation?: string | null
           phone?: string | null
           postcode?: string | null
+          preferred_language?: string | null
+          sex_at_birth?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -433,15 +553,84 @@ export type Database = {
         }
         Relationships: []
       }
+      user_mfa: {
+        Row: {
+          backup_codes: string[] | null
+          created_at: string
+          enabled: boolean | null
+          id: string
+          last_used: string | null
+          secret: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          backup_codes?: string[] | null
+          created_at?: string
+          enabled?: boolean | null
+          id?: string
+          last_used?: string | null
+          secret: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          backup_codes?: string[] | null
+          created_at?: string
+          enabled?: boolean | null
+          id?: string
+          last_used?: string | null
+          secret?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_roles: {
+        Args: { _user_id: string }
+        Returns: {
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "patient" | "doctor" | "admin" | "clinic_staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -568,6 +757,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["patient", "doctor", "admin", "clinic_staff"],
+    },
   },
 } as const

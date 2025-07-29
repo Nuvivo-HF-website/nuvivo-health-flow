@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { PatientProfileForm } from '@/components/PatientProfileForm'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'

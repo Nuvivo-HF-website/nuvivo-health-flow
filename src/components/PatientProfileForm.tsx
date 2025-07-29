@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { patientService, PatientProfile } from '@/services/patientService'
 import { toast } from '@/hooks/use-toast'
 import { Loader2, Plus, X, User, Phone, MapPin, AlertTriangle, Pill, Heart } from 'lucide-react'

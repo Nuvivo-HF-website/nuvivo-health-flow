@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { toast } from '@/hooks/use-toast'
 import { Loader2 } from 'lucide-react'
 

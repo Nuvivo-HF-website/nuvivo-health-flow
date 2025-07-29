@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { toast } from '@/hooks/use-toast'
 import { User, Settings, LogOut, FileText, Calendar, CreditCard } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'

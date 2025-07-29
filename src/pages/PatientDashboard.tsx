@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { patientPortalService } from '@/services/patientPortalService'
 import { toast } from '@/hooks/use-toast'
 import Header from '@/components/Header'

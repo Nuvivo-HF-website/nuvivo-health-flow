@@ -97,14 +97,27 @@ const SignIn = () => {
     setError("");
     
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      console.log('Starting Google OAuth with redirectTo:', `${window.location.origin}${redirectTo}`);
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}${redirectTo}`
+          redirectTo: `${window.location.origin}${redirectTo}`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         }
       });
 
-      if (error) throw error;
+      console.log('Google OAuth response:', { data, error });
+
+      if (error) {
+        console.error('Google OAuth error:', error);
+        throw error;
+      }
+
+      // OAuth redirect will happen automatically if successful
     } catch (error: any) {
       console.error('Google auth error:', error);
       setError(error.message || 'An error occurred with Google sign-in');

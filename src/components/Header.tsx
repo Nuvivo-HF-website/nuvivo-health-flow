@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, ChevronDown } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/EnhancedAuthContext";
 import { AuthModal } from "./auth/AuthModal";
 import { UserMenu } from "./auth/UserMenu";
 import {

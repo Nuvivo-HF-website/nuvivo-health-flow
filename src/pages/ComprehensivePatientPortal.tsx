@@ -88,10 +88,13 @@ export default function ComprehensivePatientPortal() {
   }
 
   // Redirect to sign-in if not authenticated
-  if (!user) {
-    React.useEffect(() => {
+  React.useEffect(() => {
+    if (!user && !loading) {
       navigate('/sign-in');
-    }, [navigate]);
+    }
+  }, [user, loading, navigate]);
+
+  if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

@@ -52,12 +52,12 @@ export function PatientProfileForm() {
       const { data, error } = await patientService.getPatientProfile(user.id)
       
       if (data) {
-        setProfile(data)
+        setProfile(data as PatientProfile)
         setFormData({
           first_name: data.first_name || '',
           last_name: data.last_name || '',
           date_of_birth: data.date_of_birth || '',
-          gender: data.gender || '',
+          gender: (data.gender as 'male' | 'female' | 'other' | 'prefer_not_to_say' | '') || '',
           phone: data.phone || '',
           address_line_1: data.address_line_1 || '',
           address_line_2: data.address_line_2 || '',

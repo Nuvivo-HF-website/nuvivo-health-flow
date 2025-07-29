@@ -34,7 +34,7 @@ serve(async (req) => {
       }
     }
 
-    const stripe = new Stripe("sk_test_51RpknzIIh7NKCtHbjzQ0xM22RAXlaEUItyPIuAREpOMR0D2Vm6sN3wCUeqZM0EmkT5RSC9VqsWqi1S0zUnJYjhH1005iEMsww9", {
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
 
@@ -70,22 +70,24 @@ serve(async (req) => {
       }
     });
 
-    // Create order record
-    const supabaseService = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-      { auth: { persistSession: false } }
-    );
+    // Create consultation record if this is a consultation payment
+    if (metadata.consultation_type && user?.id) {
+      const supabaseService = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+        { auth: { persistSession: false } }
+      );
 
-    await supabaseService.from("orders").insert({
-      user_id: user?.id || null,
-      stripe_session_id: session.id,
-      amount: Math.round(amount * 100),
-      currency: "gbp",
-      status: "pending",
-      description: description,
-      metadata: metadata
-    });
+      await supabaseService.from("consultations").insert({
+        user_id: user.id,
+        consultation_type: metadata.consultation_type,
+        appointment_date: metadata.appointment_date || new Date().toISOString(),
+        fee: Math.round(amount * 100) / 100, // Convert back to pounds
+        payment_status: "pending",
+        status: "scheduled",
+        notes: `Stripe session: ${session.id}`
+      });
+    }
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -3,17 +3,22 @@ import { supabase } from '@/lib/supabase'
 export interface PatientProfile {
   id: string
   user_id: string
-  first_name: string
-  last_name: string
-  date_of_birth: string
-  gender: 'male' | 'female' | 'other' | 'prefer_not_to_say'
-  phone: string
-  address: string
+  first_name?: string
+  last_name?: string
+  date_of_birth?: string
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say' | ''
+  phone?: string
+  address?: string
+  address_line_1?: string
+  address_line_2?: string
+  city?: string
+  postcode?: string
+  country?: string
   emergency_contact_name?: string
   emergency_contact_phone?: string
-  medical_conditions: string[]
-  allergies: string[]
-  current_medications: string[]
+  medical_conditions?: string[]
+  allergies?: string[]
+  current_medications?: string[]
   created_at: string
   updated_at: string
 }
@@ -64,7 +69,7 @@ export const patientService = {
       .from('patient_profiles')
       .select('*')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
     
     return { data, error }
   },

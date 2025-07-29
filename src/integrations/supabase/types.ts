@@ -274,7 +274,11 @@ export type Database = {
       patient_profiles: {
         Row: {
           address: string | null
+          address_line_1: string | null
+          address_line_2: string | null
           allergies: string[] | null
+          city: string | null
+          country: string | null
           created_at: string
           current_medications: string[] | null
           date_of_birth: string | null
@@ -286,12 +290,17 @@ export type Database = {
           last_name: string | null
           medical_conditions: string[] | null
           phone: string | null
+          postcode: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           address?: string | null
+          address_line_1?: string | null
+          address_line_2?: string | null
           allergies?: string[] | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           current_medications?: string[] | null
           date_of_birth?: string | null
@@ -303,12 +312,17 @@ export type Database = {
           last_name?: string | null
           medical_conditions?: string[] | null
           phone?: string | null
+          postcode?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           address?: string | null
+          address_line_1?: string | null
+          address_line_2?: string | null
           allergies?: string[] | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           current_medications?: string[] | null
           date_of_birth?: string | null
@@ -320,6 +334,7 @@ export type Database = {
           last_name?: string | null
           medical_conditions?: string[] | null
           phone?: string | null
+          postcode?: string | null
           updated_at?: string
           user_id?: string
         }

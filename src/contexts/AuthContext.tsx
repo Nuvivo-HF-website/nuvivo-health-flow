@@ -50,10 +50,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', userId)
-        .single()
+        .eq('user_id', userId)
+        .maybeSingle()
       
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error('Error fetching profile:', error)
       } else {
         setUserProfile(data)
@@ -107,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await supabase
       .from('profiles')
       .update(updates)
-      .eq('id', user.id)
+      .eq('user_id', user.id)
     
     if (!error) {
       setUserProfile({ ...userProfile, ...updates })

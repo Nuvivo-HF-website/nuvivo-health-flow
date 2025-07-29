@@ -12,6 +12,7 @@ import Results from "./pages/Results";
 import Marketplace from "./pages/Marketplace";
 import BloodTests from "./pages/BloodTests";
 import Booking from "./pages/Booking";
+import GuestBooking from "./pages/GuestBooking";
 import UploadResults from "./pages/UploadResults";
 import Radiology from "./pages/Radiology";
 import PrivateAmbulance from "./pages/PrivateAmbulance";
@@ -63,6 +64,7 @@ const App = () => (
           <Route path="/private-ambulance" element={<PrivateAmbulance />} />
           <Route path="/treatments" element={<Treatments />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/guest-booking" element={<GuestBooking />} />
           <Route path="/upload-results" element={<UploadResults />} />
           <Route path="/clinic-finder" element={<ClinicFinder />} />
           <Route path="/product/:id" element={<ProductDetail />} />

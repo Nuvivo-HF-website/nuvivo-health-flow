@@ -88,60 +88,56 @@ export const patientService = {
     return { data, error }
   },
 
-  // Medical History Management
-  async addMedicalHistory(historyData: Omit<MedicalHistory, 'id' | 'created_at'>) {
-    const { data, error } = await supabase
-      .from('medical_history')
-      .insert({
-        ...historyData,
-        created_at: new Date().toISOString()
-      })
-      .select()
-      .single()
-    
-    return { data, error }
+  // Note: Medical history and test results management would require
+  // creating additional tables in the database. For now, these are placeholder methods.
+  
+  async addMedicalHistory(historyData: any) {
+    // This would require a medical_history table
+    return { data: null, error: { message: "Medical history table not yet implemented" } }
   },
 
   async getMedicalHistory(patientId: string) {
-    const { data, error } = await supabase
-      .from('medical_history')
-      .select('*')
-      .eq('patient_id', patientId)
-      .order('created_at', { ascending: false })
-    
-    return { data, error }
+    // This would require a medical_history table  
+    return { data: [], error: null }
   },
 
-  async updateMedicalHistory(historyId: string, updates: Partial<MedicalHistory>) {
-    const { data, error } = await supabase
-      .from('medical_history')
-      .update(updates)
-      .eq('id', historyId)
-      .select()
-      .single()
-    
-    return { data, error }
+  async updateMedicalHistory(historyId: string, updates: any) {
+    // This would require a medical_history table
+    return { data: null, error: { message: "Medical history table not yet implemented" } }
   },
 
-  // Test Results Management
-  async saveTestResult(resultData: Omit<TestResult, 'id' | 'created_at'>) {
-    const { data, error } = await supabase
-      .from('test_results')
-      .insert({
-        ...resultData,
-        created_at: new Date().toISOString()
-      })
-      .select()
-      .single()
-    
-    return { data, error }
+  async saveTestResult(resultData: any) {
+    // Using the existing test_results table
+    try {
+      const { data, error } = await supabase
+        .from('test_results')
+        .insert({
+          user_id: resultData.patient_id, // Map patient_id to user_id
+          test_type: resultData.test_type,
+          test_name: resultData.test_name,
+          result_values: resultData.result_values,
+          reference_ranges: resultData.reference_ranges,
+          result_status: resultData.status, // Map status to result_status
+          test_date: resultData.test_date,
+          clinic_name: resultData.clinic_name,
+          doctor_notes: resultData.doctor_notes,
+          file_url: resultData.file_url,
+          created_at: new Date().toISOString()
+        })
+        .select()
+        .single()
+      
+      return { data, error }
+    } catch (error) {
+      return { data: null, error }
+    }
   },
 
   async getTestResults(patientId: string) {
     const { data, error } = await supabase
       .from('test_results')
       .select('*')
-      .eq('patient_id', patientId)
+      .eq('user_id', patientId) // Use user_id instead of patient_id
       .order('test_date', { ascending: false })
     
     return { data, error }
@@ -157,7 +153,7 @@ export const patientService = {
     return { data, error }
   },
 
-  async updateTestResult(resultId: string, updates: Partial<TestResult>) {
+  async updateTestResult(resultId: string, updates: any) {
     const { data, error } = await supabase
       .from('test_results')
       .update(updates)
@@ -179,18 +175,15 @@ export const patientService = {
   },
 
   async getPatientStats(patientId: string) {
-    const [profileResult, historyResult, resultsResult] = await Promise.all([
+    const [profileResult, resultsResult] = await Promise.all([
       this.getPatientProfile(patientId),
-      this.getMedicalHistory(patientId),
       this.getTestResults(patientId)
     ])
 
     return {
       profile: profileResult.data,
-      totalConditions: historyResult.data?.length || 0,
       totalTests: resultsResult.data?.length || 0,
       recentTests: resultsResult.data?.slice(0, 5) || [],
-      activeConditions: historyResult.data?.filter(h => h.status === 'active').length || 0
     }
   }
 }

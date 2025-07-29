@@ -1,6 +1,6 @@
 import React from 'react';
 import { PaymentButton } from '@/components/PaymentButton';
-import { SubscriptionButton } from '@/components/SubscriptionButton';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CreditCard, Crown, Check } from 'lucide-react';
@@ -61,15 +61,15 @@ export function PricingCard({
         
         <div className="pt-4">
           {isSubscription ? (
-            <SubscriptionButton
-              priceAmount={price}
-              interval={interval}
-              description={title}
+            <PaymentButton
+              amount={price}
+              description={`${title} - ${interval}ly subscription`}
+              metadata={{...metadata, subscription: true, interval}}
               className="w-full"
               variant={isPopular ? 'default' : 'outline'}
             >
               Subscribe Now
-            </SubscriptionButton>
+            </PaymentButton>
           ) : (
             <PaymentButton
               amount={price}

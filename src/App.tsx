@@ -47,7 +47,7 @@ import AdminReferrals from "./pages/AdminReferrals";
 import AIReportGenerator from "./pages/AIReportGenerator";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
-import PaymentDashboard from "./pages/PaymentDashboard";
+
 import Testing from "./pages/Testing";
 
 const queryClient = new QueryClient();
@@ -101,7 +101,7 @@ const App = () => (
           <Route path="/my-test-results" element={<MyTestResults />} />
           <Route path="/my-medications" element={<MyMedications />} />
           <Route path="/my-files" element={<MyFiles />} />
-          <Route path="/payment-dashboard" element={<PaymentDashboard />} />
+          
           <Route path="/testing" element={<Testing />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/subscription-success" element={<SubscriptionSuccess />} />

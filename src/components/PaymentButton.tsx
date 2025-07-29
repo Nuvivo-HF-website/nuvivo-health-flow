@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CreditCard, Loader2 } from 'lucide-react';
-import { paymentService, PaymentRequest } from '@/services/paymentService';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PaymentButtonProps {
   amount: number;
@@ -12,6 +12,7 @@ interface PaymentButtonProps {
   size?: "default" | "sm" | "lg" | "icon";
   className?: string;
   children?: React.ReactNode;
+  onSuccess?: () => void;
 }
 
 export function PaymentButton({
@@ -21,7 +22,8 @@ export function PaymentButton({
   variant = "default",
   size = "default",
   className = "",
-  children
+  children,
+  onSuccess
 }: PaymentButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -30,21 +32,28 @@ export function PaymentButton({
     setIsLoading(true);
     
     try {
-      const paymentData: PaymentRequest = {
-        amount,
-        description,
-        metadata
-      };
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: {
+          amount,
+          description,
+          metadata
+        }
+      });
 
-      const { url } = await paymentService.createOneOffPayment(paymentData);
+      if (error) throw error;
       
       // Open Stripe checkout in a new tab
-      window.open(url, '_blank');
+      window.open(data.url, '_blank');
       
       toast({
         title: "Redirecting to payment",
         description: "Please complete your payment in the new tab.",
       });
+      
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error: any) {
       console.error('Payment error:', error);
       toast({
@@ -55,6 +64,13 @@ export function PaymentButton({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const formatPrice = (amount: number) => {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: 'GBP',
+    }).format(amount);
   };
 
   return (
@@ -70,7 +86,7 @@ export function PaymentButton({
       ) : (
         <CreditCard className="mr-2 h-4 w-4" />
       )}
-      {children || `Pay ${paymentService.formatPrice(amount)}`}
+      {children || `Pay ${formatPrice(amount)}`}
     </Button>
   );
 }

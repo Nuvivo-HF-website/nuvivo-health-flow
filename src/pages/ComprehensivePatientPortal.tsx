@@ -21,6 +21,7 @@ import {
   Bot,
   AlertTriangle,
   Zap,
+  Shield,
   Dna
 } from 'lucide-react';
 
@@ -40,6 +41,7 @@ import { WearableIntegration } from '@/components/WearableIntegration';
 import { EmergencyAlertSystem } from '@/components/EmergencyAlertSystem';
 import { EnhancedTelemedicine } from '@/components/EnhancedTelemedicine';
 import { ClinicalDecisionSupport } from '@/components/ClinicalDecisionSupport';
+import SafetySupport from '@/components/SafetySupport';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -50,6 +52,9 @@ export default function ComprehensivePatientPortal() {
 
   const handleQuickAction = (action: string) => {
     switch (action) {
+      case 'safety':
+        setActiveTab('safety');
+        break;
       case 'appointment':
         setActiveTab('appointments');
         break;
@@ -123,89 +128,36 @@ export default function ComprehensivePatientPortal() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <Card 
-              className="cursor-pointer hover:shadow-md transition-shadow" 
-              onClick={() => handleQuickAction('ai-assistant')}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Brain className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <div className="font-medium">AI Assistant</div>
-                    <div className="text-sm text-muted-foreground">Ask health questions</div>
-                  </div>
-                </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleQuickAction('safety')}>
+              <CardContent className="flex flex-col items-center p-6">
+                <Shield className="h-8 w-8 text-red-500 mb-2" />
+                <h3 className="font-semibold text-center">Need Help?</h3>
+                <p className="text-sm text-muted-foreground text-center">Emergency support</p>
               </CardContent>
             </Card>
-
-            <Card 
-              className="cursor-pointer hover:shadow-md transition-shadow" 
-              onClick={() => handleQuickAction('appointment')}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Calendar className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <div className="font-medium">Book Appointment</div>
-                    <div className="text-sm text-muted-foreground">Schedule consultation</div>
-                  </div>
-                </div>
+            
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleQuickAction('appointment')}>
+              <CardContent className="flex flex-col items-center p-6">
+                <Calendar className="h-8 w-8 text-blue-500 mb-2" />
+                <h3 className="font-semibold text-center">Book Appointment</h3>
+                <p className="text-sm text-muted-foreground text-center">Schedule with specialists</p>
               </CardContent>
             </Card>
-
-            <Card 
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => handleQuickAction('health-data')}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Activity className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <div className="font-medium">Log Health Data</div>
-                    <div className="text-sm text-muted-foreground">Track vital signs</div>
-                  </div>
-                </div>
+            
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleQuickAction('health-data')}>
+              <CardContent className="flex flex-col items-center p-6">
+                <Activity className="h-8 w-8 text-green-500 mb-2" />
+                <h3 className="font-semibold text-center">Track Health</h3>
+                <p className="text-sm text-muted-foreground text-center">Monitor vital signs</p>
               </CardContent>
             </Card>
-
-            <Card 
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => handleQuickAction('telemedicine')}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-indigo-100 rounded-lg">
-                    <Video className="h-5 w-5 text-indigo-600" />
-                  </div>
-                  <div>
-                    <div className="font-medium">Start Session</div>
-                    <div className="text-sm text-muted-foreground">Join telemedicine</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => handleQuickAction('goals')}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <Target className="h-5 w-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <div className="font-medium">Set Goal</div>
-                    <div className="text-sm text-muted-foreground">Track progress</div>
-                  </div>
-                </div>
+            
+            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleQuickAction('ai-assistant')}>
+              <CardContent className="flex flex-col items-center p-6">
+                <Brain className="h-8 w-8 text-purple-500 mb-2" />
+                <h3 className="font-semibold text-center">AI Assistant</h3>
+                <p className="text-sm text-muted-foreground text-center">Get health insights</p>
               </CardContent>
             </Card>
           </div>
@@ -249,7 +201,11 @@ export default function ComprehensivePatientPortal() {
 
             {/* Phase 2 & 3 Tabs */}
             <div className="mt-4">
-              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
+                <TabsTrigger value="safety" className="flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  Safety
+                </TabsTrigger>
                 <TabsTrigger value="emergency" className="flex items-center gap-2">
                   <AlertTriangle className="h-4 w-4" />
                   Emergency
@@ -275,8 +231,10 @@ export default function ComprehensivePatientPortal() {
 
             <TabsContent value="overview" className="space-y-6">
               <AnalyticsDashboard />
-              <PredictiveHealthAnalytics />
-              <EmergencyAlertSystem />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <SafetySupport />
+                <EmergencyAlertSystem />
+              </div>
             </TabsContent>
 
             <TabsContent value="ai-assistant" className="space-y-6">
@@ -310,6 +268,10 @@ export default function ComprehensivePatientPortal() {
             </TabsContent>
 
             {/* Phase 2 & 3 Tab Content */}
+            <TabsContent value="safety" className="space-y-6">
+              <SafetySupport />
+            </TabsContent>
+
             <TabsContent value="emergency" className="space-y-6">
               <EmergencyAlertSystem />
             </TabsContent>

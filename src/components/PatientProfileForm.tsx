@@ -21,7 +21,11 @@ export function PatientProfileForm() {
     date_of_birth: '',
     gender: '' as 'male' | 'female' | 'other' | 'prefer_not_to_say' | '',
     phone: '',
-    address: '',
+    address_line_1: '',
+    address_line_2: '',
+    city: '',
+    postcode: '',
+    country: 'United Kingdom',
     emergency_contact_name: '',
     emergency_contact_phone: '',
     medical_conditions: [] as string[],
@@ -31,6 +35,8 @@ export function PatientProfileForm() {
   const [newCondition, setNewCondition] = useState('')
   const [newAllergy, setNewAllergy] = useState('')
   const [newMedication, setNewMedication] = useState('')
+  const [postcodeResults, setPostcodeResults] = useState<any[]>([])
+  const [isSearchingPostcode, setIsSearchingPostcode] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -53,7 +59,11 @@ export function PatientProfileForm() {
           date_of_birth: data.date_of_birth || '',
           gender: data.gender || '',
           phone: data.phone || '',
-          address: data.address || '',
+          address_line_1: data.address_line_1 || '',
+          address_line_2: data.address_line_2 || '',
+          city: data.city || '',
+          postcode: data.postcode || '',
+          country: data.country || 'United Kingdom',
           emergency_contact_name: data.emergency_contact_name || '',
           emergency_contact_phone: data.emergency_contact_phone || '',
           medical_conditions: data.medical_conditions || [],
@@ -86,6 +96,47 @@ export function PatientProfileForm() {
     }
   }
 
+  const searchPostcode = async (postcode: string) => {
+    if (!postcode || postcode.length < 3) {
+      setPostcodeResults([])
+      return
+    }
+
+    setIsSearchingPostcode(true)
+    try {
+      // Using postcodes.io API for UK postcodes
+      const response = await fetch(`https://api.postcodes.io/postcodes/${postcode}/autocomplete`)
+      if (response.ok) {
+        const data = await response.json()
+        setPostcodeResults(data.result || [])
+      }
+    } catch (error) {
+      console.error('Error searching postcode:', error)
+    } finally {
+      setIsSearchingPostcode(false)
+    }
+  }
+
+  const selectPostcode = async (postcode: string) => {
+    try {
+      const response = await fetch(`https://api.postcodes.io/postcodes/${postcode}`)
+      if (response.ok) {
+        const data = await response.json()
+        const result = data.result
+        
+        setFormData(prev => ({
+          ...prev,
+          postcode: result.postcode,
+          city: result.admin_district,
+          country: result.country
+        }))
+        setPostcodeResults([])
+      }
+    } catch (error) {
+      console.error('Error fetching postcode details:', error)
+    }
+  }
+
   const removeFromArray = (field: 'medical_conditions' | 'allergies' | 'current_medications', index: number) => {
     setFormData(prev => ({
       ...prev,
@@ -112,6 +163,8 @@ export function PatientProfileForm() {
       const profileData = {
         user_id: user.id,
         ...formData,
+        // Combine address fields for backward compatibility
+        address: `${formData.address_line_1}${formData.address_line_2 ? ', ' + formData.address_line_2 : ''}, ${formData.city}, ${formData.postcode}, ${formData.country}`,
         gender: formData.gender as 'male' | 'female' | 'other' | 'prefer_not_to_say'
       }
 
@@ -119,6 +172,7 @@ export function PatientProfileForm() {
       if (profile) {
         const updateData = {
           ...formData,
+          address: `${formData.address_line_1}${formData.address_line_2 ? ', ' + formData.address_line_2 : ''}, ${formData.city}, ${formData.postcode}, ${formData.country}`,
           gender: formData.gender as 'male' | 'female' | 'other' | 'prefer_not_to_say'
         }
         result = await patientService.updatePatientProfile(profile.id, updateData)
@@ -232,12 +286,80 @@ export function PatientProfileForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                value={formData.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
-                placeholder="Enter your full address"
+              <Label htmlFor="address_line_1">Address Line 1</Label>
+              <Input
+                id="address_line_1"
+                value={formData.address_line_1}
+                onChange={(e) => handleInputChange('address_line_1', e.target.value)}
+                placeholder="House number and street name"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="address_line_2">Address Line 2 (Optional)</Label>
+              <Input
+                id="address_line_2"
+                value={formData.address_line_2}
+                onChange={(e) => handleInputChange('address_line_2', e.target.value)}
+                placeholder="Apartment, suite, etc."
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2 relative">
+                <Label htmlFor="postcode">Postcode</Label>
+                <Input
+                  id="postcode"
+                  value={formData.postcode}
+                  onChange={(e) => {
+                    handleInputChange('postcode', e.target.value)
+                    searchPostcode(e.target.value)
+                  }}
+                  placeholder="Enter postcode"
+                  required
+                />
+                
+                {/* Postcode Search Results */}
+                {postcodeResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 z-10 bg-background border border-border rounded-md shadow-lg max-h-40 overflow-y-auto">
+                    {postcodeResults.map((postcode, index) => (
+                      <div
+                        key={index}
+                        className="px-3 py-2 hover:bg-muted cursor-pointer text-sm"
+                        onClick={() => selectPostcode(postcode)}
+                      >
+                        {postcode}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {isSearchingPostcode && (
+                  <div className="absolute top-full left-0 right-0 z-10 bg-background border border-border rounded-md shadow-lg p-3">
+                    <div className="text-sm text-muted-foreground">Searching postcodes...</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="country">Country</Label>
+              <Input
+                id="country"
+                value={formData.country}
+                onChange={(e) => handleInputChange('country', e.target.value)}
+                required
               />
             </div>
 

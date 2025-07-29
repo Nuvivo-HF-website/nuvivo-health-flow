@@ -270,29 +270,21 @@ const Header = () => {
             </Button>
             
             {!loading && (
-              user ? (
-                <UserMenu />
-              ) : (
-                <>
-                  <Button 
-                    variant="default" 
-                    size="sm" 
-                    className="hidden sm:flex items-center space-x-2"
-                    onClick={() => navigate("/sign-in")}
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Patient Portal</span>
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="flex sm:hidden"
-                    onClick={() => navigate("/sign-in")}
-                  >
-                    <User className="h-4 w-4" />
-                  </Button>
-                </>
-              )
+              <>
+                {/* Always show Patient Portal for testing */}
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="hidden sm:flex items-center space-x-2"
+                  onClick={() => navigate("/sign-in")}
+                >
+                  <User className="h-4 w-4" />
+                  <span>Patient Portal</span>
+                </Button>
+                
+                {/* Show user menu if logged in */}
+                {user && <UserMenu />}
+              </>
             )}
           </div>
         </div>

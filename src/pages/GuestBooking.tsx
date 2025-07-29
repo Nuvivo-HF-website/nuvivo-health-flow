@@ -14,6 +14,12 @@ export interface Specialist {
   image?: string;
   qualifications?: string;
   bio?: string;
+  rating?: number;
+  reviewCount?: number;
+  nextAvailable?: string;
+  duration?: string;
+  locations?: string[];
+  languages?: string[];
 }
 
 export interface TimeSlot {
@@ -47,9 +53,17 @@ export default function GuestBooking() {
   const [selectedSpecialist, setSelectedSpecialist] = useState<Specialist | null>(null);
   const [selectedDateTime, setSelectedDateTime] = useState<{ date: string; time: string } | null>(null);
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
+  const [viewCalendarFirst, setViewCalendarFirst] = useState(false);
 
   const handleSpecialistSelect = (specialist: Specialist) => {
     setSelectedSpecialist(specialist);
+    setViewCalendarFirst(false);
+    setCurrentStep(2);
+  };
+
+  const handleViewCalendarFirst = (specialist: Specialist) => {
+    setSelectedSpecialist(specialist);
+    setViewCalendarFirst(true);
     setCurrentStep(2);
   };
 
@@ -74,7 +88,12 @@ export default function GuestBooking() {
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 1:
-        return <SpecialistSelection onSpecialistSelect={handleSpecialistSelect} />;
+        return (
+          <SpecialistSelection 
+            onSpecialistSelect={handleSpecialistSelect}
+            onViewCalendarFirst={handleViewCalendarFirst}
+          />
+        );
       case 2:
         return (
           <AvailabilityCalendar

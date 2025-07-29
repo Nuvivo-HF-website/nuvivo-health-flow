@@ -4,20 +4,37 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronLeft, Clock } from "lucide-react";
+import { ChevronLeft, Clock, Info, CheckCircle2, AlertCircle } from "lucide-react";
 import { Specialist } from "@/pages/GuestBooking";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Mock time slots
+// Enhanced time slot generation with more realistic availability
 const generateTimeSlots = (date: Date) => {
   const slots = [];
   const startHour = 9;
   const endHour = 17;
+  const dayOfWeek = date.getDay();
   
   for (let hour = startHour; hour < endHour; hour++) {
     for (let minute = 0; minute < 60; minute += 30) {
       const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-      // Randomly make some slots unavailable for demo
-      const available = Math.random() > 0.3;
+      
+      // More realistic availability logic
+      let available = true;
+      
+      // Lunch break 12:30-13:30
+      if (hour === 12 && minute === 30) available = false;
+      if (hour === 13 && minute === 0) available = false;
+      
+      // Less availability in the afternoon
+      if (hour >= 15 && Math.random() > 0.6) available = false;
+      
+      // Weekend unavailable
+      if (dayOfWeek === 0 || dayOfWeek === 6) available = false;
+      
+      // Random unavailability for realism
+      if (Math.random() > 0.7) available = false;
+      
       slots.push({ time, available });
     }
   }
@@ -38,6 +55,27 @@ export function AvailabilityCalendar({
 }: AvailabilityCalendarProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [availableSlots, setAvailableSlots] = useState<{ time: string; available: boolean }[]>([]);
+  const [nextAvailableSlot, setNextAvailableSlot] = useState<string>("");
+
+  // Find next available slot across multiple days
+  const findNextAvailableSlot = () => {
+    const today = new Date();
+    for (let i = 0; i < 14; i++) { // Check next 14 days
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() + i);
+      
+      if (checkDate.getDay() === 0 || checkDate.getDay() === 6) continue; // Skip weekends
+      
+      const slots = generateTimeSlots(checkDate);
+      const firstAvailable = slots.find(slot => slot.available);
+      
+      if (firstAvailable) {
+        const dayName = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : checkDate.toLocaleDateString('en-UK', { weekday: 'long', month: 'short', day: 'numeric' });
+        setNextAvailableSlot(`${dayName} at ${firstAvailable.time}`);
+        break;
+      }
+    }
+  };
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
@@ -54,13 +92,30 @@ export function AvailabilityCalendar({
     }
   };
 
-  // Disable past dates and weekends for demo
+  // Disable past dates and weekends
   const isDateDisabled = (date: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const dayOfWeek = date.getDay();
     return date < today || dayOfWeek === 0 || dayOfWeek === 6;
   };
+
+  // Auto-select today if available, otherwise tomorrow
+  React.useEffect(() => {
+    findNextAvailableSlot();
+    const today = new Date();
+    if (!isDateDisabled(today)) {
+      setSelectedDate(today);
+      setAvailableSlots(generateTimeSlots(today));
+    } else {
+      const tomorrow = new Date();
+      tomorrow.setDate(today.getDate() + 1);
+      if (!isDateDisabled(tomorrow)) {
+        setSelectedDate(tomorrow);
+        setAvailableSlots(generateTimeSlots(tomorrow));
+      }
+    }
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -72,6 +127,16 @@ export function AvailabilityCalendar({
         <ChevronLeft className="w-4 h-4 mr-2" />
         Back to Specialists
       </Button>
+
+      {/* Next Available Quick Book */}
+      {nextAvailableSlot && (
+        <Alert className="mb-6 border-green-500 bg-green-50">
+          <CheckCircle2 className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-800">
+            <strong>Quick Book:</strong> Next available appointment is {nextAvailableSlot}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Selected Specialist Summary */}
       <Card className="mb-6">
@@ -88,6 +153,15 @@ export function AvailabilityCalendar({
               {specialist.specialty}
             </Badge>
             <p className="text-sm text-muted-foreground">{specialist.qualifications}</p>
+            <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
+              <span className="flex items-center space-x-1">
+                <Clock className="w-4 h-4" />
+                <span>{specialist.duration || '30 min'}</span>
+              </span>
+              {specialist.locations && (
+                <span>Available: {specialist.locations.join(', ')}</span>
+              )}
+            </div>
           </div>
           <div className="text-right">
             <p className="text-2xl font-bold text-primary">£{specialist.price}</p>
@@ -113,9 +187,17 @@ export function AvailabilityCalendar({
               disabled={isDateDisabled}
               className="rounded-md border"
             />
-            <p className="text-sm text-muted-foreground mt-2">
-              Available Monday - Friday
-            </p>
+            <div className="mt-2 space-y-1">
+              <p className="text-sm text-muted-foreground">
+                📅 Available Monday - Friday
+              </p>
+              <p className="text-sm text-muted-foreground">
+                🕘 Sessions: 9:00 AM - 5:00 PM
+              </p>
+              <p className="text-sm text-muted-foreground">
+                ⏱️ Duration: {specialist.duration || '30 minutes'}
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -136,33 +218,60 @@ export function AvailabilityCalendar({
           </CardHeader>
           <CardContent>
             {!selectedDate ? (
-              <p className="text-muted-foreground text-center py-8">
-                Please select a date to view available times
-              </p>
-            ) : (
-              <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
-                {availableSlots.map((slot, index) => (
-                  <Button
-                    key={index}
-                    variant={slot.available ? "outline" : "ghost"}
-                    disabled={!slot.available}
-                    onClick={() => handleTimeSelect(slot.time)}
-                    className={`justify-center ${
-                      slot.available 
-                        ? "hover:bg-primary hover:text-primary-foreground" 
-                        : "opacity-50 cursor-not-allowed"
-                    }`}
-                  >
-                    {slot.time}
-                  </Button>
-                ))}
+              <div className="text-center py-8">
+                <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">
+                  Please select a date to view available times
+                </p>
               </div>
+            ) : (
+              <>
+                <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+                  <p className="text-sm font-medium text-blue-800 mb-1">
+                    💡 Booking Tips:
+                  </p>
+                  <ul className="text-xs text-blue-700 space-y-1">
+                    <li>• Morning slots fill up quickly</li>
+                    <li>• Lunch break: 12:30 PM - 1:30 PM</li>
+                    <li>• Online consultations available all day</li>
+                  </ul>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">{availableSlots.map((slot, index) => {
+                    const isLunchBreak = slot.time === '12:30' || slot.time === '13:00';
+                    return (
+                      <Button
+                        key={index}
+                        variant={slot.available ? "outline" : "ghost"}
+                        disabled={!slot.available}
+                        onClick={() => handleTimeSelect(slot.time)}
+                        className={`justify-center text-sm ${
+                          slot.available 
+                            ? "hover:bg-primary hover:text-primary-foreground border-primary/20" 
+                            : "opacity-50 cursor-not-allowed"
+                        }`}
+                      >
+                        {slot.time}
+                        {isLunchBreak && !slot.available && (
+                          <span className="ml-1 text-xs">🍽️</span>
+                        )}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </>
             )}
             
-            {selectedDate && availableSlots.length === 0 && (
-              <p className="text-muted-foreground text-center py-8">
-                No available slots for this date
-              </p>
+            {selectedDate && availableSlots.filter(s => s.available).length === 0 && (
+              <div className="text-center py-8">
+                <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                <p className="text-muted-foreground mb-2">
+                  No available slots for this date
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Try selecting a different day or book for {nextAvailableSlot}
+                </p>
+              </div>
             )}
           </CardContent>
         </Card>

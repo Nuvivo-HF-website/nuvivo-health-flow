@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import PatientProfile from "./pages/PatientProfile";
+import ComprehensivePatientPortal from "./pages/ComprehensivePatientPortal";
 import PatientDashboard from "./pages/PatientDashboard";
 import MyBookings from "./pages/MyBookings";
 import MyTestResults from "./pages/MyTestResults";
@@ -97,6 +98,7 @@ const App = () => (
           <Route path="/ai-report-generator" element={<AIReportGenerator />} />
           <Route path="/profile" element={<PatientProfile />} />
           <Route path="/patient-dashboard" element={<PatientDashboard />} />
+          <Route path="/portal" element={<ComprehensivePatientPortal />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/my-test-results" element={<MyTestResults />} />
           <Route path="/my-medications" element={<MyMedications />} />

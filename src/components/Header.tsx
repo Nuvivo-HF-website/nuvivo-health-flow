@@ -260,6 +260,16 @@ const Header = () => {
 
           {/* Right side items */}
           <div className="flex items-center space-x-3">
+            {user && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="hidden sm:flex"
+                onClick={() => navigate("/portal")}
+              >
+                My Portal
+              </Button>
+            )}
             <Button 
               variant="outline" 
               size="sm" 

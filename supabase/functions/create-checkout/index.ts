@@ -35,7 +35,7 @@ serve(async (req) => {
 
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const stripe = new Stripe("sk_test_51RpknzIIh7NKCtHbjzQ0xM22RAXlaEUItyPIuAREpOMR0D2Vm6sN3wCUeqZM0EmkT5RSC9VqsWqi1S0zUnJYjhH1005iEMsww9", {
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
 

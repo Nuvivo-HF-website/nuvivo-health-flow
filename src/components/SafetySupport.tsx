@@ -307,7 +307,7 @@ export default function SafetySupport() {
               
               <Button 
                 variant="outline"
-                onClick={() => window.open('tel:116123', '_self')}
+                onClick={() => window.location.href = 'tel:116123'}
                 size="lg"
               >
                 <MessageCircle className="h-5 w-5 mr-2" />
@@ -383,7 +383,7 @@ export default function SafetySupport() {
             
             <Button 
               variant="outline"
-              onClick={() => window.open('tel:116123', '_self')}
+              onClick={() => window.location.href = 'tel:116123'}
               className="border-blue-200 text-blue-700 hover:bg-blue-50"
             >
               <MessageCircle className="h-4 w-4 mr-2" />

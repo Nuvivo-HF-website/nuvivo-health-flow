@@ -1007,6 +1007,48 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          base_price: number | null
+          category: string
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          preparation_instructions: string | null
+          preparation_required: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number | null
+          category: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          preparation_instructions?: string | null
+          preparation_required?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          preparation_instructions?: string | null
+          preparation_required?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       specialist_availability: {
         Row: {
           created_at: string
@@ -1041,6 +1083,57 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "specialist_availability_specialist_id_fkey"
+            columns: ["specialist_id"]
+            isOneToOne: false
+            referencedRelation: "specialists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      specialist_services: {
+        Row: {
+          created_at: string
+          custom_duration: number | null
+          custom_price: number | null
+          id: string
+          is_available: boolean | null
+          notes: string | null
+          service_id: string
+          specialist_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_duration?: number | null
+          custom_price?: number | null
+          id?: string
+          is_available?: boolean | null
+          notes?: string | null
+          service_id: string
+          specialist_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_duration?: number | null
+          custom_price?: number | null
+          id?: string
+          is_available?: boolean | null
+          notes?: string | null
+          service_id?: string
+          specialist_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specialist_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specialist_services_specialist_id_fkey"
             columns: ["specialist_id"]
             isOneToOne: false
             referencedRelation: "specialists"

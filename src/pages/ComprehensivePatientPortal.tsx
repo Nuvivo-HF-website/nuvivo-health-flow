@@ -94,6 +94,11 @@ export default function ComprehensivePatientPortal() {
     }
   }, [user, loading, navigate]);
 
+  // Don't render anything if redirecting
+  if (!user && !loading) {
+    return null;
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

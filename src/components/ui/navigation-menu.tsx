@@ -1,6 +1,7 @@
 
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
+import { Slot } from "@radix-ui/react-slot"
 import { cva } from "class-variance-authority"
 import { ChevronDown } from "lucide-react"
 
@@ -92,17 +93,22 @@ const NavigationMenuDropdown = DropdownMenuPrimitive.Root
 
 const NavigationMenuLink = React.forwardRef<
   HTMLAnchorElement,
-  React.AnchorHTMLAttributes<HTMLAnchorElement>
->(({ className, ...props }, ref) => (
-  <a
-    ref={ref}
-    className={cn(
-      "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-      className
-    )}
-    {...props}
-  />
-))
+  React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    asChild?: boolean
+  }
+>(({ className, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "a"
+  return (
+    <Comp
+      ref={ref}
+      className={cn(
+        "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+        className
+      )}
+      {...props}
+    />
+  )
+})
 NavigationMenuLink.displayName = "NavigationMenuLink"
 
 // These components are no longer needed but kept for compatibility

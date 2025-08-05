@@ -42,9 +42,19 @@ NavigationMenuList.displayName = "NavigationMenuList"
 
 const NavigationMenuItem = React.forwardRef<
   HTMLLIElement,
-  React.HTMLAttributes<HTMLLIElement>
->(({ className, ...props }, ref) => (
-  <li ref={ref} className={cn("", className)} {...props} />
+  React.HTMLAttributes<HTMLLIElement> & {
+    hasDropdown?: boolean
+  }
+>(({ className, hasDropdown = false, children, ...props }, ref) => (
+  <li ref={ref} className={cn("", className)} {...props}>
+    {hasDropdown ? (
+      <DropdownMenuPrimitive.Root>
+        {children}
+      </DropdownMenuPrimitive.Root>
+    ) : (
+      children
+    )}
+  </li>
 ))
 NavigationMenuItem.displayName = "NavigationMenuItem"
 

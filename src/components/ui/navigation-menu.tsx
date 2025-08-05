@@ -45,17 +45,39 @@ const NavigationMenuItem = React.forwardRef<
   React.HTMLAttributes<HTMLLIElement> & {
     hasDropdown?: boolean
   }
->(({ className, hasDropdown = false, children, ...props }, ref) => (
-  <li ref={ref} className={cn("", className)} {...props}>
-    {hasDropdown ? (
-      <DropdownMenuPrimitive.Root>
-        {children}
-      </DropdownMenuPrimitive.Root>
-    ) : (
-      children
-    )}
-  </li>
-))
+>(({ className, hasDropdown = false, children, ...props }, ref) => {
+  const [isOpen, setIsOpen] = React.useState(false)
+
+  const handleMouseEnter = () => {
+    if (hasDropdown) {
+      setIsOpen(true)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (hasDropdown) {
+      setIsOpen(false)
+    }
+  }
+
+  return (
+    <li 
+      ref={ref} 
+      className={cn("", className)} 
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...props}
+    >
+      {hasDropdown ? (
+        <DropdownMenuPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
+          {children}
+        </DropdownMenuPrimitive.Root>
+      ) : (
+        children
+      )}
+    </li>
+  )
+})
 NavigationMenuItem.displayName = "NavigationMenuItem"
 
 const navigationMenuTriggerStyle = cva(

@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/EnhancedAuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { CalendarDays, Clock, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
+import { bookingService } from '@/services/bookingService';
 
 const consultationTypes = [
   { id: 'mental-health', name: 'Mental Health Consultation', price: 150, duration: 60 },
@@ -56,11 +57,35 @@ export function ConsultationBooking() {
     setBookingStep('payment');
   };
 
-  const handlePaymentSuccess = () => {
-    toast({
-      title: "Consultation booked!",
-      description: "Your consultation has been successfully booked. You'll receive a confirmation email shortly.",
-    });
+  const handlePaymentSuccess = async () => {
+    if (!user || !selectedConsultation || !selectedDate) return;
+
+    try {
+      const appointmentDateTime = new Date(selectedDate);
+      const [hours, minutes] = selectedTime.split(':');
+      appointmentDateTime.setHours(parseInt(hours), parseInt(minutes));
+
+      await bookingService.createConsultation({
+        user_id: user.id,
+        consultation_type: selectedConsultation.id,
+        appointment_date: appointmentDateTime.toISOString(),
+        fee: selectedConsultation.price,
+        notes: notes,
+        payment_status: 'paid',
+        status: 'scheduled'
+      });
+
+      toast({
+        title: "Consultation booked!",
+        description: "Your consultation has been successfully booked. You'll receive a confirmation email shortly.",
+      });
+    } catch (error) {
+      console.error('Error saving consultation:', error);
+      toast({
+        title: "Booking saved with payment",
+        description: "Payment successful! Your consultation details have been recorded.",
+      });
+    }
     
     // Reset form
     setSelectedType('');

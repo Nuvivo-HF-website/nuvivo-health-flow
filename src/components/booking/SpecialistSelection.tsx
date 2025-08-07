@@ -107,11 +107,11 @@ export function SpecialistSelection({ selectedService, onSpecialistSelect, onBac
 
   const fetchSpecialists = async () => {
     try {
+      // Fetch specialists without the problematic foreign key reference
       let query = supabase
         .from('specialists')
         .select(`
           *,
-          profile:profiles!specialists_user_id_fkey(full_name, avatar_url),
           specialist_services(
             *,
             service:services(*)
@@ -119,17 +119,29 @@ export function SpecialistSelection({ selectedService, onSpecialistSelect, onBac
         `)
         .eq('is_active', true);
 
-      const { data, error } = await query;
+      const { data: specialistsData, error } = await query;
 
       if (error) throw error;
 
+      // Get user profiles separately to avoid the foreign key issue
+      const userIds = specialistsData?.map(s => s.user_id) || [];
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, avatar_url')
+        .in('user_id', userIds);
+
       // Transform the data to match our interface
-      const transformedData: Specialist[] = (data || []).map((specialist: any) => ({
-        ...specialist,
-        available_hours: typeof specialist.available_hours === 'object' 
-          ? specialist.available_hours 
-          : { start: '09:00', end: '17:00' } // default fallback
-      }));
+      const transformedData: Specialist[] = (specialistsData || []).map((specialist: any) => {
+        const profile = profilesData?.find(p => p.user_id === specialist.user_id);
+        return {
+          ...specialist,
+          available_hours: typeof specialist.available_hours === 'object' 
+            ? specialist.available_hours 
+            : { start: '09:00', end: '17:00' },
+          profile: profile || { full_name: 'Unknown', avatar_url: undefined },
+          specialist_services: specialist.specialist_services || []
+        };
+      });
 
       // If a specific service is selected, filter specialists who offer that service
       let filteredData = transformedData;

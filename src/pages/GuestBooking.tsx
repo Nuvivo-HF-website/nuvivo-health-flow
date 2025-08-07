@@ -5,6 +5,7 @@ import { SpecialistSelection } from "@/components/booking/SpecialistSelection";
 import { AvailabilityCalendar } from "@/components/booking/AvailabilityCalendar";
 import { GuestBookingForm } from "@/components/booking/GuestBookingForm";
 import { BookingConfirmation } from "@/components/booking/BookingConfirmation";
+import { useToast } from "@/components/ui/use-toast";
 
 export interface Specialist {
   id: string;
@@ -72,7 +73,9 @@ export default function GuestBooking() {
     setCurrentStep(3);
   };
 
-  const handleBookingSubmit = (guestDetails: BookingData['guestDetails']) => {
+  const { toast } = useToast();
+
+  const handleBookingSubmit = async (guestDetails: BookingData['guestDetails']) => {
     if (selectedSpecialist && selectedDateTime) {
       const completeBookingData: BookingData = {
         specialist: selectedSpecialist,
@@ -80,6 +83,15 @@ export default function GuestBooking() {
         time: selectedDateTime.time,
         guestDetails,
       };
+      
+      // For demo purposes, log the booking data (would normally save to database)
+      console.log('Guest booking submitted:', completeBookingData);
+      
+      toast({
+        title: "Booking Received",
+        description: "Your booking request has been submitted successfully!",
+      });
+
       setBookingData(completeBookingData);
       setCurrentStep(4);
     }

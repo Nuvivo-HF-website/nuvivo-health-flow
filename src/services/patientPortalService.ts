@@ -285,22 +285,75 @@ export const patientPortalService = {
     return { data, error }
   },
 
-  // Dashboard Summary
+  // Optimized Dashboard Summary with selective fields
   async getDashboardSummary(userId: string) {
     const [testResults, consultations, appointments, medications] = await Promise.all([
-      this.getTestResults(userId),
-      this.getUpcomingConsultations(userId),
-      this.getUpcomingAppointments(userId),
-      this.getActiveMedications(userId)
+      supabase
+        .from('test_results')
+        .select('id, test_name, test_date, result_status, ai_summary')
+        .eq('user_id', userId)
+        .order('test_date', { ascending: false })
+        .limit(3),
+      supabase
+        .from('consultations')
+        .select('id, consultation_type, appointment_date, status, doctor_id')
+        .eq('user_id', userId)
+        .gte('appointment_date', new Date().toISOString())
+        .in('status', ['scheduled', 'in_progress'])
+        .order('appointment_date', { ascending: true })
+        .limit(3),
+      supabase
+        .from('appointments')
+        .select('id, appointment_type, appointment_date, status, location')
+        .eq('user_id', userId)
+        .gte('appointment_date', new Date().toISOString())
+        .in('status', ['scheduled', 'confirmed'])
+        .order('appointment_date', { ascending: true })
+        .limit(3),
+      supabase
+        .from('medications')
+        .select('id, medication_name, dosage, frequency, prescribed_by')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .order('medication_name')
+        .limit(5)
     ])
 
     return {
-      recentTestResults: testResults.data?.slice(0, 3) || [],
+      recentTestResults: testResults.data || [],
       upcomingConsultations: consultations.data || [],
       upcomingAppointments: appointments.data || [],
       activeMedications: medications.data || [],
-      totalTestResults: testResults.data?.length || 0,
-      totalConsultations: consultations.data?.length || 0
+      summary: {
+        totalTestResults: testResults.data?.length || 0,
+        totalConsultations: consultations.data?.length || 0,
+        totalAppointments: appointments.data?.length || 0,
+        totalMedications: medications.data?.length || 0
+      }
     }
+  },
+
+  // Cached static data
+  async getServices() {
+    const { data, error } = await supabase
+      .from('services')
+      .select('id, name, description, category, base_price, duration_minutes')
+      .eq('is_active', true)
+      .order('category, name')
+    
+    return { data, error }
+  },
+
+  async getSpecialists() {
+    const { data, error } = await supabase
+      .from('specialists')
+      .select(`
+        id, specialty, consultation_fee, bio, experience_years,
+        profiles:user_id (full_name)
+      `)
+      .eq('is_active', true)
+      .order('specialty')
+    
+    return { data, error }
   }
 }

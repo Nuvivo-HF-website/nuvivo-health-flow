@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 
 export interface PatientProfile {
   id: string
@@ -172,6 +172,44 @@ export const patientService = {
       .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`)
     
     return { data, error }
+  },
+
+  // Optimized dashboard data with caching
+  async getPatientDashboard(patientId: string) {
+    const [profileResult, resultsResult, appointmentsResult, medicationsResult] = await Promise.all([
+      this.getPatientProfile(patientId),
+      supabase
+        .from('test_results')
+        .select('*')
+        .eq('user_id', patientId)
+        .order('test_date', { ascending: false })
+        .limit(5),
+      supabase
+        .from('appointments')
+        .select('id, appointment_date, appointment_type, status')
+        .eq('user_id', patientId)
+        .gte('appointment_date', new Date().toISOString())
+        .order('appointment_date', { ascending: true })
+        .limit(3),
+      supabase
+        .from('medications')
+        .select('id, medication_name, dosage, frequency, status')
+        .eq('user_id', patientId)
+        .eq('status', 'active')
+        .limit(5)
+    ])
+
+    return {
+      profile: profileResult.data,
+      recentTests: resultsResult.data || [],
+      upcomingAppointments: appointmentsResult.data || [],
+      activeMedications: medicationsResult.data || [],
+      summary: {
+        totalTests: resultsResult.data?.length || 0,
+        upcomingAppointments: appointmentsResult.data?.length || 0,
+        activeMedications: medicationsResult.data?.length || 0
+      }
+    }
   },
 
   async getPatientStats(patientId: string) {

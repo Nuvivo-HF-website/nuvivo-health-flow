@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { queryCache } from '@/lib/queryCache';
 
 export type UserRole = 'patient' | 'doctor' | 'admin' | 'clinic_staff';
 
@@ -75,6 +76,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserRoles = async (userId: string) => {
     try {
+      // Check cache first
+      const cachedRoles = queryCache.get<UserRole[]>(`roles_${userId}`);
+      if (cachedRoles) {
+        setUserRoles(cachedRoles);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
@@ -82,7 +90,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) throw error;
       
-      setUserRoles(data?.map(r => r.role) || ['patient']);
+      const roles = data?.map(r => r.role) || ['patient'];
+      setUserRoles(roles);
+      
+      // Cache for 10 minutes
+      queryCache.set(`roles_${userId}`, roles, 10 * 60 * 1000);
     } catch (error) {
       console.error('Error fetching user roles:', error);
       setUserRoles(['patient']); // Default to patient role
@@ -91,14 +103,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      // Check cache first
+      const cachedProfile = queryCache.get(`profile_${userId}`);
+      if (cachedProfile) {
+        setUserProfile(cachedProfile);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error) throw error;
       setUserProfile(data);
+      
+      // Cache for 5 minutes
+      if (data) {
+        queryCache.set(`profile_${userId}`, data);
+      }
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
@@ -177,6 +201,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(null);
       setUserRoles([]);
       setUserProfile(null);
+      
+      // Clear cache on logout
+      queryCache.clear();
 
       toast({
         title: "Signed out",
@@ -203,7 +230,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) throw error;
 
-      setUserProfile((prev: any) => ({ ...prev, ...updates }));
+      const updatedProfile = { ...userProfile, ...updates };
+      setUserProfile(updatedProfile);
+      
+      // Update cache
+      if (user) {
+        queryCache.set(`profile_${user.id}`, updatedProfile);
+      }
 
       toast({
         title: "Profile updated",

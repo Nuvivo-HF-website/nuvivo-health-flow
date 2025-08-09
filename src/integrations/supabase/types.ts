@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_logs: {
+        Row: {
+          created_at: string
+          id: string
+          model: string
+          response_snippet: string | null
+          result_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          model: string
+          response_snippet?: string | null
+          result_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          model?: string
+          response_snippet?: string | null
+          result_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_ai_logs_result_id"
+            columns: ["result_id"]
+            isOneToOne: false
+            referencedRelation: "results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointment_history: {
         Row: {
           action: string
@@ -976,6 +1008,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ai_consent: boolean | null
           avatar_url: string | null
           created_at: string
           email: string | null
@@ -986,6 +1019,7 @@ export type Database = {
           user_type: string | null
         }
         Insert: {
+          ai_consent?: boolean | null
           avatar_url?: string | null
           created_at?: string
           email?: string | null
@@ -996,6 +1030,7 @@ export type Database = {
           user_type?: string | null
         }
         Update: {
+          ai_consent?: boolean | null
           avatar_url?: string | null
           created_at?: string
           email?: string | null
@@ -1004,6 +1039,39 @@ export type Database = {
           updated_at?: string
           user_id?: string
           user_type?: string | null
+        }
+        Relationships: []
+      }
+      results: {
+        Row: {
+          ai_generated_at: string | null
+          ai_summary: string | null
+          created_at: string
+          id: string
+          parsed_data: Json
+          updated_at: string
+          uploaded_by: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_generated_at?: string | null
+          ai_summary?: string | null
+          created_at?: string
+          id?: string
+          parsed_data?: Json
+          updated_at?: string
+          uploaded_by?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_generated_at?: string | null
+          ai_summary?: string | null
+          created_at?: string
+          id?: string
+          parsed_data?: Json
+          updated_at?: string
+          uploaded_by?: string | null
+          user_id?: string
         }
         Relationships: []
       }

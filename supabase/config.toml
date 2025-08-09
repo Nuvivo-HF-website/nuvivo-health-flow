@@ -3,5 +3,8 @@ project_id = "duuplufbkzynrhmtshlm"
 [functions.generate-ai-report]
 verify_jwt = true
 
+[functions.generate-summary]
+verify_jwt = true
+
 [functions.create-admin-user]
 verify_jwt = false

@@ -9,10 +9,11 @@ import { Badge } from "@/components/ui/badge"
 import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { patientService, PatientProfile } from '@/services/patientService'
 import { toast } from '@/hooks/use-toast'
-import { Loader2, Plus, X, User, Phone, MapPin, AlertTriangle, Pill, Heart } from 'lucide-react'
+import { Loader2, Plus, X, User, Phone, MapPin, AlertTriangle, Pill, Heart, Shield } from 'lucide-react'
+import { Checkbox } from "@/components/ui/checkbox"
 
 export function PatientProfileForm() {
-  const { user } = useAuth()
+  const { user, userProfile, updateProfile } = useAuth()
   const [loading, setLoading] = useState(false)
   const [profile, setProfile] = useState<PatientProfile | null>(null)
   const [formData, setFormData] = useState({
@@ -494,6 +495,59 @@ export function PatientProfileForm() {
                     />
                   </Badge>
                 ))}
+              </div>
+            </div>
+
+            {/* AI Consent Section */}
+            <div className="space-y-4 p-4 border border-border rounded-lg bg-muted/30">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                AI-Powered Health Insights
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="ai_consent"
+                    checked={userProfile?.ai_consent || false}
+                    onCheckedChange={async (checked) => {
+                      try {
+                        await updateProfile({ ai_consent: checked })
+                        toast({
+                          title: checked ? "AI insights enabled" : "AI insights disabled",
+                          description: checked 
+                            ? "You can now generate AI summaries of your test results"
+                            : "AI summaries have been disabled for your account",
+                        })
+                      } catch (error) {
+                        toast({
+                          title: "Error",
+                          description: "Failed to update AI consent",
+                          variant: "destructive",
+                        })
+                      }
+                    }}
+                  />
+                  <div className="grid gap-1.5 leading-none">
+                    <Label
+                      htmlFor="ai_consent"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Enable AI-powered blood test insights
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Allow our AI to generate patient-friendly summaries of your blood test results.
+                      Data is anonymised and processed in compliance with GDPR. No personal identifiers
+                      are sent to the AI system.
+                    </p>
+                  </div>
+                </div>
+                {userProfile?.ai_consent && (
+                  <div className="text-xs text-muted-foreground p-3 bg-background rounded border-l-4 border-l-primary">
+                    <strong>Privacy Notice:</strong> When generating AI summaries, only clinical test values 
+                    (test names, values, units, and reference ranges) are processed. Your name, date of birth, 
+                    and other identifying information are never shared with AI systems.
+                  </div>
+                )}
               </div>
             </div>
 

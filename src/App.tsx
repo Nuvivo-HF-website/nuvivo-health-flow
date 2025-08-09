@@ -12,6 +12,7 @@ import MyFiles from "./pages/MyFiles";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Results from "./pages/Results";
+import PatientResults from "./pages/PatientResults";
 import Marketplace from "./pages/Marketplace";
 import BloodTests from "./pages/BloodTests";
 import Booking from "./pages/Booking";
@@ -100,6 +101,7 @@ const App = () => (
           <Route path="/portal" element={<ComprehensivePatientPortal />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/my-test-results" element={<MyTestResults />} />
+          <Route path="/patient-results" element={<PatientResults />} />
           <Route path="/my-medications" element={<MyMedications />} />
           <Route path="/my-files" element={<MyFiles />} />
           

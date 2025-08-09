@@ -13,6 +13,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Results from "./pages/Results";
 import PatientResults from "./pages/PatientResults";
+import ResultView from "./pages/ResultView";
 import Marketplace from "./pages/Marketplace";
 import BloodTests from "./pages/BloodTests";
 import Booking from "./pages/Booking";
@@ -102,6 +103,7 @@ const App = () => (
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/my-test-results" element={<MyTestResults />} />
           <Route path="/patient-results" element={<PatientResults />} />
+          <Route path="/result/:resultId" element={<ResultView />} />
           <Route path="/my-medications" element={<MyMedications />} />
           <Route path="/my-files" element={<MyFiles />} />
           

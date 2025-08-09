@@ -2,6 +2,7 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { PatientProfileForm } from '@/components/PatientProfileForm'
+import { AIConsent } from '@/components/AIConsent'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -44,7 +45,11 @@ export default function PatientProfile() {
           <h1 className="text-3xl font-bold">My Profile</h1>
           <p className="text-muted-foreground">Manage your personal information and medical history</p>
         </div>
-        <PatientProfileForm />
+        
+        <div className="space-y-6">
+          <PatientProfileForm />
+          <AIConsent />
+        </div>
       </div>
       <Footer />
     </div>

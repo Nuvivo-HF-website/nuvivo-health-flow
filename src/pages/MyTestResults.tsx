@@ -20,7 +20,8 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Brain
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
@@ -304,8 +305,16 @@ export default function MyTestResults() {
                       )}
 
                       {result.ai_summary && (
-                        <div className="bg-muted/50 p-3 rounded-lg mb-4">
-                          <p className="text-sm">{result.ai_summary}</p>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Brain className="h-4 w-4 text-blue-500" />
+                            <span className="text-sm font-medium text-blue-700">AI Summary</span>
+                          </div>
+                          <p className="text-sm leading-relaxed mb-2">{result.ai_summary}</p>
+                          <div className="flex items-start gap-1 text-xs text-blue-600">
+                            <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                            <p>This is not a diagnosis; consult your GP.</p>
+                          </div>
                         </div>
                       )}
 
@@ -321,7 +330,7 @@ export default function MyTestResults() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => navigate(`/test-results/${result.id}`)}
+                        onClick={() => navigate(`/result/${result.id}`)}
                       >
                         <Eye className="h-4 w-4 mr-2" />
                         View Details

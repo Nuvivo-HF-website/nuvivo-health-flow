@@ -250,13 +250,13 @@ serve(async (req) => {
       });
     }
 
-    // Log to ai_logs
+    // Log to ai_logs - PRIVACY: Only store response snippet, never prompts or PII
     const { error: logError } = await supabaseService
       .from('ai_logs')
       .insert({
         result_id: resultId,
         model: 'azure-openai',
-        response_snippet: aiSummary.slice(0, 200),
+        response_snippet: aiSummary.slice(0, 200), // Max 200 chars, no prompts/PII
       });
 
     if (logError) {

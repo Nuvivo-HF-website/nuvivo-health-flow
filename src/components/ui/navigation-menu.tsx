@@ -61,7 +61,9 @@ const NavigationMenuItem = React.forwardRef<
 
   const handleClick = () => {
     // Force close on click to ensure highlight disappears
-    setIsOpen(false)
+    if (hasDropdown) {
+      setIsOpen(false)
+    }
   }
 
   const handleBlur = () => {

@@ -5,15 +5,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, FileText, Brain, Download, CheckCircle, Eye, AlertTriangle, Stethoscope } from "lucide-react";
+import { Upload, FileText, Brain, Download, CheckCircle, Eye, AlertTriangle, Stethoscope, X, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/EnhancedAuthContext";
+import { FileUploadService, UploadedFile } from "@/services/fileUploadService";
 
 const UploadResults = () => {
   const navigate = useNavigate();
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const { user } = useAuth();
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const [patientInfo, setPatientInfo] = useState({
     name: "",
     dateOfBirth: "",
@@ -25,17 +29,93 @@ const UploadResults = () => {
   const [generatedReportId, setGeneratedReportId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to upload files",
+        variant: "destructive"
+      });
+      navigate("/sign-in");
+      return;
+    }
+
     const files = Array.from(event.target.files || []);
-    setUploadedFiles(prev => [...prev, ...files]);
-    toast({
-      title: "Files uploaded",
-      description: `${files.length} file(s) uploaded successfully`,
-    });
+    if (files.length === 0) return;
+
+    setIsUploading(true);
+    const uploadPromises = files.map(file => 
+      FileUploadService.uploadMedicalDocument(file, user.id)
+    );
+
+    try {
+      const results = await Promise.all(uploadPromises);
+      const successfulUploads: UploadedFile[] = [];
+      let errorCount = 0;
+
+      results.forEach((result, index) => {
+        if (result.error) {
+          errorCount++;
+          console.error(`Failed to upload ${files[index].name}:`, result.error);
+        } else if (result.data) {
+          successfulUploads.push(result.data);
+        }
+      });
+
+      if (successfulUploads.length > 0) {
+        setUploadedFiles(prev => [...prev, ...successfulUploads]);
+        toast({
+          title: "Files uploaded successfully",
+          description: `${successfulUploads.length} file(s) uploaded${errorCount > 0 ? `, ${errorCount} failed` : ''}`,
+        });
+      }
+
+      if (errorCount > 0 && successfulUploads.length === 0) {
+        toast({
+          title: "Upload failed",
+          description: "Failed to upload files. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Upload error",
+        description: "An unexpected error occurred while uploading files",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
+      // Reset the input
+      event.target.value = '';
+    }
   };
 
-  const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  const removeFile = async (fileToRemove: UploadedFile) => {
+    try {
+      const { error } = await FileUploadService.deleteFile(fileToRemove.path);
+      if (error) {
+        toast({
+          title: "Delete failed",
+          description: "Failed to delete file from storage",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setUploadedFiles(prev => prev.filter(file => file.id !== fileToRemove.id));
+      toast({
+        title: "File removed",
+        description: "File has been successfully deleted",
+      });
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast({
+        title: "Delete error",
+        description: "An unexpected error occurred while deleting the file",
+        variant: "destructive"
+      });
+    }
   };
 
   const generateReport = async () => {
@@ -287,21 +367,34 @@ const UploadResults = () => {
                   {uploadedFiles.length > 0 && (
                     <div className="space-y-2">
                       <Label>Uploaded Files:</Label>
-                      {uploadedFiles.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-secondary rounded">
-                          <div className="flex items-center gap-2">
-                            <FileText className="w-4 h-4" />
-                            <span className="text-sm">{file.name}</span>
+                      {uploadedFiles.map((file) => (
+                        <div key={file.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <FileText className="w-4 h-4 text-primary" />
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium">{file.name}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {(file.size / 1024 / 1024).toFixed(2)} MB
+                              </span>
+                            </div>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => removeFile(index)}
+                            onClick={() => removeFile(file)}
+                            className="text-destructive hover:text-destructive"
                           >
-                            Remove
+                            <X className="w-4 h-4" />
                           </Button>
                         </div>
                       ))}
+                    </div>
+                  )}
+
+                  {isUploading && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Uploading files...
                     </div>
                   )}
                 </CardContent>
@@ -384,7 +477,7 @@ const UploadResults = () => {
                         </p>
                         <Button
                           onClick={generateReport}
-                          disabled={isGenerating}
+                          disabled={isGenerating || isUploading}
                           className="w-full"
                         >
                           {isGenerating ? (

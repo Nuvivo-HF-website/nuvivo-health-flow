@@ -41,15 +41,35 @@ NavigationMenuList.displayName = "NavigationMenuList"
 
 const NavigationMenuItem = React.forwardRef<
   HTMLLIElement,
-  React.HTMLAttributes<HTMLLIElement>
->(({ className, children, ...props }, ref) => {
+  React.HTMLAttributes<HTMLLIElement> & {
+    hasDropdown?: boolean
+  }
+>(({ className, hasDropdown = false, children, ...props }, ref) => {
+  const [isOpen, setIsOpen] = React.useState(false)
+
+  const handleMouseEnter = () => {
+    if (hasDropdown) {
+      setIsOpen(true)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (hasDropdown) {
+      setIsOpen(false)
+    }
+  }
+
   return (
     <li 
       ref={ref} 
-      className={cn("group relative", className)} 
+      className={cn("relative", className)} 
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       {...props}
     >
-      {children}
+      <div className={isOpen && hasDropdown ? "dropdown-open" : ""}>
+        {children}
+      </div>
     </li>
   )
 })
@@ -65,12 +85,12 @@ const NavigationMenuTrigger = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <button
     ref={ref}
-    className={cn(navigationMenuTriggerStyle(), "group", className)}
+    className={cn(navigationMenuTriggerStyle(), className)}
     {...props}
   >
     {children}{" "}
     <ChevronDown
-      className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-hover:rotate-180"
+      className="relative top-[1px] ml-1 h-3 w-3 transition duration-200"
       aria-hidden="true"
     />
   </button>
@@ -84,7 +104,7 @@ const NavigationMenuContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "absolute left-0 top-full z-50 min-w-[200px] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200",
+      "absolute left-0 top-full z-50 min-w-[200px] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg opacity-0 invisible transition-all duration-200 [.dropdown-open_&]:opacity-100 [.dropdown-open_&]:visible",
       className
     )}
     {...props}

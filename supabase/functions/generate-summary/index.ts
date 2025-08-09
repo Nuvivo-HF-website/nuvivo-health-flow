@@ -1,28 +1,50 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
+// CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
 
-const logStep = (step: string, data?: any) => {
-  console.log(`[generate-summary] ${step}`, data ? JSON.stringify(data, null, 2) : '');
-}
+// Anonymizer function (copied from src/lib/anonymise.ts)
+type AnonTest = { 
+  name: string; 
+  value: number | string; 
+  unit?: string; 
+  reference?: string; 
+};
 
-interface BloodTestValue {
-  name: string;
-  value: string | number;
-  unit?: string;
-  reference?: string;
-  status?: 'normal' | 'high' | 'low' | 'critical';
-}
+const allowedTests = new Set([
+  'Cholesterol', 'HDL', 'LDL', 'TSH', 'Glucose', 'HbA1c', 'WBC', 'RBC', 'Platelets'
+]);
 
-interface AnonymizedData {
-  tests: BloodTestValue[];
-  age_range?: string; // "20-30", "30-40", etc.
-  gender?: string;
+function anonymiseParsed(raw: any): { tests: AnonTest[]; sample_date?: string } {
+  const tests: AnonTest[] = [];
+  
+  if (!raw || !Array.isArray(raw.tests)) {
+    return { tests: [] };
+  }
+  
+  for (const t of raw.tests) {
+    const name = String(t.name || '').trim();
+    if (!allowedTests.has(name)) continue;
+    
+    const value = t.value === undefined ? null : (Number(t.value) ?? t.value);
+    
+    tests.push({ 
+      name, 
+      value, 
+      unit: t.unit || null, 
+      reference: t.reference || null 
+    });
+  }
+  
+  return { 
+    tests, 
+    sample_date: raw.sample_date || null 
+  };
 }
 
 serve(async (req) => {
@@ -32,57 +54,89 @@ serve(async (req) => {
   }
 
   try {
-    logStep('Starting AI summary generation');
-
-    // Initialize Supabase client
+    // Get environment variables
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const azureOpenAIEndpoint = Deno.env.get('AZURE_OPENAI_ENDPOINT')!;
+    const azureOpenAIKey = Deno.env.get('AZURE_OPENAI_KEY')!;
+    const azureDeploymentName = Deno.env.get('AZURE_DEPLOYMENT_NAME')!;
 
-    // Get user from auth token
-    const authHeader = req.headers.get('Authorization')!;
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      logStep('Authentication failed', authError);
-      return new Response(
-        JSON.stringify({ error: 'Authentication required' }), 
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Check required environment variables
+    if (!supabaseUrl || !supabaseServiceKey || !azureOpenAIEndpoint || !azureOpenAIKey || !azureDeploymentName) {
+      console.error('Missing required environment variables');
+      return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    logStep('User authenticated', { userId: user.id });
+    // Authenticate request
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Missing authorization header' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
-    // Check AI consent
-    const { data: profile, error: profileError } = await supabase
+    // Create Supabase client with service role for data access
+    const supabaseService = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Create client with user JWT for auth verification
+    const supabaseAuth = createClient(supabaseUrl, supabaseServiceKey, {
+      global: {
+        headers: {
+          Authorization: authHeader,
+        },
+      },
+    });
+
+    // Verify user authentication
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    if (authError || !user) {
+      console.error('Authentication failed:', authError);
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    console.log('Authenticated user:', user.id);
+
+    // Get request body
+    const { resultId } = await req.json();
+    if (!resultId) {
+      return new Response(JSON.stringify({ error: 'Missing resultId' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Check user's AI consent
+    const { data: profile, error: profileError } = await supabaseService
       .from('profiles')
       .select('ai_consent')
       .eq('user_id', user.id)
       .single();
 
-    if (profileError || !profile?.ai_consent) {
-      logStep('AI consent not granted', profileError);
-      return new Response(
-        JSON.stringify({ error: 'AI consent required. Please enable AI insights in your profile.' }), 
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (profileError) {
+      console.error('Profile fetch error:', profileError);
+      return new Response(JSON.stringify({ error: 'Unable to verify AI consent' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    logStep('AI consent confirmed');
-
-    // Parse request body
-    const { resultId } = await req.json();
-    
-    if (!resultId) {
-      return new Response(
-        JSON.stringify({ error: 'Result ID is required' }), 
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (!profile?.ai_consent) {
+      console.log('AI consent not granted for user:', user.id);
+      return new Response(JSON.stringify({ error: 'AI consent required' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    // Get the blood test result
-    const { data: result, error: resultError } = await supabase
+    // Load result by resultId
+    const { data: result, error: resultError } = await supabaseService
       .from('results')
       .select('*')
       .eq('id', resultId)
@@ -90,183 +144,137 @@ serve(async (req) => {
       .single();
 
     if (resultError || !result) {
-      logStep('Result not found', resultError);
-      return new Response(
-        JSON.stringify({ error: 'Blood test result not found' }), 
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      console.error('Result fetch error:', resultError);
+      return new Response(JSON.stringify({ error: 'Result not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    logStep('Retrieved result', { resultId, hasData: !!result.parsed_data });
+    console.log('Found result:', result.id);
 
-    // Anonymize the data - only keep clinical values
-    const anonymizedData: AnonymizedData = {
-      tests: []
-    };
-
-    // Extract and sanitize test values from parsed_data
-    if (result.parsed_data && typeof result.parsed_data === 'object') {
-      const data = result.parsed_data as any;
-      
-      // Handle different possible data structures
-      if (data.tests && Array.isArray(data.tests)) {
-        anonymizedData.tests = data.tests.map((test: any) => ({
-          name: test.name || test.test_name || 'Unknown Test',
-          value: test.value || test.result_value || 'N/A',
-          unit: test.unit || test.units || '',
-          reference: test.reference || test.reference_range || '',
-          status: test.status || 'normal'
-        }));
-      } else if (data.biomarkers && Array.isArray(data.biomarkers)) {
-        anonymizedData.tests = data.biomarkers.map((biomarker: any) => ({
-          name: biomarker.name || 'Unknown Test',
-          value: biomarker.value || 'N/A',
-          unit: biomarker.unit || '',
-          reference: biomarker.reference_range || '',
-          status: biomarker.status || 'normal'
-        }));
-      } else {
-        // Try to extract from flat structure
-        Object.keys(data).forEach(key => {
-          if (typeof data[key] === 'object' && data[key].value !== undefined) {
-            anonymizedData.tests.push({
-              name: key,
-              value: data[key].value,
-              unit: data[key].unit || '',
-              reference: data[key].reference || '',
-              status: data[key].status || 'normal'
-            });
-          }
-        });
-      }
+    // Use parsed_data if present
+    let parsedData = result.parsed_data;
+    if (!parsedData) {
+      console.error('No parsed_data available for result:', resultId);
+      return new Response(JSON.stringify({ error: 'No parsed data available' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    logStep('Anonymized data prepared', { testCount: anonymizedData.tests.length });
-
+    // Anonymize the data
+    const anonymizedData = anonymiseParsed(parsedData);
+    
+    // Check if we have any tests after anonymization
     if (anonymizedData.tests.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No test data found to analyze' }), 
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      console.log('No valid tests found after anonymization');
+      return new Response(JSON.stringify({ error: 'No valid test data available' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    // Prepare OpenAI prompt
-    const systemPrompt = `You are a medical AI assistant that creates patient-friendly explanations of blood test results. 
-Your role is to help patients understand their test results in simple, clear language while emphasizing that this is for educational purposes only.
+    console.log('Anonymized tests count:', anonymizedData.tests.length);
 
-Guidelines:
-- Use simple, non-medical language
-- Explain what each test measures and why it matters
-- If values are outside normal ranges, explain what this might indicate
-- Always emphasize that only a healthcare provider can make medical decisions
-- Keep explanations concise but informative
-- Focus on actionable insights where appropriate
-- If critical values are present, emphasize the need for immediate medical attention
+    // Build system prompt EXACTLY as specified
+    const systemPrompt = "You are a clinical assistant generating short, non-alarming patient-friendly summaries from ANONYMISED lab values only. NEVER ask for or infer identity. Output 2–4 sentences, avoid jargon, include one next step like 'discuss with your GP'. At the end add: 'This is not a diagnosis; consult your GP.'";
 
-The data provided contains only clinical test values - no personal identifying information.`;
+    // Build user prompt with bullet-list of tests
+    const testList = anonymizedData.tests.map(test => {
+      const valueStr = test.value !== null ? String(test.value) : 'N/A';
+      const unitStr = test.unit ? ` ${test.unit}` : '';
+      const refStr = test.reference ? ` (Reference: ${test.reference})` : '';
+      return `• ${test.name}: ${valueStr}${unitStr}${refStr}`;
+    }).join('\n');
 
-    const userPrompt = `Please provide a patient-friendly summary of these blood test results:
+    const userPrompt = `Blood test results:\n${testList}`;
 
-${anonymizedData.tests.map(test => 
-  `- ${test.name}: ${test.value} ${test.unit} (Reference: ${test.reference}) [Status: ${test.status}]`
-).join('\n')}
+    console.log('Calling Azure OpenAI...');
 
-Please structure your response as a clear, encouraging summary that helps the patient understand their results while emphasizing the importance of discussing with their healthcare provider.`;
-
-    logStep('Calling OpenAI API');
-
-    // Call OpenAI API
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      return new Response(
-        JSON.stringify({ error: 'AI service not configured' }), 
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Call Azure OpenAI
+    const azureUrl = `${azureOpenAIEndpoint}/openai/deployments/${azureDeploymentName}/chat/completions?api-version=2024-06-01-preview`;
+    
+    const openAIResponse = await fetch(azureUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'api-key': azureOpenAIKey,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        max_tokens: 800,
+        max_tokens: 500,
         temperature: 0.3,
       }),
     });
 
     if (!openAIResponse.ok) {
-      logStep('OpenAI API error', { status: openAIResponse.status });
-      return new Response(
-        JSON.stringify({ error: 'AI service temporarily unavailable' }), 
-        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      const errorText = await openAIResponse.text();
+      console.error('Azure OpenAI API error:', openAIResponse.status, errorText);
+      return new Response(JSON.stringify({ error: 'AI service unavailable' }), {
+        status: 503,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const openAIData = await openAIResponse.json();
-    const summary = openAIData.choices[0]?.message?.content;
+    const aiSummary = openAIData.choices?.[0]?.message?.content;
 
-    if (!summary) {
-      logStep('No summary generated');
-      return new Response(
-        JSON.stringify({ error: 'Failed to generate summary' }), 
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (!aiSummary) {
+      console.error('No summary generated from AI');
+      return new Response(JSON.stringify({ error: 'Failed to generate summary' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    logStep('AI summary generated', { length: summary.length });
+    console.log('Generated summary length:', aiSummary.length);
 
-    // Update the result with AI summary
-    const { error: updateError } = await supabase
+    // Update results table with AI summary
+    const { error: updateError } = await supabaseService
       .from('results')
       .update({
-        ai_summary: summary,
-        ai_generated_at: new Date().toISOString()
+        ai_summary: aiSummary,
+        ai_generated_at: new Date().toISOString(),
       })
       .eq('id', resultId);
 
     if (updateError) {
-      logStep('Failed to update result', updateError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to save summary' }), 
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      console.error('Failed to update result:', updateError);
+      return new Response(JSON.stringify({ error: 'Failed to save summary' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    // Log AI usage for audit trail
-    const { error: logError } = await supabase
+    // Log to ai_logs
+    const { error: logError } = await supabaseService
       .from('ai_logs')
       .insert({
         result_id: resultId,
-        model: 'gpt-4o-mini',
-        response_snippet: summary.substring(0, 200)
+        model: 'azure-openai',
+        response_snippet: aiSummary.slice(0, 200),
       });
 
     if (logError) {
-      logStep('Failed to create audit log', logError);
+      console.error('Failed to log AI usage:', logError);
+      // Don't fail the request for logging errors
     }
 
-    logStep('Summary generation completed successfully');
+    console.log('Summary generation completed successfully');
 
-    return new Response(
-      JSON.stringify({ 
-        summary,
-        disclaimer: "This AI-generated summary is for educational purposes only and should not replace professional medical advice. Please discuss these results with your healthcare provider."
-      }), 
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ ai_summary: aiSummary }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
-    logStep('Unexpected error', error);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }), 
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    console.error('Unexpected error:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

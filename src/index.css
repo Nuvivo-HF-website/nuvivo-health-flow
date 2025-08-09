@@ -31,9 +31,9 @@ All colors MUST be HSL.
     --muted: 0 0% 94%; /* Very light grey */
     --muted-foreground: 0 0% 40%;
 
-    /* Accent - Pure black for emphasis */
-    --accent: 0 0% 10%; /* Almost black */
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Light gray for emphasis */
+    --accent: 0 0% 95%; /* Light gray */
+    --accent-foreground: 0 0% 15%;
     --accent-soft: 0 0% 60%; /* Medium grey */
 
     /* Medical success - minimal green */

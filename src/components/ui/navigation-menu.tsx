@@ -1,6 +1,5 @@
 
 import * as React from "react"
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { Slot } from "@radix-ui/react-slot"
 import { cva } from "class-variance-authority"
 import { ChevronDown } from "lucide-react"
@@ -42,39 +41,15 @@ NavigationMenuList.displayName = "NavigationMenuList"
 
 const NavigationMenuItem = React.forwardRef<
   HTMLLIElement,
-  React.HTMLAttributes<HTMLLIElement> & {
-    hasDropdown?: boolean
-  }
->(({ className, hasDropdown = false, children, ...props }, ref) => {
-  const [isOpen, setIsOpen] = React.useState(false)
-
-  const handleMouseEnter = () => {
-    if (hasDropdown) {
-      setIsOpen(true)
-    }
-  }
-
-  const handleMouseLeave = () => {
-    if (hasDropdown) {
-      setIsOpen(false)
-    }
-  }
-
+  React.HTMLAttributes<HTMLLIElement>
+>(({ className, children, ...props }, ref) => {
   return (
     <li 
       ref={ref} 
-      className={cn("", className)} 
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className={cn("group relative", className)} 
       {...props}
     >
-      {hasDropdown ? (
-        <DropdownMenuPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
-          {children}
-        </DropdownMenuPrimitive.Root>
-      ) : (
-        children
-      )}
+      {children}
     </li>
   )
 })
@@ -85,32 +60,31 @@ const navigationMenuTriggerStyle = cva(
 )
 
 const NavigationMenuTrigger = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, children, ...props }, ref) => (
-  <DropdownMenuPrimitive.Trigger
+  <button
     ref={ref}
     className={cn(navigationMenuTriggerStyle(), "group", className)}
     {...props}
   >
     {children}{" "}
     <ChevronDown
-      className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180"
+      className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-hover:rotate-180"
       aria-hidden="true"
     />
-  </DropdownMenuPrimitive.Trigger>
+  </button>
 ))
 NavigationMenuTrigger.displayName = "NavigationMenuTrigger"
 
 const NavigationMenuContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <DropdownMenuPrimitive.Content
+  <div
     ref={ref}
-    sideOffset={4}
     className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "absolute left-0 top-full z-50 min-w-[200px] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200",
       className
     )}
     {...props}
@@ -118,8 +92,7 @@ const NavigationMenuContent = React.forwardRef<
 ))
 NavigationMenuContent.displayName = "NavigationMenuContent"
 
-// Wrapper for dropdown functionality
-const NavigationMenuDropdown = DropdownMenuPrimitive.Root
+// Simple navigation menu implementation
 
 const NavigationMenuLink = React.forwardRef<
   HTMLAnchorElement,
@@ -168,5 +141,4 @@ export {
   NavigationMenuLink,
   NavigationMenuIndicator,
   NavigationMenuViewport,
-  NavigationMenuDropdown,
 }

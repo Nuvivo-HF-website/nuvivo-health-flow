@@ -59,12 +59,24 @@ const NavigationMenuItem = React.forwardRef<
     }
   }
 
+  const handleClick = () => {
+    // Force close on click to ensure highlight disappears
+    setIsOpen(false)
+  }
+
+  const handleBlur = () => {
+    // Close on blur to remove any lingering focus state
+    setIsOpen(false)
+  }
+
   return (
     <li 
       ref={ref} 
       className={cn("relative", className)} 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+      onBlur={handleBlur}
       {...props}
     >
       <div className={isOpen && hasDropdown ? "dropdown-open" : ""}>

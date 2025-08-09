@@ -63,7 +63,7 @@ const Header = () => {
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
                   Blood Tests
                 </NavigationMenuTrigger>
@@ -118,7 +118,7 @@ const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
                   Consultations
                 </NavigationMenuTrigger>
@@ -158,7 +158,7 @@ const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
                   Treatments
                 </NavigationMenuTrigger>
@@ -193,7 +193,7 @@ const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
                   Scans & Imaging
                 </NavigationMenuTrigger>
@@ -218,7 +218,7 @@ const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
                   Mobile Services
                 </NavigationMenuTrigger>

@@ -1,7 +1,53 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
-import { anonymiseParsed } from '../../../src/lib/anonymise.ts';
+
+// Anonymization logic (copied from src/lib/anonymise.ts)
+type AnonTest = { 
+  name: string; 
+  value: number | string; 
+  unit?: string; 
+  reference?: string; 
+};
+
+const allowedTests = new Set([
+  'Cholesterol',
+  'HDL', 
+  'LDL', 
+  'TSH', 
+  'Glucose', 
+  'HbA1c', 
+  'WBC', 
+  'RBC', 
+  'Platelets'
+]);
+
+function anonymiseParsed(raw: any): { tests: AnonTest[]; sample_date?: string } {
+  const tests: AnonTest[] = [];
+  
+  if (!raw || !Array.isArray(raw.tests)) {
+    return { tests: [] };
+  }
+  
+  for (const t of raw.tests) {
+    const name = String(t.name || '').trim();
+    if (!allowedTests.has(name)) continue;
+    
+    const value = t.value === undefined ? null : (Number(t.value) ?? t.value);
+    
+    tests.push({ 
+      name, 
+      value, 
+      unit: t.unit || null, 
+      reference: t.reference || null 
+    });
+  }
+  
+  return { 
+    tests, 
+    sample_date: raw.sample_date || null 
+  };
+}
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

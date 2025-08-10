@@ -21,7 +21,6 @@ serve(async (req) => {
 
     const azureEndpoint = Deno.env.get("AZURE_OPENAI_ENDPOINT");
     const azureApiKey = Deno.env.get("AZURE_OPENAI_API_KEY");
-    const azureDeploymentName = Deno.env.get("AZURE_DEPLOYMENT_NAME") || "gpt-4o-mini";
     if (!azureEndpoint || !azureApiKey) {
       throw new Error("Azure OpenAI credentials not configured");
     }
@@ -85,7 +84,7 @@ Please provide a comprehensive NHS-compliant interpretation of these blood test 
 
     logStep("Calling Azure OpenAI API");
 
-    const response = await fetch(`${azureEndpoint}/openai/deployments/${azureDeploymentName}/chat/completions?api-version=2024-06-01-preview`, {
+    const response = await fetch(`${azureEndpoint}/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-06-01-preview`, {
       method: 'POST',
       headers: {
         'api-key': azureApiKey,

@@ -6,6 +6,7 @@ import { Terminal, Shield, Brain, Database } from 'lucide-react';
 import { StagingTestRunner } from '@/components/StagingTestRunner';
 import { NHSTestDataSeeder } from '@/components/NHSTestDataSeeder';
 import { AIConsent } from '@/components/AIConsent';
+import { StagingUserSetup } from '@/components/StagingUserSetup';
 
 export default function StagingDemo() {
   return (
@@ -43,41 +44,42 @@ export default function StagingDemo() {
 
         <TabsContent value="setup" className="space-y-4">
           <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Database className="h-5 w-5" />
-                  Environment Configuration
-                </CardTitle>
-                <CardDescription>
-                  Staging environment setup and configuration
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium">Required Environment Variables:</h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• STAGING_SUPABASE_URL</li>
-                    <li>• STAGING_SUPABASE_ANON_KEY</li>
-                    <li>• AZURE_OPENAI_ENDPOINT</li>
-                    <li>• AZURE_OPENAI_API_KEY</li>
-                  </ul>
-                </div>
-                
-                <div className="space-y-2">
-                  <h4 className="font-medium">Setup Steps:</h4>
-                  <ol className="text-sm text-muted-foreground space-y-1">
-                    <li>1. Configure staging Supabase project (EU region)</li>
-                    <li>2. Run staging-setup.sh script</li>
-                    <li>3. Execute staging-seed-data.sql</li>
-                    <li>4. Run compliance test suite</li>
-                  </ol>
-                </div>
-              </CardContent>
-            </Card>
-
+            <StagingUserSetup />
             <NHSTestDataSeeder />
           </div>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                Environment Configuration
+              </CardTitle>
+              <CardDescription>
+                Staging environment setup and configuration
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <h4 className="font-medium">Required Environment Variables:</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• STAGING_SUPABASE_URL (configured)</li>
+                  <li>• STAGING_SUPABASE_ANON_KEY (configured)</li>
+                  <li>• AZURE_OPENAI_ENDPOINT (configured)</li>
+                  <li>• AZURE_OPENAI_API_KEY (configured)</li>
+                </ul>
+              </div>
+              
+              <div className="space-y-2">
+                <h4 className="font-medium">Quick Test Setup:</h4>
+                <ol className="text-sm text-muted-foreground space-y-1">
+                  <li>1. Click "Create Test Patient Account" above</li>
+                  <li>2. Use provided credentials to sign in</li>
+                  <li>3. View AI-processed blood test results</li>
+                  <li>4. Test GDPR compliance features</li>
+                </ol>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="ai-demo" className="space-y-4">

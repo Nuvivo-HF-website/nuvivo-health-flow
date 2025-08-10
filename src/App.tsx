@@ -50,6 +50,8 @@ import AIReportGenerator from "./pages/AIReportGenerator";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import StaffDashboard from "./pages/StaffDashboard";
+import StakeholderDashboard from "./pages/StakeholderDashboard";
+import StagingDemo from "./pages/StagingDemo";
 
 import Testing from "./pages/Testing";
 
@@ -99,6 +101,8 @@ const App = () => (
           <Route path="/admin-referrals" element={<AdminReferrals />} />
           <Route path="/ai-report-generator" element={<AIReportGenerator />} />
           <Route path="/staff-dashboard" element={<StaffDashboard />} />
+          <Route path="/stakeholder-dashboard" element={<StakeholderDashboard />} />
+          <Route path="/staging-demo" element={<StagingDemo />} />
           <Route path="/profile" element={<PatientProfile />} />
           <Route path="/patient-dashboard" element={<Navigate to="/portal" replace />} />
           <Route path="/portal" element={<ComprehensivePatientPortal />} />

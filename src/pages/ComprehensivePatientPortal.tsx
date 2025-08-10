@@ -22,7 +22,8 @@ import {
   AlertTriangle,
   Zap,
   Shield,
-  Dna
+  Dna,
+  BarChart3
 } from 'lucide-react';
 
 // Import all Phase 2-4 components
@@ -42,6 +43,7 @@ import { EmergencyAlertSystem } from '@/components/EmergencyAlertSystem';
 import { EnhancedTelemedicine } from '@/components/EnhancedTelemedicine';
 import { ClinicalDecisionSupport } from '@/components/ClinicalDecisionSupport';
 import SafetySupport from '@/components/SafetySupport';
+import { HealthTrendsDashboard } from '@/components/HealthTrendsDashboard';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -174,10 +176,14 @@ export default function ComprehensivePatientPortal() {
 
           {/* Main Content Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
                 Overview
+              </TabsTrigger>
+              <TabsTrigger value="health-trends" className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Health Trends
               </TabsTrigger>
               <TabsTrigger value="ai-assistant" className="flex items-center gap-2">
                 <Brain className="h-4 w-4" />
@@ -245,6 +251,10 @@ export default function ComprehensivePatientPortal() {
                 <SafetySupport />
                 <EmergencyAlertSystem />
               </div>
+            </TabsContent>
+
+            <TabsContent value="health-trends" className="space-y-6">
+              <HealthTrendsDashboard />
             </TabsContent>
 
             <TabsContent value="ai-assistant" className="space-y-6">

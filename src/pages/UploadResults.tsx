@@ -5,17 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, FileText, Brain, Download, CheckCircle, Eye, AlertTriangle, Stethoscope, X, Loader2 } from "lucide-react";
+import { Upload, FileText, Brain, Download, CheckCircle, Eye, AlertTriangle, Stethoscope, X, Loader2, Shield } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/contexts/EnhancedAuthContext";
 import { FileUploadService, UploadedFile } from "@/services/fileUploadService";
+import { GDPRConsentManager } from "@/components/GDPRConsentManager";
+import { AIConsent } from "@/components/AIConsent";
+import AIPrivacyNotice from "@/components/AIPrivacyNotice";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const UploadResults = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [patientInfo, setPatientInfo] = useState({
@@ -27,7 +31,12 @@ const UploadResults = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
   const [generatedReportId, setGeneratedReportId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("upload");
   const { toast } = useToast();
+
+  // Check if user has necessary consents for data upload
+  const hasDataProcessingConsent = userProfile?.consent_timestamp || userProfile?.ai_consent;
+  const canUploadData = user && hasDataProcessingConsent;
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!user) {
@@ -37,6 +46,16 @@ const UploadResults = () => {
         variant: "destructive"
       });
       navigate("/sign-in");
+      return;
+    }
+
+    if (!canUploadData) {
+      toast({
+        title: "Consent required",
+        description: "Please review and accept the data processing consent before uploading files",
+        variant: "destructive"
+      });
+      setActiveTab("consent");
       return;
     }
 
@@ -125,6 +144,16 @@ const UploadResults = () => {
         description: "Please upload at least one test result file",
         variant: "destructive"
       });
+      return;
+    }
+
+    if (!userProfile?.ai_consent) {
+      toast({
+        title: "AI consent required",
+        description: "Please enable AI insights in the AI Insights tab to generate reports",
+        variant: "destructive"
+      });
+      setActiveTab("ai-insights");
       return;
     }
 
@@ -324,249 +353,275 @@ const UploadResults = () => {
           </Alert>
 
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-primary mb-2">Upload Your Test Results</h1>
+            <h1 className="text-3xl font-bold text-primary mb-2">
+              <Shield className="inline-block w-8 h-8 mr-3" />
+              Secure Health Data Upload & Management
+            </h1>
             <p className="text-muted-foreground">
-              Already have test results from another provider? Upload them here to get an AI-powered comprehensive health report with personalised insights.
+              Upload your test results with full GDPR compliance and privacy protection. Manage your data consents and generate AI-powered health insights.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Upload Section */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
-                    Upload Test Results
-                  </CardTitle>
-                  <CardDescription>
-                    Upload blood test results, medical reports, or any health documents
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-                    <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <div className="space-y-2">
-                      <Label htmlFor="file-upload" className="cursor-pointer">
-                        <span className="text-primary font-medium">Click to upload</span> or drag and drop
-                      </Label>
-                      <p className="text-sm text-muted-foreground">
-                        PDF, JPG, PNG or other document formats
-                      </p>
-                      <Input
-                        id="file-upload"
-                        type="file"
-                        multiple
-                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                        onChange={handleFileUpload}
-                        className="hidden"
-                      />
-                    </div>
-                  </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="upload" className="flex items-center gap-2">
+                <Upload className="w-4 h-4" />
+                Upload Data
+              </TabsTrigger>
+              <TabsTrigger value="consent" className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                Privacy & Consent
+              </TabsTrigger>
+              <TabsTrigger value="ai-insights" className="flex items-center gap-2">
+                <Brain className="w-4 h-4" />
+                AI Insights
+              </TabsTrigger>
+            </TabsList>
 
-                  {uploadedFiles.length > 0 && (
-                    <div className="space-y-2">
-                      <Label>Uploaded Files:</Label>
-                      {uploadedFiles.map((file) => (
-                        <div key={file.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <FileText className="w-4 h-4 text-primary" />
-                            <div className="flex flex-col">
-                              <span className="text-sm font-medium">{file.name}</span>
-                              <span className="text-xs text-muted-foreground">
-                                {(file.size / 1024 / 1024).toFixed(2)} MB
-                              </span>
-                            </div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeFile(file)}
-                            className="text-destructive hover:text-destructive"
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
+            <TabsContent value="upload" className="space-y-6">
+              {!canUploadData && (
+                <Alert className="mb-6 border-red-200 bg-red-50">
+                  <Shield className="h-4 w-4 text-red-600" />
+                  <AlertDescription className="text-red-800">
+                    <strong>Consent Required:</strong> Please review and accept the data processing consent in the "Privacy & Consent" tab before uploading files.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="grid lg:grid-cols-2 gap-8">
+                {/* Upload Section */}
+                <div className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Upload className="w-5 h-5" />
+                        Upload Test Results
+                      </CardTitle>
+                      <CardDescription>
+                        Upload blood test results, medical reports, or any health documents
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                        <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                        <div className="space-y-2">
+                          <Label htmlFor="file-upload" className="cursor-pointer">
+                            <span className="text-primary font-medium">Click to upload</span> or drag and drop
+                          </Label>
+                          <p className="text-sm text-muted-foreground">
+                            PDF, JPG, PNG or other document formats
+                          </p>
+                          <Input
+                            id="file-upload"
+                            type="file"
+                            multiple
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            disabled={!canUploadData}
+                          />
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      </div>
 
-                  {isUploading && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Uploading files...
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                      {uploadedFiles.length > 0 && (
+                        <div className="space-y-2">
+                          <Label>Uploaded Files:</Label>
+                          {uploadedFiles.map((file) => (
+                            <div key={file.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                              <div className="flex items-center gap-3">
+                                <FileText className="w-4 h-4 text-primary" />
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium">{file.name}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                                  </span>
+                                </div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFile(file)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Stethoscope className="w-5 h-5" />
-                    Your Information
-                  </CardTitle>
-                  <CardDescription>
-                    Help us provide more accurate analysis by sharing some basic information
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="name">Your Name</Label>
-                      <Input
-                        id="name"
-                        value={patientInfo.name}
-                        onChange={(e) => setPatientInfo(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="Enter your full name"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="dob">Date of Birth</Label>
-                      <Input
-                        id="dob"
-                        type="date"
-                        value={patientInfo.dateOfBirth}
-                        onChange={(e) => setPatientInfo(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="test-date">Test Date</Label>
-                    <Input
-                      id="test-date"
-                      type="date"
-                      value={patientInfo.testDate}
-                      onChange={(e) => setPatientInfo(prev => ({ ...prev, testDate: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="notes">Additional Notes</Label>
-                    <Textarea
-                      id="notes"
-                      value={patientInfo.notes}
-                      onChange={(e) => setPatientInfo(prev => ({ ...prev, notes: e.target.value }))}
-                      placeholder="Any symptoms, medications, or relevant information..."
-                      rows={3}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                      {isUploading && (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Uploading files...
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
 
-            {/* Report Generation Section */}
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Brain className="w-5 h-5" />
-                    AI Report Generation
-                  </CardTitle>
-                  <CardDescription>
-                    Generate a comprehensive health report using AI analysis
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-center py-8">
-                    {!reportGenerated ? (
-                      <>
-                        <Brain className="w-16 h-16 mx-auto text-primary mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">Ready to Generate Report</h3>
-                        <p className="text-muted-foreground mb-6">
-                          Our AI will analyze your results and provide insights, recommendations, and explanations
-                        </p>
-                        <Button
-                          onClick={generateReport}
-                          disabled={isGenerating || isUploading}
-                          className="w-full"
-                        >
-                          {isGenerating ? (
-                            <>
-                              <div className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-2" />
-                              Analyzing Results...
-                            </>
-                          ) : (
-                            <>
-                              <Brain className="w-4 h-4 mr-2" />
-                              Generate AI Report
-                            </>
-                          )}
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">Report Generated Successfully</h3>
-                        <p className="text-muted-foreground mb-6">
-                          Your comprehensive health report is ready for download
-                        </p>
-                        <div className="space-y-3">
-                          <Button 
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Stethoscope className="w-5 h-5" />
+                        Your Information
+                      </CardTitle>
+                      <CardDescription>
+                        Help us provide more accurate analysis by sharing some basic information
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="name">Your Name</Label>
+                          <Input
+                            id="name"
+                            value={patientInfo.name}
+                            onChange={(e) => setPatientInfo(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder="Enter your full name"
+                            disabled={!canUploadData}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="dob">Date of Birth</Label>
+                          <Input
+                            id="dob"
+                            type="date"
+                            value={patientInfo.dateOfBirth}
+                            onChange={(e) => setPatientInfo(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                            disabled={!canUploadData}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="test-date">Test Date</Label>
+                        <Input
+                          id="test-date"
+                          type="date"
+                          value={patientInfo.testDate}
+                          onChange={(e) => setPatientInfo(prev => ({ ...prev, testDate: e.target.value }))}
+                          disabled={!canUploadData}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="notes">Additional Notes</Label>
+                        <Textarea
+                          id="notes"
+                          value={patientInfo.notes}
+                          onChange={(e) => setPatientInfo(prev => ({ ...prev, notes: e.target.value }))}
+                          placeholder="Any symptoms, medications, or relevant information..."
+                          rows={3}
+                          disabled={!canUploadData}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Results Section */}
+                <div className="space-y-6">
+                  {/* Generate Report Card */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Brain className="w-5 h-5" />
+                        AI-Powered Analysis
+                      </CardTitle>
+                      <CardDescription>
+                        Generate comprehensive health insights from your uploaded results
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <Button
+                        onClick={generateReport}
+                        disabled={isGenerating || uploadedFiles.length === 0 || !userProfile?.ai_consent}
+                        className="w-full"
+                        size="lg"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Generating AI Report...
+                          </>
+                        ) : (
+                          <>
+                            <Brain className="w-4 h-4 mr-2" />
+                            Generate AI Health Report
+                          </>
+                        )}
+                      </Button>
+
+                      <div className="text-sm text-muted-foreground space-y-2">
+                        <p>• Upload your test results first</p>
+                        <p>• Enable AI consent in the AI Insights tab</p>
+                        <p>• Our AI will analyze your biomarkers</p>
+                        <p>• Get personalized health insights</p>
+                        <p>• Download comprehensive PDF report</p>
+                      </div>
+                      
+                      {!userProfile?.ai_consent && (
+                        <Alert className="border-amber-200 bg-amber-50">
+                          <AlertTriangle className="h-4 w-4 text-amber-600" />
+                          <AlertDescription className="text-amber-800">
+                            AI consent is required to generate reports. Please enable AI insights in the AI Insights tab.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Report Generated Success */}
+                  {reportGenerated && (
+                    <Card className="border-green-200 bg-green-50">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-green-800">
+                          <CheckCircle className="w-5 h-5" />
+                          Report Generated Successfully!
+                        </CardTitle>
+                        <CardDescription className="text-green-700">
+                          Your AI-powered health report is ready for viewing and download
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid gap-3">
+                          <Button
+                            onClick={viewOnlineReport}
+                            variant="outline"
+                            className="w-full border-green-300 text-green-800 hover:bg-green-100"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View Report Online
+                          </Button>
+                          <Button
                             onClick={downloadPDFReport}
-                            className="w-full"
+                            className="w-full bg-green-600 hover:bg-green-700"
                           >
                             <Download className="w-4 h-4 mr-2" />
                             Download PDF Report
                           </Button>
-                          <Button 
-                            variant="outline" 
-                            className="w-full"
-                            onClick={viewOnlineReport}
-                          >
-                            <Eye className="w-4 h-4 mr-2" />
-                            View Online Report
-                          </Button>
                         </div>
-                      </>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                        
+                        <div className="text-sm text-green-700 bg-green-100 p-3 rounded-lg">
+                          <strong>Report ID:</strong> {generatedReportId}<br />
+                          <strong>Generated:</strong> {new Date().toLocaleString()}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>What's Included in Your Report</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Detailed analysis of all biomarkers
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Risk assessment and health insights
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Personalised recommendations
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Lifestyle and dietary suggestions
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Follow-up recommendations
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      Specialist referral suggestions
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+            <TabsContent value="consent" className="space-y-6">
+              <GDPRConsentManager />
+            </TabsContent>
 
-          {/* Additional Medical Disclaimer */}
-          <Alert className="mt-8 border-red-200 bg-red-50">
-            <Stethoscope className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800">
-              <strong>Remember:</strong> These AI-generated reports are educational tools only and should never be used as a substitute for professional medical advice, diagnosis, or treatment. 
-              Always discuss your results with a qualified healthcare provider who can interpret them in the context of your full medical history and current health status.
-            </AlertDescription>
-          </Alert>
+            <TabsContent value="ai-insights" className="space-y-6">
+              <div className="grid gap-6">
+                <AIConsent />
+                <AIPrivacyNotice />
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
 

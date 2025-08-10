@@ -58,8 +58,8 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const azureOpenAIEndpoint = Deno.env.get('AZURE_OPENAI_ENDPOINT')!;
-    const azureOpenAIKey = Deno.env.get('AZURE_OPENAI_KEY')!;
-    const azureDeploymentName = Deno.env.get('AZURE_DEPLOYMENT_NAME')!;
+    const azureOpenAIKey = Deno.env.get('AZURE_OPENAI_API_KEY')!;
+    const azureDeploymentName = Deno.env.get('AZURE_DEPLOYMENT_NAME') || 'gpt-4o-mini';
 
     // Check required environment variables
     if (!supabaseUrl || !supabaseServiceKey || !azureOpenAIEndpoint || !azureOpenAIKey || !azureDeploymentName) {

@@ -1665,8 +1665,16 @@ export type Database = {
         }
         Returns: string
       }
+      decode_message_content: {
+        Args: { encoded_content: string }
+        Returns: string
+      }
       decrypt_message_content: {
         Args: { encrypted_content: string }
+        Returns: string
+      }
+      encode_message_content: {
+        Args: { content_text: string }
         Returns: string
       }
       encrypt_message_content: {

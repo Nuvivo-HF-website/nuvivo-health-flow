@@ -23,7 +23,8 @@ import {
   Zap,
   Shield,
   Dna,
-  BarChart3
+  BarChart3,
+  MessageCircle
 } from 'lucide-react';
 
 // Import all Phase 2-4 components
@@ -44,6 +45,7 @@ import { EnhancedTelemedicine } from '@/components/EnhancedTelemedicine';
 import { ClinicalDecisionSupport } from '@/components/ClinicalDecisionSupport';
 import SafetySupport from '@/components/SafetySupport';
 import { HealthTrendsDashboard } from '@/components/HealthTrendsDashboard';
+import { MessagingInbox } from '@/components/MessagingInbox';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -176,7 +178,7 @@ export default function ComprehensivePatientPortal() {
 
           {/* Main Content Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-10">
               <TabsTrigger value="overview" className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
                 Overview
@@ -212,6 +214,10 @@ export default function ComprehensivePatientPortal() {
               <TabsTrigger value="records" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
                 Records
+              </TabsTrigger>
+              <TabsTrigger value="messages" className="flex items-center gap-2">
+                <MessageCircle className="h-4 w-4" />
+                Messages
               </TabsTrigger>
             </TabsList>
 
@@ -310,6 +316,10 @@ export default function ComprehensivePatientPortal() {
 
             <TabsContent value="genomics" className="space-y-6">
               <GenomicsAnalyzer />
+            </TabsContent>
+
+            <TabsContent value="messages" className="space-y-6">
+              <MessagingInbox />
             </TabsContent>
           </Tabs>
         </div>

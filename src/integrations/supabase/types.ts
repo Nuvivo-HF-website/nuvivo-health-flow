@@ -41,10 +41,38 @@ export type Database = {
             foreignKeyName: "fk_ai_logs_result_id"
             columns: ["result_id"]
             isOneToOne: false
+            referencedRelation: "patient_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_ai_logs_result_id"
+            columns: ["result_id"]
+            isOneToOne: false
             referencedRelation: "results"
             referencedColumns: ["id"]
           },
         ]
+      }
+      ai_review_logs: {
+        Row: {
+          id: string
+          result_id: string
+          viewed_at: string
+          viewed_by: string
+        }
+        Insert: {
+          id?: string
+          result_id: string
+          viewed_at?: string
+          viewed_by: string
+        }
+        Update: {
+          id?: string
+          result_id?: string
+          viewed_at?: string
+          viewed_by?: string
+        }
+        Relationships: []
       }
       appointment_history: {
         Row: {
@@ -1044,7 +1072,9 @@ export type Database = {
       }
       results: {
         Row: {
+          ai_flags: Json | null
           ai_generated_at: string | null
+          ai_risk_score: number | null
           ai_summary: string | null
           created_at: string
           id: string
@@ -1054,7 +1084,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_flags?: Json | null
           ai_generated_at?: string | null
+          ai_risk_score?: number | null
           ai_summary?: string | null
           created_at?: string
           id?: string
@@ -1064,7 +1096,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_flags?: Json | null
           ai_generated_at?: string | null
+          ai_risk_score?: number | null
           ai_summary?: string | null
           created_at?: string
           id?: string
@@ -1463,7 +1497,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      patient_results: {
+        Row: {
+          ai_generated_at: string | null
+          ai_summary: string | null
+          created_at: string | null
+          id: string | null
+          parsed_data: Json | null
+          updated_at: string | null
+          uploaded_by: string | null
+          user_id: string | null
+        }
+        Insert: {
+          ai_generated_at?: string | null
+          ai_summary?: string | null
+          created_at?: string | null
+          id?: string | null
+          parsed_data?: Json | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          ai_generated_at?: string | null
+          ai_summary?: string | null
+          created_at?: string | null
+          id?: string | null
+          parsed_data?: Json | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       create_notification: {

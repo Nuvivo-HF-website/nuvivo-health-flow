@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/contexts/EnhancedAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { SummaryButton } from '@/components/SummaryButton';
+import { RiskFlaggingButton } from '@/components/RiskFlaggingButton';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { 
@@ -28,6 +29,8 @@ interface Result {
   parsed_data: any;
   ai_summary: string;
   ai_generated_at: string;
+  ai_flags?: any;
+  ai_risk_score?: number;
   created_at: string;
   updated_at: string;
 }
@@ -66,7 +69,7 @@ export default function ResultView() {
       // Load the result
       const { data: resultData, error: resultError } = await supabase
         .from('results')
-        .select('*')
+        .select('id, user_id, uploaded_by, parsed_data, ai_summary, ai_generated_at, ai_flags, ai_risk_score, created_at, updated_at')
         .eq('id', resultId)
         .single();
 
@@ -210,13 +213,21 @@ export default function ResultView() {
                   </div>
                   
                   {isStaff && (
-                    <SummaryButton
-                      resultId={result.id}
-                      hasExistingSummary={!!result.ai_summary}
-                      userHasConsent={userProfile?.ai_consent}
-                      onSummaryGenerated={handleSummaryGenerated}
-                      disabled={refreshing}
-                    />
+                    <div className="flex gap-2">
+                      <SummaryButton
+                        resultId={result.id}
+                        hasExistingSummary={!!result.ai_summary}
+                        userHasConsent={userProfile?.ai_consent}
+                        onSummaryGenerated={handleSummaryGenerated}
+                        disabled={refreshing}
+                      />
+                      <RiskFlaggingButton
+                        resultId={result.id}
+                        hasExistingFlags={!!result.ai_flags}
+                        onFlagsGenerated={handleSummaryGenerated}
+                        disabled={refreshing}
+                      />
+                    </div>
                   )}
                 </div>
               </CardHeader>
@@ -259,6 +270,65 @@ export default function ResultView() {
                       This AI-generated summary is for educational purposes only and should not replace professional medical advice. 
                       Please discuss these results with your healthcare provider.
                     </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Risk Flags - Staff Only */}
+            {isStaff && result.ai_flags && (
+              <Card className="border-orange-200 bg-orange-50/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-orange-800">
+                    <AlertTriangle className="h-5 w-5" />
+                    Risk Assessment
+                  </CardTitle>
+                  <CardDescription>
+                    AI-generated risk analysis for clinical review only
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Badge 
+                        variant={
+                          result.ai_flags.riskLevel === 'high' ? 'destructive' :
+                          result.ai_flags.riskLevel === 'medium' ? 'default' : 'secondary'
+                        }
+                        className="text-sm"
+                      >
+                        {result.ai_flags.riskLevel?.toUpperCase()} RISK
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        Score: {result.ai_risk_score}/3
+                      </span>
+                    </div>
+                    
+                    {result.ai_flags.flaggedTests?.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Flagged Tests:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {result.ai_flags.flaggedTests.map((test: string, index: number) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {test}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {result.ai_flags.reasoning && (
+                      <div>
+                        <p className="text-sm font-medium mb-2">Clinical Reasoning:</p>
+                        <p className="text-sm text-muted-foreground bg-white rounded p-3 border">
+                          {result.ai_flags.reasoning}
+                        </p>
+                      </div>
+                    )}
+                    
+                    <div className="text-xs text-muted-foreground border-t pt-2">
+                      ⚠️ This risk assessment is for staff review only and should not be shared with patients.
+                    </div>
                   </div>
                 </CardContent>
               </Card>

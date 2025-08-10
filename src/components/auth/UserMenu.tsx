@@ -11,11 +11,11 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { toast } from '@/hooks/use-toast'
-import { User, Settings, LogOut, FileText, Calendar, CreditCard } from 'lucide-react'
+import { User, Settings, LogOut, FileText, Calendar, CreditCard, AlertTriangle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 export function UserMenu() {
-  const { user, userProfile, signOut } = useAuth()
+  const { user, userProfile, signOut, hasRole } = useAuth()
   const navigate = useNavigate()
 
   const handleSignOut = async () => {
@@ -103,6 +103,16 @@ export function UserMenu() {
             <DropdownMenuItem onClick={() => navigate('/testing')}>
               <Settings className="mr-2 h-4 w-4" />
               <span>System Testing</span>
+            </DropdownMenuItem>
+          </>
+        )}
+        
+        {(hasRole('admin') || hasRole('doctor')) && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate('/staff-dashboard')}>
+              <AlertTriangle className="mr-2 h-4 w-4" />
+              <span>Staff Dashboard</span>
             </DropdownMenuItem>
           </>
         )}

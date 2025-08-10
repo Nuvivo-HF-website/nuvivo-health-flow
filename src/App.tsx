@@ -49,6 +49,7 @@ import AdminReferrals from "./pages/AdminReferrals";
 import AIReportGenerator from "./pages/AIReportGenerator";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
+import StaffDashboard from "./pages/StaffDashboard";
 
 import Testing from "./pages/Testing";
 
@@ -97,6 +98,7 @@ const App = () => (
           <Route path="/clinic-dashboard" element={<ClinicDashboard />} />
           <Route path="/admin-referrals" element={<AdminReferrals />} />
           <Route path="/ai-report-generator" element={<AIReportGenerator />} />
+          <Route path="/staff-dashboard" element={<StaffDashboard />} />
           <Route path="/profile" element={<PatientProfile />} />
           <Route path="/patient-dashboard" element={<Navigate to="/portal" replace />} />
           <Route path="/portal" element={<ComprehensivePatientPortal />} />

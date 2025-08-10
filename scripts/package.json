@@ -1,0 +1,14 @@
+{
+  "name": "staging-test-scripts",
+  "scripts": {
+    "staging:setup": "chmod +x scripts/staging-setup.sh && ./scripts/staging-setup.sh",
+    "staging:test": "node scripts/staging-test-plan.js",
+    "staging:seed": "echo 'Please run scripts/staging-seed-data.sql in your Supabase SQL editor'",
+    "staging:security": "npm audit --audit-level high && snyk test --severity-threshold=high",
+    "staging:full": "npm run staging:setup"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.53.0",
+    "axios": "^1.6.0"
+  }
+}

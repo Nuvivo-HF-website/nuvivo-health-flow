@@ -1,0 +1,308 @@
+{
+  "personal_data_mapping": {
+    "supabase_database": {
+      "categories": ["health", "identity", "contact", "professional"],
+      "tables": [
+        {
+          "name": "profiles",
+          "data_category": "identity",
+          "retention_days": 2555,
+          "contains_pii": true,
+          "gdpr_article": "Article_6_1_a"
+        },
+        {
+          "name": "patient_profiles", 
+          "data_category": "health",
+          "retention_days": 2555,
+          "contains_pii": true,
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "results",
+          "data_category": "health", 
+          "retention_days": 2555,
+          "contains_pii": false,
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "test_results",
+          "data_category": "health",
+          "retention_days": 2555, 
+          "contains_pii": false,
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "medical_documents",
+          "data_category": "health",
+          "retention_days": 2555,
+          "contains_pii": false,
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "medications",
+          "data_category": "health",
+          "retention_days": 2555,
+          "contains_pii": false,
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "prescriptions",
+          "data_category": "health",
+          "retention_days": 2555,
+          "contains_pii": false, 
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "messages",
+          "data_category": "health",
+          "retention_days": 2555,
+          "contains_pii": false,
+          "gdpr_article": "Article_9_2_h",
+          "encryption": "base64_encoded"
+        },
+        {
+          "name": "appointments",
+          "data_category": "health",
+          "retention_days": 2555,
+          "contains_pii": false,
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "consultations",
+          "data_category": "health", 
+          "retention_days": 2555,
+          "contains_pii": false,
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "health_goals",
+          "data_category": "health",
+          "retention_days": 2555,
+          "contains_pii": false,
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "health_metrics", 
+          "data_category": "health",
+          "retention_days": 2555,
+          "contains_pii": false,
+          "gdpr_article": "Article_9_2_h"
+        },
+        {
+          "name": "audit_logs",
+          "data_category": "access_logs",
+          "retention_days": 2555,
+          "contains_pii": false,
+          "gdpr_article": "Article_6_1_f",
+          "purpose": "legal_compliance_security"
+        }
+      ],
+      "encryption": "at_rest_aes256",
+      "access_control": "rls_policies"
+    },
+    "supabase_storage": {
+      "categories": ["health", "biometric"],
+      "buckets": [
+        {
+          "name": "medical-documents",
+          "data_category": "health",
+          "retention_days": 2555,
+          "public": false,
+          "encryption": "at_rest_aes256"
+        }
+      ]
+    },
+    "browser_localStorage": {
+      "categories": ["authentication"],
+      "data": [
+        {
+          "key": "supabase_auth_session",
+          "data_category": "authentication",
+          "retention_days": 30,
+          "encryption": "none_client_side",
+          "purpose": "user_authentication"
+        }
+      ]
+    },
+    "external_services": {
+      "azure_openai": {
+        "data_category": "health_anonymized",
+        "region": "eu_west",
+        "retention_days": 0,
+        "gdpr_compliance": true,
+        "purpose": "ai_analysis",
+        "consent_required": true,
+        "anonymization": "strict_pii_removal"
+      }
+    }
+  },
+  "data_flows": {
+    "ai_processing": {
+      "source": "results.parsed_data",
+      "destination": "azure_openai_eu",
+      "anonymization": true,
+      "consent_required": true,
+      "retention": "no_external_retention",
+      "pii_fields_removed": [
+        "patient_name", "dob", "nhs_number", "address", 
+        "email", "phone", "postcode", "full_name"
+      ],
+      "allowed_fields": [
+        "Cholesterol", "HDL", "LDL", "TSH", "Glucose", 
+        "HbA1c", "WBC", "RBC", "Platelets"
+      ]
+    },
+    "messaging": {
+      "source": "messages.content",
+      "encryption": "base64_encoding",
+      "access_control": "sender_recipient_only",
+      "audit_logging": "comprehensive"
+    },
+    "file_storage": {
+      "source": "medical_documents",
+      "destination": "supabase_storage",
+      "encryption": "at_rest_aes256",
+      "access_control": "rls_policies"
+    }
+  },
+  "legal_basis": {
+    "health_data_processing": {
+      "article": "Article_9_2_h",
+      "description": "Healthcare provision and health or social care management",
+      "legitimate_interest": true
+    },
+    "consent_based_processing": {
+      "article": "Article_6_1_a", 
+      "description": "Explicit consent for AI processing and marketing",
+      "withdrawable": true
+    },
+    "security_processing": {
+      "article": "Article_6_1_f",
+      "description": "Legitimate interest for security, fraud prevention, audit logging",
+      "balancing_test": "security_outweighs_privacy_impact"
+    }
+  },
+  "retention_policies": {
+    "medical_records": {
+      "period_days": 2555,
+      "reason": "UK healthcare regulation compliance",
+      "deletion_trigger": "patient_request_after_retention_period"
+    },
+    "audit_logs": {
+      "period_days": 2555,
+      "reason": "Legal compliance and security investigation",
+      "deletion_trigger": "regulatory_requirement_only"
+    },
+    "marketing_data": {
+      "period_days": 730,
+      "reason": "Marketing consent duration",
+      "deletion_trigger": "consent_withdrawal_or_expiry"
+    },
+    "session_data": {
+      "period_days": 30,
+      "reason": "Technical necessity for authentication",
+      "deletion_trigger": "automatic_expiry"
+    }
+  },
+  "data_subject_rights": {
+    "right_of_access": {
+      "implementation": "patient_portal_export_function",
+      "response_time_days": 30,
+      "format": "structured_json"
+    },
+    "right_to_rectification": {
+      "implementation": "profile_editing_interface",
+      "validation": "clinical_staff_review_for_medical_data"
+    },
+    "right_to_erasure": {
+      "implementation": "gdpr_deletion_request_workflow",
+      "limitations": "legal_retention_requirements_healthcare",
+      "response_time_days": 30
+    },
+    "right_to_data_portability": {
+      "implementation": "json_export_download",
+      "format": "machine_readable_json",
+      "scope": "all_personal_data"
+    },
+    "right_to_object": {
+      "implementation": "consent_withdrawal_interface", 
+      "effect": "immediate_processing_cessation",
+      "exceptions": "legal_obligations_vital_interests"
+    }
+  },
+  "consent_management": {
+    "consent_types": [
+      {
+        "type": "ai_processing",
+        "required": false,
+        "withdrawable": true,
+        "granular": true,
+        "purpose": "AI analysis of anonymized medical data"
+      },
+      {
+        "type": "marketing",
+        "required": false,
+        "withdrawable": true,
+        "granular": true,
+        "purpose": "Health-related marketing communications"
+      },
+      {
+        "type": "research",
+        "required": false,
+        "withdrawable": true,
+        "granular": true,
+        "purpose": "Anonymized medical research participation"
+      },
+      {
+        "type": "data_retention",
+        "required": true,
+        "withdrawable": true,
+        "granular": false,
+        "purpose": "Extended data retention beyond minimum legal requirements"
+      }
+    ],
+    "consent_tracking": {
+      "timestamp": true,
+      "version": true,
+      "ip_address": true,
+      "withdrawal_tracking": true,
+      "audit_trail": "comprehensive"
+    }
+  },
+  "security_measures": {
+    "database": {
+      "rls_enabled": true,
+      "encryption_at_rest": "aes256",
+      "access_logging": "comprehensive",
+      "backup_encryption": true
+    },
+    "transport": {
+      "tls_version": "1.2_minimum",
+      "https_enforced": true,
+      "certificate_validation": true
+    },
+    "application": {
+      "authentication": "supabase_auth",
+      "session_management": "secure_tokens",
+      "role_based_access": true,
+      "mfa_available": true
+    }
+  },
+  "compliance_monitoring": {
+    "automated_scans": {
+      "frequency": "daily",
+      "tools": ["npm_audit", "snyk", "owasp_zap"],
+      "alert_thresholds": "high_critical_immediate"
+    },
+    "manual_reviews": {
+      "frequency": "quarterly",
+      "scope": "gdpr_compliance_security_audit",
+      "documentation": "required"
+    },
+    "incident_response": {
+      "data_breach_notification": "72_hours_to_ico",
+      "user_notification": "without_undue_delay",
+      "forensic_investigation": "preserve_audit_trail"
+    }
+  }
+}

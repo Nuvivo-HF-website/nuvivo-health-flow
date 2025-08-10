@@ -46,6 +46,7 @@ import { ClinicalDecisionSupport } from '@/components/ClinicalDecisionSupport';
 import SafetySupport from '@/components/SafetySupport';
 import { HealthTrendsDashboard } from '@/components/HealthTrendsDashboard';
 import { MessagingInbox } from '@/components/MessagingInbox';
+import { GDPRConsentManager } from '@/components/GDPRConsentManager';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -219,6 +220,10 @@ export default function ComprehensivePatientPortal() {
                 <MessageCircle className="h-4 w-4" />
                 Messages
               </TabsTrigger>
+              <TabsTrigger value="privacy" className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Privacy
+              </TabsTrigger>
             </TabsList>
 
             {/* Phase 2 & 3 Tabs */}
@@ -320,6 +325,10 @@ export default function ComprehensivePatientPortal() {
 
             <TabsContent value="messages" className="space-y-6">
               <MessagingInbox />
+            </TabsContent>
+
+            <TabsContent value="privacy" className="space-y-6">
+              <GDPRConsentManager />
             </TabsContent>
           </Tabs>
         </div>

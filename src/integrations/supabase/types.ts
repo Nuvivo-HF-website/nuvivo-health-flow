@@ -1110,10 +1110,16 @@ export type Database = {
         Row: {
           ai_consent: boolean | null
           avatar_url: string | null
+          consent_ip_address: unknown | null
+          consent_timestamp: string | null
+          consent_version: string | null
           created_at: string
+          data_retention_consent: boolean | null
           email: string | null
           full_name: string | null
           id: string
+          marketing_consent: boolean | null
+          research_consent: boolean | null
           updated_at: string
           user_id: string
           user_type: string | null
@@ -1121,10 +1127,16 @@ export type Database = {
         Insert: {
           ai_consent?: boolean | null
           avatar_url?: string | null
+          consent_ip_address?: unknown | null
+          consent_timestamp?: string | null
+          consent_version?: string | null
           created_at?: string
+          data_retention_consent?: boolean | null
           email?: string | null
           full_name?: string | null
           id?: string
+          marketing_consent?: boolean | null
+          research_consent?: boolean | null
           updated_at?: string
           user_id: string
           user_type?: string | null
@@ -1132,10 +1144,16 @@ export type Database = {
         Update: {
           ai_consent?: boolean | null
           avatar_url?: string | null
+          consent_ip_address?: unknown | null
+          consent_timestamp?: string | null
+          consent_version?: string | null
           created_at?: string
+          data_retention_consent?: boolean | null
           email?: string | null
           full_name?: string | null
           id?: string
+          marketing_consent?: boolean | null
+          research_consent?: boolean | null
           updated_at?: string
           user_id?: string
           user_type?: string | null
@@ -1681,6 +1699,10 @@ export type Database = {
         Args: { content_text: string }
         Returns: string
       }
+      export_user_data: {
+        Args: { _user_id: string }
+        Returns: Json
+      }
       get_upcoming_appointments: {
         Args: { _user_id: string }
         Returns: {
@@ -1706,13 +1728,33 @@ export type Database = {
         }
         Returns: boolean
       }
+      log_gdpr_action: {
+        Args: {
+          _user_id: string
+          _action: string
+          _table_name?: string
+          _record_id?: string
+          _ip_address?: unknown
+          _user_agent?: string
+          _data_category?: string
+        }
+        Returns: string
+      }
       log_message_action: {
         Args: { _message_id: string; _action: string; _actor_id: string }
         Returns: undefined
       }
+      process_gdpr_deletion: {
+        Args: { _user_id: string }
+        Returns: Json
+      }
       update_health_goal_progress: {
         Args: { _goal_id: string; _current_value: number }
         Returns: undefined
+      }
+      withdraw_consent: {
+        Args: { _user_id: string; _consent_type: string }
+        Returns: Json
       }
     }
     Enums: {

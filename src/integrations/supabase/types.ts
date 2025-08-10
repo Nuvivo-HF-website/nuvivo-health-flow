@@ -800,6 +800,78 @@ export type Database = {
           },
         ]
       }
+      message_audit_logs: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          id: string
+          message_id: string
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          id?: string
+          message_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          id?: string
+          message_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read_at: string | null
+          recipient_id: string
+          related_result_id: string | null
+          sender_id: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          related_result_id?: string | null
+          sender_id: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          related_result_id?: string | null
+          sender_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_messages_related_result"
+            columns: ["related_result_id"]
+            isOneToOne: false
+            referencedRelation: "patient_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_messages_related_result"
+            columns: ["related_result_id"]
+            isOneToOne: false
+            referencedRelation: "results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           action_label: string | null
@@ -1497,6 +1569,54 @@ export type Database = {
       }
     }
     Views: {
+      messages_decrypted: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string | null
+          read_at: string | null
+          recipient_id: string | null
+          related_result_id: string | null
+          sender_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          content?: never
+          created_at?: string | null
+          id?: string | null
+          read_at?: string | null
+          recipient_id?: string | null
+          related_result_id?: string | null
+          sender_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          content?: never
+          created_at?: string | null
+          id?: string | null
+          read_at?: string | null
+          recipient_id?: string | null
+          related_result_id?: string | null
+          sender_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_messages_related_result"
+            columns: ["related_result_id"]
+            isOneToOne: false
+            referencedRelation: "patient_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_messages_related_result"
+            columns: ["related_result_id"]
+            isOneToOne: false
+            referencedRelation: "results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_results: {
         Row: {
           ai_generated_at: string | null
@@ -1545,6 +1665,14 @@ export type Database = {
         }
         Returns: string
       }
+      decrypt_message_content: {
+        Args: { encrypted_content: string }
+        Returns: string
+      }
+      encrypt_message_content: {
+        Args: { content_text: string }
+        Returns: string
+      }
       get_upcoming_appointments: {
         Args: { _user_id: string }
         Returns: {
@@ -1569,6 +1697,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      log_message_action: {
+        Args: { _message_id: string; _action: string; _actor_id: string }
+        Returns: undefined
       }
       update_health_goal_progress: {
         Args: { _goal_id: string; _current_value: number }

@@ -20,7 +20,7 @@ serve(async (req) => {
     logStep("Function started");
 
     const azureEndpoint = Deno.env.get("AZURE_OPENAI_ENDPOINT");
-    const azureApiKey = Deno.env.get("AZURE_OPENAI_KEY");
+    const azureApiKey = Deno.env.get("AZURE_OPENAI_API_KEY");
     const azureDeploymentName = Deno.env.get("AZURE_DEPLOYMENT_NAME") || "gpt-4o-mini";
     if (!azureEndpoint || !azureApiKey) {
       throw new Error("Azure OpenAI credentials not configured");

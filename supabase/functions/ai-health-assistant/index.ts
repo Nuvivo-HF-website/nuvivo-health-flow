@@ -70,28 +70,34 @@ Remember: You are not replacing medical professionals but enhancing healthcare b
       { role: 'user', content: query }
     ]
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Use Azure OpenAI for EU compliance
+    const azureEndpoint = Deno.env.get('AZURE_OPENAI_ENDPOINT')
+    const azureApiKey = Deno.env.get('AZURE_OPENAI_API_KEY')
+    
+    if (!azureEndpoint || !azureApiKey) {
+      throw new Error('Azure OpenAI credentials not configured')
+    }
+
+    const response = await fetch(`${azureEndpoint}/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-06-01-preview`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': Deno.env.get('ANTHROPIC_API_KEY'),
-        'anthropic-version': '2023-06-01'
+        'api-key': azureApiKey
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        messages: messages.slice(-10), // Keep last 10 messages for context
         max_tokens: 1500,
-        temperature: 0.3,
-        messages: messages.slice(-10) // Keep last 10 messages for context
+        temperature: 0.3
       })
     })
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`Anthropic API error: ${errorText}`)
+      throw new Error(`Azure OpenAI API error: ${errorText}`)
     }
 
     const result = await response.json()
-    const assistantResponse = result.content[0].text
+    const assistantResponse = result.choices[0]?.message?.content
 
     // Enhanced response with structured data
     const enhancedResponse = {

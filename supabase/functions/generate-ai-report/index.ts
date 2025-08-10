@@ -19,9 +19,10 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
-    if (!openaiApiKey) {
-      throw new Error("OpenAI API key not configured");
+    const azureEndpoint = Deno.env.get("AZURE_OPENAI_ENDPOINT");
+    const azureApiKey = Deno.env.get("AZURE_OPENAI_API_KEY");
+    if (!azureEndpoint || !azureApiKey) {
+      throw new Error("Azure OpenAI credentials not configured");
     }
 
     const supabaseClient = createClient(
@@ -81,16 +82,15 @@ ${bloodTestResults.map(result =>
 
 Please provide a comprehensive NHS-compliant interpretation of these blood test results.`;
 
-    logStep("Calling OpenAI API");
+    logStep("Calling Azure OpenAI API");
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`${azureEndpoint}/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-06-01-preview`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
+        'api-key': azureApiKey,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -102,8 +102,8 @@ Please provide a comprehensive NHS-compliant interpretation of these blood test 
 
     if (!response.ok) {
       const errorData = await response.text();
-      logStep("OpenAI API error", { status: response.status, error: errorData });
-      throw new Error(`OpenAI API error: ${response.status}`);
+      logStep("Azure OpenAI API error", { status: response.status, error: errorData });
+      throw new Error(`Azure OpenAI API error: ${response.status}`);
     }
 
     const aiResponse = await response.json();

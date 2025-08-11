@@ -182,11 +182,11 @@ const Services = () => {
                         category.popular ? 'bg-primary/10' : 'bg-accent/10'
                       }`}>
                         <IconComponent className={`w-6 h-6 ${
-                          category.popular ? 'text-primary' : 'text-accent'
+                          category.popular ? 'text-black' : 'text-black'
                         }`} />
                       </div>
                       <div>
-                        <CardTitle className="text-xl text-accent">{category.title}</CardTitle>
+                        <CardTitle className="text-xl text-black">{category.title}</CardTitle>
                         <p className="text-sm text-muted-foreground">{category.subtitle}</p>
                       </div>
                     </div>

@@ -23,10 +23,10 @@ const Index = () => {
       {/* AI Report Generation CTA */}
       <section className="py-20 bg-gradient-warm">
         <div className="container mx-auto px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-inter font-normal text-white mb-6">
+          <h2 className="text-3xl sm:text-4xl font-inter font-normal text-black mb-6">
             Already Have Results?
           </h2>
-          <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto font-inter">
+          <p className="text-xl text-black/80 mb-12 max-w-2xl mx-auto font-inter">
             Upload your existing blood test results and get AI-powered analysis from the world's most advanced health platform.
           </p>
           <Button 

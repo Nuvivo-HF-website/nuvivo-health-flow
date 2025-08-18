@@ -42,7 +42,7 @@ const Index = () => {
       <MedicalQuiz />
       
       <CTASection 
-        title="Ready to Take Control of Your Health?"
+        title="Ready to Take Control of Your Health ?"
         subtitle="Discover trusted doctors, clinics, and tests in minutes – all in one place. Book appointments, get answers, and start feeling better, faster."
         primaryButtonText="Book Your Test Now"
         primaryButtonLink="/booking"

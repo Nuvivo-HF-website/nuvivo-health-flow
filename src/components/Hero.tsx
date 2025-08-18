@@ -46,7 +46,7 @@ const Hero = () => {
                 className="text-lg px-12 py-4 font-inter"
                 onClick={() => navigate("/booking")}
               >
-                Book Your Test
+                Browse service
               </Button>
               <Button 
                 variant="outline" 

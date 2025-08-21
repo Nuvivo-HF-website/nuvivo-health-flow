@@ -99,44 +99,99 @@ const Header = () => {
               </NavigationMenuItem>
 
               <NavigationMenuItem hasDropdown>
-                <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
-                  Consultations
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="grid w-[300px] gap-3 p-4">
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/marketplace" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Doctors & Specialists</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/consultations/mental-health" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Mental Health & Psychology</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/consultations/nutrition" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Nutrition & Weight</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/consultations/sexual-health" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Sexual Health</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/consultations/second-opinions" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Second Opinions</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/medical-reports" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Medical Reports (Fit Notes, DVLA, Travel Letters)</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+  <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
+    Consultations
+  </NavigationMenuTrigger>
+  <NavigationMenuContent>
+    <div className="w-[600px] p-4">
+      <div className="grid gap-6 md:grid-cols-3">
+        {/* 1. General & Specialist Care */}
+        <div className="space-y-2">
+          {/* fixed-height heading wrapper so columns line up */}
+          <div className="px-1 min-h-[40px] flex items-end">
+            <h4 className="text-[14px] font-semibold">
+              General &amp; Specialist Care
+            </h4>
+          </div>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/marketplace"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Doctors &amp; Specialists</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/consultations/second-opinions"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Second Opinions</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/medical-reports"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">
+                Medical Reports (Fit Notes, DVLA, Travel Letters)
+              </div>
+            </NavigationLink>
+          </NavigationMenuLink>
+        </div>
+
+        {/* 2. Wellbeing & Lifestyle */}
+        <div className="space-y-2">
+          <div className="px-1 min-h-[40px] flex items-end">
+            <h4 className="text-[14px] font-semibold">
+              Wellbeing &amp; Lifestyle
+            </h4>
+          </div>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/consultations/nutrition"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Nutrition &amp; Weight</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/consultations/mental-health"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Mental Health &amp; Psychology</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+        </div>
+
+        {/* 3. Specialist Health Areas */}
+        <div className="space-y-2">
+          <div className="px-1 min-h-[40px] flex items-end">
+            <h4 className="text-[14px] font-semibold">
+              Specialist Health Areas
+            </h4>
+          </div>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/consultations/sexual-health"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Sexual Health</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+        </div>
+      </div>
+    </div>
+  </NavigationMenuContent>
+</NavigationMenuItem>
 
               <NavigationMenuItem hasDropdown>
                 <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">

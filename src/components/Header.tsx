@@ -83,27 +83,7 @@ const Header = () => {
                       <NavigationLink to="/blood-tests?category=mens-health" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
                         <div className="text-sm font-medium leading-none">Men's Health Panels</div>
                       </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/blood-tests?category=hormones" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Hormones & Fertility</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/blood-tests?category=energy-sleep" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Energy, Sleep & Mood</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/blood-tests?category=vitamins" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Vitamin & Nutrition</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/blood-tests?category=immunity" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Inflammation & Immunity</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
+                    </NavigationMenuLink>                    
                     <NavigationMenuLink asChild>
                       <NavigationLink to="/blood-tests?category=sports" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
                         <div className="text-sm font-medium leading-none">Sports Performance</div>

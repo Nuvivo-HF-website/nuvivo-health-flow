@@ -429,6 +429,31 @@ const Treatments = () => {
     navigate(`/booking?treatment=${treatment.id}&type=treatment`);
   };
 
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    
+    // Update URL to reflect category change
+    if (category === "All") {
+      navigate("/treatments", { replace: true });
+    } else {
+      // Map category names back to URL parameters
+      const reverseMap: { [key: string]: string } = {
+        'IV Vitamin Therapy': 'iv-drips',
+        'B12 Injections': 'b12-shots',
+        'Hormone Therapy': 'hormones',
+        'Chronic Conditions': 'chronic',
+        'Smoking Cessation': 'smoking',
+        'Physiotherapy': 'physio',
+        'Sports Therapy': 'sports'
+      };
+      
+      const urlCategory = reverseMap[category];
+      if (urlCategory) {
+        navigate(`/treatments?category=${urlCategory}`, { replace: true });
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -464,7 +489,7 @@ const Treatments = () => {
               <Button
                 key={category}
                 variant={selectedCategory === category ? "default" : "outline"}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => handleCategoryChange(category)}
                 className="mb-2"
               >
                 {category}

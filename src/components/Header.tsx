@@ -42,15 +42,18 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-              <img 
-                src="/lovable-uploads/d10bf310-8418-438d-af09-376e2c242db8.png" 
-                alt="Nuvivo Health Logo" 
-                className="w-12 h-12 object-contain"
-              />
-            </Link>
-          </div>
+          <div className="flex items-center shrink-0">
+  <Link
+    to="/"
+    className="flex items-center hover:opacity-80 transition-opacity relative z-20"
+  >
+    <img
+      src="/lovable-uploads/d10bf310-8418-438d-af09-376e2c242db8.png"
+      alt="Nuvivo Health Logo"
+      className="w-12 h-12 object-contain"
+    />
+  </Link>
+</div>
 
           {/* Navigation */}
           <NavigationMenu className="hidden md:flex">
@@ -98,6 +101,9 @@ const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
+
+
+
               <NavigationMenuItem hasDropdown>
   <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
     Consultations
@@ -109,7 +115,7 @@ const Header = () => {
         <div className="space-y-2">
           {/* fixed-height heading wrapper so columns line up */}
           <div className="px-1 min-h-[40px] flex items-end">
-            <h4 className="text-[14px] font-semibold">
+            <h4 className="text-[15px] font-semibold">
               General &amp; Specialist Care
             </h4>
           </div>
@@ -146,8 +152,8 @@ const Header = () => {
 
         {/* 2. Wellbeing & Lifestyle */}
         <div className="space-y-2">
-          <div className="px-1 min-h-[40px] flex items-end">
-            <h4 className="text-[14px] font-semibold">
+          <div className="px-1 min-h-[20px] flex items-end">
+            <h4 className="text-[15px] font-semibold">
               Wellbeing &amp; Lifestyle
             </h4>
           </div>
@@ -173,8 +179,8 @@ const Header = () => {
 
         {/* 3. Specialist Health Areas */}
         <div className="space-y-2">
-          <div className="px-1 min-h-[40px] flex items-end">
-            <h4 className="text-[14px] font-semibold">
+          <div className="px-1 min-h-[20px] flex items-end">
+            <h4 className="text-[15px] font-semibold">
               Specialist Health Areas
             </h4>
           </div>
@@ -193,40 +199,124 @@ const Header = () => {
   </NavigationMenuContent>
 </NavigationMenuItem>
 
-              <NavigationMenuItem hasDropdown>
-                <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
-                  Treatments
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="grid w-[300px] gap-3 p-4">
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/treatments?category=physio" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Physiotherapy & Sports Therapy</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/treatments?category=iv-drips" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">IV Vitamin Drips & B12 Shots</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/treatments?category=hormones" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">HRT & TRT Support</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/treatments?category=chronic" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Chronic Conditions (Thyroid, Diabetes, PCOS)</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/treatments?category=smoking" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Smoking Cessation</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+
+
+
+<NavigationMenuItem hasDropdown>
+  <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
+    Treatments &amp; Therapies
+  </NavigationMenuTrigger>
+  <NavigationMenuContent>
+    <div className="w-[800px] p-4 not-prose">
+      <div className="grid gap-6 md:grid-cols-4">
+        {/* 1. Physical & Sports Therapy */}
+        <div className="space-y-2">
+          <div className="px-1 h-10 md:h-12 flex items-end">
+            <h4 className="text-[15px] font-semibold">
+              Physical &amp; Sports Therapy
+            </h4>
+          </div>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/treatments?category=physio"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Physiotherapy</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/treatments?category=physio"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Sports Therapy</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+        </div>
+
+        {/* 2. Wellness & Nutrient Therapy */}
+        <div className="space-y-2">
+          <div className="px-1 h-10 md:h-12 flex items-end">
+            <h4 className="text-[15px] font-semibold">
+              Wellness &amp; Nutrient Therapy
+            </h4>
+          </div>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/treatments?category=iv-drips"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">IV Vitamin Drips</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/treatments?category=iv-drips"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">B12 Shots</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+        </div>
+
+        {/* 3. Hormone & Endocrine Support */}
+        <div className="space-y-2">
+          <div className="px-1 h-10 md:h-12 flex items-end">
+            <h4 className="text-[15px] font-semibold">
+              Hormone &amp; Endocrine Support
+            </h4>
+          </div>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/treatments?category=hormones"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">HRT &amp; TRT Support</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/treatments?category=chronic"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">
+                Chronic Conditions (Thyroid, Diabetes, PCOS)
+              </div>
+            </NavigationLink>
+          </NavigationMenuLink>
+        </div>
+
+        {/* 4. Lifestyle Change Support */}
+        <div className="space-y-2">
+          <div className="px-1 h-10 md:h-12 flex items-end">
+            <h4 className="text-[15px] font-semibold">
+              Lifestyle Change Support
+            </h4>
+          </div>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/treatments?category=smoking"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Smoking Cessation</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+        </div>
+      </div>
+    </div>
+  </NavigationMenuContent>
+</NavigationMenuItem>
+
+
+
+
 
               <NavigationMenuItem hasDropdown>
                 <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
@@ -236,17 +326,17 @@ const Header = () => {
                   <div className="grid w-[300px] gap-3 p-4">
                     <NavigationMenuLink asChild>
                       <NavigationLink to="/radiology" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Radiology & Ultrasound</div>
+                        <div className="text-sm font-medium leading-none">Ultrasound & Radiology</div>
                       </NavigationLink>
                     </NavigationMenuLink>
                     <NavigationMenuLink asChild>
                       <NavigationLink to="/scans/ecg" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Home ECG & Monitoring</div>
+                        <div className="text-sm font-medium leading-none">Heart Monitoring & ECG (Home or Clinic)</div>
                       </NavigationLink>
                     </NavigationMenuLink>
                     <NavigationMenuLink asChild>
                       <NavigationLink to="/scans/cancer" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Cancer Scans</div>
+                        <div className="text-sm font-medium leading-none">Specialist Cancer Screening</div>
                       </NavigationLink>
                     </NavigationMenuLink>
                   </div>
@@ -254,42 +344,80 @@ const Header = () => {
               </NavigationMenuItem>
 
               <NavigationMenuItem hasDropdown>
-                <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
-                  Mobile Services
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="grid w-[300px] gap-3 p-4">
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/mobile/home-collection" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Home Blood Collection</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/private-ambulance" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Private Ambulance</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/mobile/sample-dropoff" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Sample Drop-Off Support</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
-                      <NavigationLink to="/mobile/corporate" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                        <div className="text-sm font-medium leading-none">Corporate Health Days</div>
-                      </NavigationLink>
-                    </NavigationMenuLink>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+  <NavigationMenuTrigger className="text-muted-foreground hover:text-primary">
+    Mobile &amp; On-Site Services
+  </NavigationMenuTrigger>
+  <NavigationMenuContent>
+   <div className="w-[600px] p-4">
+      <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <div className="px-1 min-h-[20px] flex items-end">
+            <h4 className="text-[15px] font-semibold">
+              At-Home Care
+            </h4>
+          </div>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/mobile/home-collection"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Home Blood Collection</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/mobile/corporate"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Corporate Health Days</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+        </div>
+
+        
+        <div className="space-y-2">
+          <div className="px-1 min-h-[20px] flex items-end">
+            <h4 className="text-[15px] font-semibold">
+              Medical Transport &amp; Support
+            </h4>
+          </div>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/private-ambulance"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Private Ambulance</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/mobile/sample-dropoff"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">Sample Drop-Off Assistance</div>
+            </NavigationLink>
+          </NavigationMenuLink>
+        </div>
+      </div>
+    </div>
+  </NavigationMenuContent>
+</NavigationMenuItem>
 
               <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <NavigationLink to="/clinic-finder" className="text-muted-foreground hover:text-primary transition-colors px-3 py-2">
-                    Find Clinic
-                  </NavigationLink>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+  <NavigationMenuLink asChild>
+    <NavigationLink
+      to="/clinic-finder"
+      className="whitespace-nowrap text-muted-foreground hover:text-primary transition-colors px-3 py-2"
+    >
+      Find Clinic
+    </NavigationLink>
+  </NavigationMenuLink>
+</NavigationMenuItem>
+
             </NavigationMenuList>
           </NavigationMenu>
 

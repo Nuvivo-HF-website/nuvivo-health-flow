@@ -55,6 +55,13 @@ export default function ComprehensivePatientPortal() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
 
+  // All hooks must come before any conditional logic
+  React.useEffect(() => {
+    if (!user && !loading) {
+      navigate('/sign-in');
+    }
+  }, [user, loading, navigate]);
+
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'safety':
@@ -92,18 +99,7 @@ export default function ComprehensivePatientPortal() {
     );
   }
 
-  // Redirect to sign-in if not authenticated
-  React.useEffect(() => {
-    if (!user && !loading) {
-      navigate('/sign-in');
-    }
-  }, [user, loading, navigate]);
-
-  // Don't render anything if redirecting
-  if (!user && !loading) {
-    return null;
-  }
-
+  // Don't render anything if redirecting or no user
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

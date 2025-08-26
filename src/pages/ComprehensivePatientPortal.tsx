@@ -173,12 +173,14 @@ export default function ComprehensivePatientPortal() {
         </div>
         
         {/* Main Content - adjusted for sidebar positioning */}
-        <main className="flex-1 overflow-auto p-6 ml-[456px]">
+        <main className="flex-1 overflow-auto p-6 ml-[456px] mr-[368px]">
           {renderContent()}
         </main>
         
-        {/* Right Sidebar */}
-        <PortalRightSidebar />
+        {/* Right Sidebar - positioned to match left sidebar alignment */}
+        <div className="absolute right-[48px] top-[-32px] z-10">
+          <PortalRightSidebar />
+        </div>
       </div>
 
       <Footer />

@@ -71,9 +71,9 @@ const menuSections = [
 
 export function PortalSidebar({ activeSection, onSectionChange }: PortalSidebarProps) {
   return (
-    <div className="h-[calc(100vh-64px)] overflow-hidden">
+    <div className="w-64 bg-card border-r border-border h-[calc(100vh-32px)] shadow-lg">
       <ScrollArea className="h-full">
-        <div className="p-4 space-y-6">
+        <div className="p-4 pt-12 space-y-6">
           {menuSections.map((section) => (
             <div key={section.title} className="space-y-2">
               <h3 className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">

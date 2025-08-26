@@ -181,7 +181,7 @@ const Services = () => {
                 key={index} 
                 className={`relative transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group ${
                   category.popular ? 'border-primary shadow-primary/20 ring-2 ring-primary/20' : ''
-                } ${index === 4 ? 'lg:col-span-2 lg:justify-self-center' : ''}`}
+                } ${index === 4 ? 'lg:col-start-1 lg:col-end-3 lg:max-w-md lg:mx-auto' : ''}`}
               >
                 {category.popular && (
                   <div className="absolute -top-3 left-6">

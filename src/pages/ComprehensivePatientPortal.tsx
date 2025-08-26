@@ -43,10 +43,10 @@ import { WearableIntegration } from '@/components/WearableIntegration';
 import { EmergencyAlertSystem } from '@/components/EmergencyAlertSystem';
 import { EnhancedTelemedicine } from '@/components/EnhancedTelemedicine';
 import { ClinicalDecisionSupport } from '@/components/ClinicalDecisionSupport';
-import SafetySupport from '@/components/SafetySupport';
 import { HealthTrendsDashboard } from '@/components/HealthTrendsDashboard';
 import { MessagingInbox } from '@/components/MessagingInbox';
 import { GDPRConsentManager } from '@/components/GDPRConsentManager';
+import UnifiedEmergencyCenter from '@/components/UnifiedEmergencyCenter';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -224,14 +224,10 @@ export default function ComprehensivePatientPortal() {
 
             {/* Phase 2 & 3 Tabs */}
             <div className="mt-4">
-              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
                 <TabsTrigger value="safety" className="flex items-center gap-2">
                   <Shield className="h-4 w-4" />
-                  Safety
-                </TabsTrigger>
-                <TabsTrigger value="emergency" className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4" />
-                  Emergency
+                  Emergency & Safety
                 </TabsTrigger>
                 <TabsTrigger value="clinical-support" className="flex items-center gap-2">
                   <Brain className="h-4 w-4" />
@@ -254,9 +250,8 @@ export default function ComprehensivePatientPortal() {
 
             <TabsContent value="overview" className="space-y-6">
               <AnalyticsDashboard />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <SafetySupport />
-                <EmergencyAlertSystem />
+              <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+                <UnifiedEmergencyCenter />
               </div>
             </TabsContent>
 
@@ -296,11 +291,7 @@ export default function ComprehensivePatientPortal() {
 
             {/* Phase 2 & 3 Tab Content */}
             <TabsContent value="safety" className="space-y-6">
-              <SafetySupport />
-            </TabsContent>
-
-            <TabsContent value="emergency" className="space-y-6">
-              <EmergencyAlertSystem />
+              <UnifiedEmergencyCenter />
             </TabsContent>
 
             <TabsContent value="clinical-support" className="space-y-6">

@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { 
   Heart, Droplets, Dumbbell, Shield, Clock, CheckCircle, 
   TestTube2, Users, Scan, Zap, ArrowRight, Star,
-  Calendar, MapPin, Award, X
+  Calendar, MapPin, Award, X, Truck
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -132,6 +132,22 @@ const Services = () => {
       startingPrice: "£45",
       link: "/treatments",
       services: ["Deep Tissue Massage", "Sports Massage", "Therapeutic Massage", "Injury Treatment"]
+    },
+    {
+      icon: Truck,
+      title: "Mobile Services",
+      subtitle: "Healthcare at Your Doorstep",
+      description: "Professional medical services delivered directly to you",
+      features: [
+        "Home blood collection",
+        "Mobile health screening",
+        "Corporate wellness visits",
+        "Same-day appointments"
+      ],
+      popular: false,
+      startingPrice: "£25",
+      link: "/mobile-home-collection",
+      services: ["Home Collection", "Corporate Health", "Sample Drop-off", "Private Ambulance"]
     }
   ];
 

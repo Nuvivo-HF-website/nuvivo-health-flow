@@ -173,7 +173,7 @@ const Services = () => {
         </div>
 
         {/* Service Categories */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-20 [&>*:nth-child(5)]:lg:col-start-1 [&>*:nth-child(5)]:lg:col-end-3 [&>*:nth-child(5)]:lg:justify-self-center">
+        <div className="grid lg:grid-cols-2 gap-8 mb-20 [&>*:nth-child(5)]:lg:justify-self-center">
           {serviceCategories.map((category, index) => {
             const IconComponent = category.icon;
             return (

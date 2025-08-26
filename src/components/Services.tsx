@@ -102,6 +102,22 @@ const Services = () => {
       services: ["General Practice", "Cardiology", "Endocrinology", "Dermatology"]
     },
     {
+      icon: Truck,
+      title: "Mobile Services",
+      subtitle: "Healthcare at Your Doorstep",
+      description: "Professional medical services delivered directly to you",
+      features: [
+        "Home blood collection",
+        "Mobile health screening",
+        "Corporate wellness visits",
+        "Same-day appointments"
+      ],
+      popular: false,
+      startingPrice: "£25",
+      link: "/mobile-home-collection",
+      services: ["Home Collection", "Corporate Health", "Sample Drop-off", "Private Ambulance"]
+    },
+    {
       icon: Scan,
       title: "Radiology Services",
       subtitle: "Advanced Medical Imaging",
@@ -132,22 +148,6 @@ const Services = () => {
       startingPrice: "£45",
       link: "/treatments",
       services: ["Deep Tissue Massage", "Sports Massage", "Therapeutic Massage", "Injury Treatment"]
-    },
-    {
-      icon: Truck,
-      title: "Mobile Services",
-      subtitle: "Healthcare at Your Doorstep",
-      description: "Professional medical services delivered directly to you",
-      features: [
-        "Home blood collection",
-        "Mobile health screening",
-        "Corporate wellness visits",
-        "Same-day appointments"
-      ],
-      popular: false,
-      startingPrice: "£25",
-      link: "/mobile-home-collection",
-      services: ["Home Collection", "Corporate Health", "Sample Drop-off", "Private Ambulance"]
     }
   ];
 

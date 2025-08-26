@@ -164,8 +164,8 @@ export default function ComprehensivePatientPortal() {
       <Header />
       
       <div className="relative flex h-[calc(100vh-64px)]">
-        {/* Left Sidebar - positioned to start at header logo mid-point */}
-        <div className="absolute left-0 top-[-32px] z-10">
+        {/* Left Sidebar - positioned so its middle aligns with header logo */}
+        <div className="absolute left-12 top-[-32px] z-10">
           <PortalSidebar 
             activeSection={activeSection} 
             onSectionChange={setActiveSection} 
@@ -173,7 +173,7 @@ export default function ComprehensivePatientPortal() {
         </div>
         
         {/* Main Content - adjusted for sidebar positioning */}
-        <main className="flex-1 overflow-auto p-6 ml-64">
+        <main className="flex-1 overflow-auto p-6 ml-80">
           {renderContent()}
         </main>
         

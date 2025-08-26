@@ -173,7 +173,7 @@ const Services = () => {
         </div>
 
         {/* Service Categories */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 mb-20 justify-items-center">
+        <div className="grid lg:grid-cols-2 gap-8 mb-20">
           {serviceCategories.map((category, index) => {
             const IconComponent = category.icon;
             return (

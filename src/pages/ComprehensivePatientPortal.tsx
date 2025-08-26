@@ -1,31 +1,12 @@
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/EnhancedAuthContext';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Activity, 
-  Calendar, 
-  Pill, 
-  Target, 
-  Video, 
-  FileText, 
-  TrendingUp,
-  Heart,
-  Settings,
-  Bell,
-  Plus,
-  Brain,
-  Bot,
-  AlertTriangle,
-  Zap,
-  Shield,
-  Dna,
-  BarChart3,
-  MessageCircle
-} from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { PortalSidebar } from '@/components/portal/PortalSidebar';
+import { PortalRightSidebar } from '@/components/portal/PortalRightSidebar';
+import { QuickActions } from '@/components/portal/QuickActions';
+import { AnalyticsOverview } from '@/components/portal/AnalyticsOverview';
 
 // Import all Phase 2-4 components
 import { EnhancedMedicalRecords } from '@/components/EnhancedMedicalRecords';
@@ -47,13 +28,11 @@ import { HealthTrendsDashboard } from '@/components/HealthTrendsDashboard';
 import { MessagingInbox } from '@/components/MessagingInbox';
 import { GDPRConsentManager } from '@/components/GDPRConsentManager';
 import UnifiedEmergencyCenter from '@/components/UnifiedEmergencyCenter';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 export default function ComprehensivePatientPortal() {
   const { user, userProfile, loading } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeSection, setActiveSection] = useState('overview');
 
   // All hooks must come before any conditional logic
   React.useEffect(() => {
@@ -63,28 +42,7 @@ export default function ComprehensivePatientPortal() {
   }, [user, loading, navigate]);
 
   const handleQuickAction = (action: string) => {
-    switch (action) {
-      case 'safety':
-        setActiveTab('safety');
-        break;
-      case 'appointment':
-        setActiveTab('appointments');
-        break;
-      case 'health-data':
-        setActiveTab('health-metrics');
-        break;
-      case 'telemedicine':
-        setActiveTab('telemedicine');
-        break;
-      case 'goals':
-        setActiveTab('goals');
-        break;
-      case 'ai-assistant':
-        setActiveTab('ai-assistant');
-        break;
-      default:
-        break;
-    }
+    setActiveSection(action);
   };
 
   // Show loading state while checking authentication
@@ -110,216 +68,116 @@ export default function ComprehensivePatientPortal() {
     );
   }
 
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return (
+          <div className="space-y-6">
+            <QuickActions onActionClick={handleQuickAction} />
+            <AnalyticsOverview />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-card rounded-lg p-6 border">
+                <h3 className="text-lg font-semibold mb-4">Unified Emergency Center</h3>
+                <p className="text-sm text-muted-foreground">(UnifiedEmergencyCenter)</p>
+                <div className="mt-8 text-center text-muted-foreground">
+                  Component preview
+                </div>
+              </div>
+              <div className="bg-card rounded-lg p-6 border">
+                <h3 className="text-lg font-semibold mb-4">Health Trends Dashboard</h3>
+                <p className="text-sm text-muted-foreground">(HealthtrendsDashboard)</p>
+                <div className="mt-8 text-center text-muted-foreground">
+                  Component preview
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'health-trends':
+        return <HealthTrendsDashboard />;
+      case 'ai-assistant':
+        return <AIHealthAssistant />;
+      case 'appointments':
+        return <AdvancedAppointmentBooking />;
+      case 'health-metrics':
+        return (
+          <div className="space-y-6">
+            <HealthMetricsTracker />
+            <WearableIntegration />
+          </div>
+        );
+      case 'telemedicine':
+        return (
+          <div className="space-y-6">
+            <EnhancedTelemedicine />
+            <ClinicalDecisionSupport />
+          </div>
+        );
+      case 'prescriptions':
+        return <PrescriptionManager />;
+      case 'goals':
+        return <HealthGoalsTracker />;
+      case 'records':
+        return <EnhancedMedicalRecords />;
+      case 'messages':
+        return <MessagingInbox />;
+      case 'privacy':
+        return <GDPRConsentManager />;
+      case 'safety':
+        return <UnifiedEmergencyCenter />;
+      case 'clinical-support':
+        return <ClinicalDecisionSupport />;
+      case 'predictive-analytics':
+        return <PredictiveHealthAnalytics />;
+      case 'automations':
+        return <MicroAutomations />;
+      case 'genomics':
+        return <GenomicsAnalyzer />;
+      default:
+        return (
+          <div className="space-y-6">
+            <QuickActions onActionClick={handleQuickAction} />
+            <AnalyticsOverview />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-card rounded-lg p-6 border">
+                <h3 className="text-lg font-semibold mb-4">Unified Emergency Center</h3>
+                <p className="text-sm text-muted-foreground">(UnifiedEmergencyCenter)</p>
+                <div className="mt-8 text-center text-muted-foreground">
+                  Component preview
+                </div>
+              </div>
+              <div className="bg-card rounded-lg p-6 border">
+                <h3 className="text-lg font-semibold mb-4">Health Trends Dashboard</h3>
+                <p className="text-sm text-muted-foreground">(HealthtrendsDashboard)</p>
+                <div className="mt-8 text-center text-muted-foreground">
+                  Component preview
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="space-y-6">
-          {/* Welcome Section */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight">
-                Welcome back, {userProfile?.full_name || user.email}
-              </h1>
-              <p className="text-xl text-muted-foreground">
-                Your comprehensive healthcare dashboard
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => navigate('/profile')}>
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </Button>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleQuickAction('safety')}>
-              <CardContent className="flex flex-col items-center p-6">
-                <Shield className="h-8 w-8 text-red-500 mb-2" />
-                <h3 className="font-semibold text-center">Need Help?</h3>
-                <p className="text-sm text-muted-foreground text-center">Emergency support</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleQuickAction('appointment')}>
-              <CardContent className="flex flex-col items-center p-6">
-                <Calendar className="h-8 w-8 text-blue-500 mb-2" />
-                <h3 className="font-semibold text-center">Book Appointment</h3>
-                <p className="text-sm text-muted-foreground text-center">Schedule with specialists</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleQuickAction('health-data')}>
-              <CardContent className="flex flex-col items-center p-6">
-                <Activity className="h-8 w-8 text-green-500 mb-2" />
-                <h3 className="font-semibold text-center">Track Health</h3>
-                <p className="text-sm text-muted-foreground text-center">Monitor vital signs</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleQuickAction('ai-assistant')}>
-              <CardContent className="flex flex-col items-center p-6">
-                <Brain className="h-8 w-8 text-purple-500 mb-2" />
-                <h3 className="font-semibold text-center">AI Assistant</h3>
-                <p className="text-sm text-muted-foreground text-center">Get health insights</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Main Content Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-10">
-              <TabsTrigger value="overview" className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="health-trends" className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Health Trends
-              </TabsTrigger>
-              <TabsTrigger value="ai-assistant" className="flex items-center gap-2">
-                <Brain className="h-4 w-4" />
-                AI Assistant
-              </TabsTrigger>
-              <TabsTrigger value="appointments" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Appointments
-              </TabsTrigger>
-              <TabsTrigger value="health-metrics" className="flex items-center gap-2">
-                <Activity className="h-4 w-4" />
-                Health Metrics
-              </TabsTrigger>
-              <TabsTrigger value="telemedicine" className="flex items-center gap-2">
-                <Video className="h-4 w-4" />
-                Telemedicine
-              </TabsTrigger>
-              <TabsTrigger value="prescriptions" className="flex items-center gap-2">
-                <Pill className="h-4 w-4" />
-                Medications
-              </TabsTrigger>
-              <TabsTrigger value="goals" className="flex items-center gap-2">
-                <Target className="h-4 w-4" />
-                Goals
-              </TabsTrigger>
-              <TabsTrigger value="records" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Records
-              </TabsTrigger>
-              <TabsTrigger value="messages" className="flex items-center gap-2">
-                <MessageCircle className="h-4 w-4" />
-                Messages
-              </TabsTrigger>
-              <TabsTrigger value="privacy" className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Privacy
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Phase 2 & 3 Tabs */}
-            <div className="mt-4">
-              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
-                <TabsTrigger value="safety" className="flex items-center gap-2">
-                  <Shield className="h-4 w-4" />
-                  Emergency & Safety
-                </TabsTrigger>
-                <TabsTrigger value="clinical-support" className="flex items-center gap-2">
-                  <Brain className="h-4 w-4" />
-                  Clinical Support
-                </TabsTrigger>
-                <TabsTrigger value="predictive-analytics" className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" />
-                  Predictive Analytics
-                </TabsTrigger>
-                <TabsTrigger value="automations" className="flex items-center gap-2">
-                  <Zap className="h-4 w-4" />
-                  Automations
-                </TabsTrigger>
-                <TabsTrigger value="genomics" className="flex items-center gap-2">
-                  <Dna className="h-4 w-4" />
-                  Genomics
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value="overview" className="space-y-6">
-              <AnalyticsDashboard />
-              <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-                <UnifiedEmergencyCenter />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="health-trends" className="space-y-6">
-              <HealthTrendsDashboard />
-            </TabsContent>
-
-            <TabsContent value="ai-assistant" className="space-y-6">
-              <AIHealthAssistant />
-            </TabsContent>
-
-            <TabsContent value="appointments" className="space-y-6">
-              <AdvancedAppointmentBooking />
-            </TabsContent>
-
-            <TabsContent value="health-metrics" className="space-y-6">
-              <HealthMetricsTracker />
-              <WearableIntegration />
-            </TabsContent>
-
-            <TabsContent value="telemedicine" className="space-y-6">
-              <EnhancedTelemedicine />
-              <ClinicalDecisionSupport />
-            </TabsContent>
-
-            <TabsContent value="prescriptions" className="space-y-6">
-              <PrescriptionManager />
-            </TabsContent>
-
-            <TabsContent value="goals" className="space-y-6">
-              <HealthGoalsTracker />
-            </TabsContent>
-
-            <TabsContent value="records" className="space-y-6">
-              <EnhancedMedicalRecords />
-            </TabsContent>
-
-            {/* Phase 2 & 3 Tab Content */}
-            <TabsContent value="safety" className="space-y-6">
-              <UnifiedEmergencyCenter />
-            </TabsContent>
-
-            <TabsContent value="clinical-support" className="space-y-6">
-              <ClinicalDecisionSupport />
-            </TabsContent>
-
-            <TabsContent value="predictive-analytics" className="space-y-6">
-              <PredictiveHealthAnalytics />
-            </TabsContent>
-
-            <TabsContent value="automations" className="space-y-6">
-              <MicroAutomations />
-            </TabsContent>
-
-            <TabsContent value="genomics" className="space-y-6">
-              <GenomicsAnalyzer />
-            </TabsContent>
-
-            <TabsContent value="messages" className="space-y-6">
-              <MessagingInbox />
-            </TabsContent>
-
-            <TabsContent value="privacy" className="space-y-6">
-              <GDPRConsentManager />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </main>
+      <div className="flex h-[calc(100vh-64px)]">
+        {/* Left Sidebar */}
+        <PortalSidebar 
+          activeSection={activeSection} 
+          onSectionChange={setActiveSection} 
+        />
+        
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto p-6">
+          {renderContent()}
+        </main>
+        
+        {/* Right Sidebar */}
+        <PortalRightSidebar />
+      </div>
 
       <Footer />
     </div>

@@ -102,20 +102,20 @@ const Services = () => {
       services: ["General Practice", "Cardiology", "Endocrinology", "Dermatology"]
     },
     {
-      icon: Truck,
-      title: "Mobile Services",
-      subtitle: "Healthcare at Your Doorstep",
-      description: "Professional medical services delivered directly to you",
+      icon: Zap,
+      title: "Treatments",
+      subtitle: "Recovery & Performance",
+      description: "Advanced wellness and recovery treatments",
       features: [
-        "Home blood collection",
-        "Mobile health screening",
-        "Corporate wellness visits",
-        "Same-day appointments"
+        "Deep tissue massage",
+        "Sports massage therapy", 
+        "Injury rehabilitation",
+        "Therapeutic treatments"
       ],
       popular: false,
-      startingPrice: "£25",
-      link: "/mobile-home-collection",
-      services: ["Home Collection", "Corporate Health", "Sample Drop-off", "Private Ambulance"]
+      startingPrice: "£45",
+      link: "/treatments",
+      services: ["Deep Tissue Massage", "Sports Massage", "Therapeutic Massage", "Injury Treatment"]
     },
     {
       icon: Scan,
@@ -134,20 +134,20 @@ const Services = () => {
       services: ["MRI Scans", "CT Scans", "Ultrasound", "X-Ray"]
     },
     {
-      icon: Zap,
-      title: "Treatments",
-      subtitle: "Recovery & Performance",
-      description: "Advanced wellness and recovery treatments",
+      icon: Truck,
+      title: "Mobile Services",
+      subtitle: "Healthcare at Your Doorstep",
+      description: "Professional medical services delivered directly to you",
       features: [
-        "Deep tissue massage",
-        "Sports massage therapy", 
-        "Injury rehabilitation",
-        "Therapeutic treatments"
+        "Home blood collection",
+        "Mobile health screening",
+        "Corporate wellness visits",
+        "Same-day appointments"
       ],
       popular: false,
-      startingPrice: "£45",
-      link: "/treatments",
-      services: ["Deep Tissue Massage", "Sports Massage", "Therapeutic Massage", "Injury Treatment"]
+      startingPrice: "£25",
+      link: "/mobile-home-collection",
+      services: ["Home Collection", "Corporate Health", "Sample Drop-off", "Private Ambulance"]
     }
   ];
 

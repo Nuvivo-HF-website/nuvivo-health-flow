@@ -516,21 +516,31 @@ export function EnhancedMedicalRecords() {
 
                       {/* Test Values */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {Object.entries(test.result_values).map(([key, value]) => (
-                          <div key={key} className="bg-white p-3 rounded-lg border">
-                            <div className="text-sm font-medium text-gray-900 mb-1">
-                              {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                            </div>
-                            <div className="text-lg font-semibold text-primary">
-                              {value as string}
-                            </div>
-                            {test.reference_ranges[key] && (
-                              <div className="text-xs text-muted-foreground">
-                                Reference: {test.reference_ranges[key]}
+                        {Object.entries(test.result_values).map(([key, value]) => {
+                          // Handle both object and string values
+                          const displayValue = typeof value === 'object' && value !== null ? 
+                            `${(value as any)?.value || ''} ${(value as any)?.unit || ''}`.trim() : 
+                            String(value);
+                          const referenceRange = typeof value === 'object' && value !== null ? 
+                            (value as any)?.reference : 
+                            test.reference_ranges[key];
+                          
+                          return (
+                            <div key={key} className="bg-white p-3 rounded-lg border">
+                              <div className="text-sm font-medium text-gray-900 mb-1">
+                                {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                               </div>
-                            )}
-                          </div>
-                        ))}
+                              <div className="text-lg font-semibold text-primary">
+                                {displayValue}
+                              </div>
+                              {referenceRange && (
+                                <div className="text-xs text-muted-foreground">
+                                  Reference: {referenceRange}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* Action Buttons */}

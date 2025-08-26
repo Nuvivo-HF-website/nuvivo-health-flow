@@ -161,24 +161,27 @@ export default function ComprehensivePatientPortal() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-      
-      <div className="relative flex h-[calc(100vh-64px)]">
-        {/* Left Sidebar - positioned to start at header logo mid-point */}
-        <div className="absolute left-0 top-[-32px] z-10">
-          <PortalSidebar 
-            activeSection={activeSection} 
-            onSectionChange={setActiveSection} 
-          />
+      <div className="relative">
+        <Header />
+        
+        <div className="flex h-[calc(100vh-64px)]">
+          {/* Left Sidebar - extending into header area */}
+          <div className="fixed left-0 top-0 z-40 w-64 h-screen bg-card border-r border-border">
+            <div className="h-16"></div> {/* Header spacer */}
+            <PortalSidebar 
+              activeSection={activeSection} 
+              onSectionChange={setActiveSection} 
+            />
+          </div>
+          
+          {/* Main Content - adjusted for fixed sidebar */}
+          <main className="flex-1 overflow-auto p-6 ml-64">
+            {renderContent()}
+          </main>
+          
+          {/* Right Sidebar */}
+          <PortalRightSidebar />
         </div>
-        
-        {/* Main Content - adjusted for sidebar positioning */}
-        <main className="flex-1 overflow-auto p-6 ml-64">
-          {renderContent()}
-        </main>
-        
-        {/* Right Sidebar */}
-        <PortalRightSidebar />
       </div>
 
       <Footer />

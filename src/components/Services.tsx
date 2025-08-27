@@ -181,7 +181,7 @@ const Services = () => {
                 key={index} 
                 className={`relative transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group ${
                   category.popular ? 'border-primary shadow-primary/20 ring-2 ring-primary/20' : ''
-                } ${index === 4 ? 'lg:col-start-1 lg:col-end-3 lg:max-w-md lg:mx-auto' : ''}`}
+                } ${index === 4 ? 'lg:justify-self-center' : ''}`}
               >
                 {category.popular && (
                   <div className="absolute -top-3 left-6">
@@ -336,11 +336,16 @@ const Services = () => {
                 variant="outline" 
                 size="lg" 
                 className="border-white text-white hover:bg-white/10"
-                onClick={() => navigate("/blood-tests")}
+                onClick={() => {
+                  const servicesSection = document.getElementById('services');
+                  if (servicesSection) {
+                    servicesSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
               >
                 <div className="flex items-center gap-2">
                   <TestTube2 className="w-5 h-5" />
-                  Browse Tests
+                  Browse Services
                 </div>
               </Button>
             </div>

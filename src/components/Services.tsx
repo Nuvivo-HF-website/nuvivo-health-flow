@@ -173,7 +173,7 @@ const Services = () => {
         </div>
 
         {/* Service Categories */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-20 [&>*:nth-child(5)]:lg:col-start-1 [&>*:nth-child(5)]:lg:col-end-3 [&>*:nth-child(5)]:lg:justify-self-center">
+        <div className="grid lg:grid-cols-2 gap-8 mb-20">
           {serviceCategories.map((category, index) => {
             const IconComponent = category.icon;
             return (
@@ -181,7 +181,7 @@ const Services = () => {
                 key={index} 
                 className={`relative transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group ${
                   category.popular ? 'border-primary shadow-primary/20 ring-2 ring-primary/20' : ''
-                }`}
+                } ${index === 4 ? 'lg:col-start-1 lg:col-end-3 lg:max-w-md lg:mx-auto' : ''}`}
               >
                 {category.popular && (
                   <div className="absolute -top-3 left-6">

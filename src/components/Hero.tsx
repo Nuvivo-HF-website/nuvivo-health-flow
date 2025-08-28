@@ -8,7 +8,7 @@ const Hero = () => {
   return (
     <section className="pt-32 pb-24 bg-background">
       <div className="container mx-auto px-8 lg:px-16">
-        <div className="grid lg:grid-cols-2 gap-20 items-center max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-20 items-start max-w-7xl mx-auto">
           {/* Content */}
           <div className="space-y-12 animate-fade-in">
             <div className="space-y-8">

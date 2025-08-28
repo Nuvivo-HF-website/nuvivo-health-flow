@@ -146,7 +146,7 @@ const Services = () => {
       ],
       popular: false,
       startingPrice: "£25",
-      link: "/mobile-home-collection",
+      link: "/mobile-services",
       services: ["Home Collection", "Corporate Health", "Sample Drop-off", "Private Ambulance"]
     }
   ];

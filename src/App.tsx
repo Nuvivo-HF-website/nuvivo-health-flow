@@ -38,6 +38,7 @@ import ConsultationsSexualHealth from "./pages/ConsultationsSexualHealth";
 import ConsultationsSecondOpinions from "./pages/ConsultationsSecondOpinions";
 import ScansECG from "./pages/ScansECG";
 import ScansCancer from "./pages/ScansCancer";
+import MobileServices from "./pages/MobileServices";
 import MobileHomeCollection from "./pages/MobileHomeCollection";
 import MobileSampleDropoff from "./pages/MobileSampleDropoff";
 import MobileCorporate from "./pages/MobileCorporate";
@@ -89,9 +90,10 @@ const App = () => (
           <Route path="/consultations/second-opinions" element={<ConsultationsSecondOpinions />} />
           <Route path="/scans/ecg" element={<ScansECG />} />
           <Route path="/scans/cancer" element={<ScansCancer />} />
-          <Route path="/mobile/home-collection" element={<MobileHomeCollection />} />
-          <Route path="/mobile/sample-dropoff" element={<MobileSampleDropoff />} />
-          <Route path="/mobile/corporate" element={<MobileCorporate />} />
+          <Route path="/mobile-services" element={<MobileServices />} />
+          <Route path="/mobile-home-collection" element={<MobileHomeCollection />} />
+          <Route path="/mobile-sample-dropoff" element={<MobileSampleDropoff />} />
+          <Route path="/mobile-corporate" element={<MobileCorporate />} />
           <Route path="/join-professional" element={<JoinProfessional />} />
           <Route path="/partner-register" element={<PartnerRegister />} />
           <Route path="/partner-dashboard" element={<PartnerDashboard />} />

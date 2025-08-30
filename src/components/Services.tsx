@@ -71,7 +71,7 @@ const Services = () => {
   const serviceCategories = [
     {
       icon: TestTube2,
-      title: "Blood Testing",
+      title: "Blood Tests",
       subtitle: "Comprehensive Lab Analysis",
       description: "From basic health checks to advanced wellness panels",
       features: [
@@ -103,7 +103,7 @@ const Services = () => {
     },
     {
       icon: Zap,
-      title: "Treatments & Therapies",
+      title: "Treatments",
       subtitle: "Recovery & Performance",
       description: "Advanced wellness and recovery treatments",
       features: [

@@ -237,7 +237,7 @@ const Services = () => {
                             category.title === "Treatments" ? "hover:scale-105" : ""
                           }`}
                           onClick={() => {
-                            if (category.title === "Treatments") {
+                            if (category.title === "Treatments & Therapies") {
                               setSelectedTreatment(service);
                             }
                           }}
@@ -253,10 +253,10 @@ const Services = () => {
                       variant={category.popular ? "hero" : "default"} 
                       className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                       size="lg"
-                      onClick={() => navigate(category.title === "Treatments" ? "/consultations" : category.link)}
+                      onClick={() => navigate(category.title === "Treatments & Therapies" ? "/consultations" : category.link)}
                     >
                       <div className="flex items-center justify-center gap-2">
-                        {category.title === "Treatments" ? "Explore Doctor Consultations" : `Explore ${category.title}`}
+                        {category.title === "Treatments & Therapies" ? "Explore Treatments & Therapies" : `Explore ${category.title}`}
                         <ArrowRight className="w-4 h-4" />
                       </div>
                     </Button>

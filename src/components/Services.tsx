@@ -103,7 +103,7 @@ const Services = () => {
     },
     {
       icon: Zap,
-      title: "Treatments",
+      title: "Treatments & Therapies",
       subtitle: "Recovery & Performance",
       description: "Advanced wellness and recovery treatments",
       features: [

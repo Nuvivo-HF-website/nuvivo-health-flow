@@ -311,7 +311,6 @@ const Services = () => {
               Book appointments online with flexible scheduling options
             </p>
           </div>
-        </div>      
         </div>
 
         {/* Treatment Details Modal */}

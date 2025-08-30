@@ -311,45 +311,7 @@ const Services = () => {
               Book appointments online with flexible scheduling options
             </p>
           </div>
-        </div>
-
-        {/* CTA Section */}
-        {/*<div className="text-center mt-16">
-          <div className="bg-gradient-primary rounded-2xl p-8 text-primary-foreground">
-            <h3 className="text-2xl font-bold mb-4">Join the World's Leading Health Platform</h3>
-            <p className="text-primary-foreground/80 mb-6 max-w-2xl mx-auto">
-              Access the most advanced health ecosystem on Earth. Connect with world-renowned specialists and cutting-edge diagnostics.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                variant="secondary" 
-                size="lg" 
-                className="bg-white text-accent hover:bg-white/90"
-                onClick={() => navigate("/booking")}
-              >
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  Book Appointment
-                </div>
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="border-white text-white hover:bg-white/10"
-                onClick={() => {
-                  const servicesSection = document.getElementById('services');
-                  if (servicesSection) {
-                    servicesSection.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  <TestTube2 className="w-5 h-5" />
-                  Browse Services
-                </div>
-              </Button>
-            </div>
-          </div>*/}
+        </div>      
         </div>
 
         {/* Treatment Details Modal */}

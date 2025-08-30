@@ -256,7 +256,7 @@ const Services = () => {
                       onClick={() => navigate(category.title === "Treatments" ? "/consultations" : category.link)}
                     >
                       <div className="flex items-center justify-center gap-2">
-                        {category.title === "Treatments" ? "Explore Treatments" : `Explore ${category.title}`}
+                        {category.title === "Treatments" ? "Explore Doctor Consultations" : `Explore ${category.title}`}
                         <ArrowRight className="w-4 h-4" />
                       </div>
                     </Button>

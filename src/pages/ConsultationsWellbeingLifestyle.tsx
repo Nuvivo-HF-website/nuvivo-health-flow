@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Apple, Scale, Dumbbell } from "lucide-react";
+import { Apple, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -11,45 +11,27 @@ const ConsultationsWellbeingLifestyle = () => {
   const services = [
     {
       icon: Apple,
-      title: "Nutritionist Consultation",
-      description: "Expert dietary advice and personalized nutrition plans",
-      price: "£75",
-      duration: "45 minutes",
+      title: "Nutrition & Weight Management",
+      description: "Comprehensive nutrition consultations and weight management programs",
       features: [
-        "Dietary assessment",
         "Personalized meal plans",
-        "Nutritional guidance",
-        "Health optimization"
+        "Weight loss strategies", 
+        "Dietary assessments",
+        "Nutritional counseling"
       ],
       link: "/consultations/nutrition"
     },
     {
-      icon: Scale,
-      title: "Weight Management",
-      description: "Comprehensive weight loss and management programs",
-      price: "£85",
-      duration: "60 minutes",
+      icon: Heart,
+      title: "Mental Health & Psychology",
+      description: "Professional mental health support and psychological consultations",
       features: [
-        "Body composition analysis",
-        "Sustainable weight loss plans",
-        "Lifestyle modifications",
-        "Ongoing monitoring"
+        "Psychology consultations",
+        "Counselling sessions",
+        "Therapy services",
+        "Mental wellbeing support"
       ],
-      link: "/consultations/nutrition"
-    },
-    {
-      icon: Dumbbell,
-      title: "Sports Nutrition",
-      description: "Performance nutrition for athletes and active individuals",
-      price: "£95",
-      duration: "45 minutes",
-      features: [
-        "Performance optimization",
-        "Recovery nutrition",
-        "Supplement guidance",
-        "Competition preparation"
-      ],
-      link: "/consultations/nutrition"
+      link: "/consultations/mental-health"
     }
   ];
 
@@ -70,7 +52,7 @@ const ConsultationsWellbeingLifestyle = () => {
           </div>
 
           {/* Services Grid */}
-          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+          <div className="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
             {services.map((service, index) => {
               const IconComponent = service.icon;
               return (
@@ -84,10 +66,6 @@ const ConsultationsWellbeingLifestyle = () => {
                     </div>
                     <CardTitle className="text-xl">{service.title}</CardTitle>
                     <p className="text-muted-foreground">{service.description}</p>
-                    <div className="flex justify-center gap-4 text-sm">
-                      <span className="font-semibold text-primary">{service.price}</span>
-                      <span className="text-muted-foreground">• {service.duration}</span>
-                    </div>
                   </CardHeader>
                   
                   <CardContent className="space-y-4">

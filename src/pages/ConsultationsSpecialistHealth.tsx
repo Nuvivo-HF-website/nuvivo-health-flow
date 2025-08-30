@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Heart, Shield } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -10,46 +10,16 @@ const ConsultationsSpecialistHealth = () => {
 
   const services = [
     {
-      icon: Brain,
-      title: "Mental Health & Psychology",
-      description: "Professional mental health support and psychological consultations",
-      price: "£85",
-      duration: "50 minutes",
-      features: [
-        "Psychology consultations",
-        "Counselling sessions",
-        "Group therapy",
-        "Mental health assessments"
-      ],
-      link: "/consultations/mental-health"
-    },
-    {
       icon: Heart,
-      title: "Sexual Health Consultations",
-      description: "Confidential sexual health services and consultations",
-      price: "£75",
-      duration: "30 minutes",
+      title: "Sexual Health",
+      description: "Confidential sexual health consultations and comprehensive care",
       features: [
         "STI testing & consultation",
-        "Erectile dysfunction treatment",
-        "Sexual wellness advice",
+        "Sexual health advice",
+        "Contraception guidance", 
         "Relationship counselling"
       ],
       link: "/consultations/sexual-health"
-    },
-    {
-      icon: Shield,
-      title: "Specialized Health Services",
-      description: "Targeted consultations for specific health conditions",
-      price: "£95",
-      duration: "45 minutes",
-      features: [
-        "Chronic condition management",
-        "Preventive health screening", 
-        "Health risk assessments",
-        "Specialized treatment plans"
-      ],
-      link: "/marketplace"
     }
   ];
 
@@ -70,7 +40,7 @@ const ConsultationsSpecialistHealth = () => {
           </div>
 
           {/* Services Grid */}
-          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+          <div className="grid lg:grid-cols-1 gap-8 max-w-2xl mx-auto mb-16">
             {services.map((service, index) => {
               const IconComponent = service.icon;
               return (
@@ -84,10 +54,6 @@ const ConsultationsSpecialistHealth = () => {
                     </div>
                     <CardTitle className="text-xl">{service.title}</CardTitle>
                     <p className="text-muted-foreground">{service.description}</p>
-                    <div className="flex justify-center gap-4 text-sm">
-                      <span className="font-semibold text-primary">{service.price}</span>
-                      <span className="text-muted-foreground">• {service.duration}</span>
-                    </div>
                   </CardHeader>
                   
                   <CardContent className="space-y-4">

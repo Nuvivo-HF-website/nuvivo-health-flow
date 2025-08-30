@@ -87,7 +87,7 @@ const Services = () => {
     },
     {
       icon: Users,
-      title: "Doctor Consultations", 
+      title: "Consultations", 
       subtitle: "Expert Medical Advice",
       description: "Connect with verified specialists and GPs",
       features: [
@@ -103,7 +103,7 @@ const Services = () => {
     },
     {
       icon: Zap,
-      title: "Treatments & Therapies",
+      title: "Treatments",
       subtitle: "Recovery & Performance",
       description: "Advanced wellness and recovery treatments",
       features: [
@@ -119,7 +119,7 @@ const Services = () => {
     },
     {
       icon: Scan,
-      title: "Scans & Imaging",
+      title: "Radiology Services",
       subtitle: "Advanced Medical Imaging",
       description: "Professional diagnostic imaging and scans",
       features: [
@@ -135,7 +135,7 @@ const Services = () => {
     },
     {
       icon: Truck,
-      title: "Mobile & On-Site Services",
+      title: "Mobile Services",
       subtitle: "Healthcare at Your Doorstep",
       description: "Professional medical services delivered directly to you",
       features: [

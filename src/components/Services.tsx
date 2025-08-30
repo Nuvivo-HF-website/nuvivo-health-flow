@@ -71,7 +71,7 @@ const Services = () => {
   const serviceCategories = [
     {
       icon: TestTube2,
-      title: "Blood Testing",
+      title: "Blood Tests",
       subtitle: "Comprehensive Lab Analysis",
       description: "From basic health checks to advanced wellness panels",
       features: [
@@ -87,7 +87,7 @@ const Services = () => {
     },
     {
       icon: Users,
-      title: "Consultations", 
+      title: "Doctor Consultations", 
       subtitle: "Expert Medical Advice",
       description: "Connect with verified specialists and GPs",
       features: [

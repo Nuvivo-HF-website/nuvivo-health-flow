@@ -253,10 +253,10 @@ const Services = () => {
                       variant={category.popular ? "hero" : "default"} 
                       className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                       size="lg"
-                      onClick={() => navigate(category.link)}
+                      onClick={() => navigate(category.title === "Treatments" ? "/consultations" : category.link)}
                     >
                       <div className="flex items-center justify-center gap-2">
-                        Explore {category.title}
+                        {category.title === "Treatments" ? "Explore Treatments" : `Explore ${category.title}`}
                         <ArrowRight className="w-4 h-4" />
                       </div>
                     </Button>

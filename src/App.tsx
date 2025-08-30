@@ -27,6 +27,10 @@ import ProductDetail from "./pages/ProductDetail";
 import ServiceDetail from "./pages/ServiceDetail";
 import SignIn from "./pages/SignIn";
 import Treatments from "./pages/Treatments";
+import Consultations from "./pages/Consultations";
+import ConsultationsGeneralSpecialist from "./pages/ConsultationsGeneralSpecialist";
+import ConsultationsWellbeingLifestyle from "./pages/ConsultationsWellbeingLifestyle";
+import ConsultationsSpecialistHealth from "./pages/ConsultationsSpecialistHealth";
 import FAQ from "./pages/FAQ";
 import About from "./pages/About";
 import Preparation from "./pages/Preparation";
@@ -84,6 +88,10 @@ const App = () => (
           <Route path="/preparation" element={<Preparation />} />
           <Route path="/professional-registration" element={<SignIn />} />
           <Route path="/medical-reports" element={<MedicalReports />} />
+          <Route path="/consultations" element={<Consultations />} />
+          <Route path="/consultations/general-specialist" element={<ConsultationsGeneralSpecialist />} />
+          <Route path="/consultations/wellbeing-lifestyle" element={<ConsultationsWellbeingLifestyle />} />
+          <Route path="/consultations/specialist-health" element={<ConsultationsSpecialistHealth />} />
           <Route path="/consultations/mental-health" element={<ConsultationsMentalHealth />} />
           <Route path="/consultations/nutrition" element={<ConsultationsNutrition />} />
           <Route path="/consultations/sexual-health" element={<ConsultationsSexualHealth />} />

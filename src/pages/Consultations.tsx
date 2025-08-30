@@ -13,41 +13,62 @@ const Consultations = () => {
       icon: Users,
       title: "General & Specialist Care",
       subtitle: "Comprehensive Medical Consultations",
-      description: "Connect with GPs and medical specialists for expert diagnosis and treatment",
-      features: [
-        "General Practice consultations",
-        "Medical specialist referrals", 
-        "Second opinion services",
-        "Video & in-person appointments"
+      description:
+        "Connect with GPs and medical specialists for expert diagnosis and treatment.",
+      link: "/consultations/general-specialist",
+      options: [
+        {
+          title: "Doctors & Specialists",
+          desc: "Book GP appointments or connect with verified consultants across disciplines.",
+          to: "/marketplace",
+        },
+        {
+          title: "Second Opinions",
+          desc: "Independent expert review of your diagnosis or treatment plan.",
+          to: "/consultations/second-opinions",
+        },
+        {
+          title: "Medical Reports (Fit Notes, DVLA, Travel Letters)",
+          desc: "Certified medical documentation quickly and securely.",
+          to: "/medical-reports",
+        },
       ],
-      link: "/consultations/general-specialist"
     },
     {
       icon: Heart,
       title: "Wellbeing & Lifestyle",
       subtitle: "Holistic Health & Wellness",
-      description: "Nutrition, fitness, and lifestyle consultations for optimal wellbeing",
-      features: [
-        "Nutritionist consultations",
-        "Weight management programs",
-        "Sports nutrition advice",
-        "Lifestyle medicine"
+      description:
+        "Nutrition, fitness, and lifestyle consultations for optimal wellbeing.",
+      link: "/consultations/wellbeing-lifestyle",
+      options: [
+        {
+          title: "Nutrition & Weight",
+          desc: "Evidence-based nutrition and weight management programs.",
+          to: "/consultations/nutrition",
+        },
+        {
+          title: "Mental Health & Psychology",
+          desc: "Support from qualified therapists and psychologists.",
+          to: "/consultations/mental-health",
+        },
       ],
-      link: "/consultations/wellbeing-lifestyle"
     },
     {
       icon: Brain,
       title: "Specialist Health Areas",
       subtitle: "Targeted Health Services",
-      description: "Specialized consultations for mental health, sexual health, and more",
-      features: [
-        "Mental health support",
-        "Psychology consultations", 
-        "Sexual health services",
-        "Specialized therapy"
+      description:
+        "Specialised consultations focused on specific health needs.",
+      link: "/consultations/specialist-health",
+      options: [
+        {
+          title: "Sexual Health",
+          desc: "Confidential consultations, testing and treatment guidance.",
+          to: "/consultations/sexual-health",
+        },
       ],
-      link: "/consultations/specialist-health"
-    }
+    },
   ];
 
   return (
@@ -55,54 +76,79 @@ const Consultations = () => {
       <Header />
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
+          {/* Page header */}
           <div className="text-center mb-16">
             <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-4">
               Expert Medical Consultations
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Connect with verified healthcare professionals for comprehensive medical consultations, 
-              specialist advice, and personalized treatment plans.
+              Connect with verified healthcare professionals for comprehensive
+              medical consultations, specialist advice, and personalised
+              treatment plans.
             </p>
           </div>
 
-          {/* Consultation Categories */}
+          {/* Categories */}
           <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {consultationCategories.map((category, index) => {
-              const IconComponent = category.icon;
+            {consultationCategories.map((cat, i) => {
+              const Icon = cat.icon;
               return (
-                <Card 
-                  key={index} 
+                <Card
+                  key={i}
                   className="relative transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group"
                 >
                   <CardHeader className="pb-4">
                     <div className="flex flex-col items-center text-center">
                       <div className="w-16 h-16 rounded-lg flex items-center justify-center bg-primary/10 mb-4">
-                        <IconComponent className="w-8 h-8 text-primary" />
+                        <Icon className="w-8 h-8 text-primary" />
                       </div>
-                      <CardTitle className="text-xl text-foreground">{category.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{category.subtitle}</p>
+                      <CardTitle className="text-xl text-foreground">
+                        {cat.title}
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        {cat.subtitle}
+                      </p>
                     </div>
-                    <p className="text-muted-foreground mt-4 text-center">{category.description}</p>
+                    <p className="text-muted-foreground mt-4 text-center">
+                      {cat.description}
+                    </p>
                   </CardHeader>
-                  
-                  <CardContent className="space-y-6">
-                    {/* Key Features */}
+
+                  <CardContent className="space-y-4">
+                    {/* Options list */}
                     <div className="space-y-3">
-                      {category.features.map((feature, featureIndex) => (
-                        <div key={featureIndex} className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
-                          <span className="text-sm text-foreground">{feature}</span>
+                      {cat.options.map((opt, j) => (
+                        <div
+                          key={j}
+                          className="rounded-xl border border-border p-4 flex items-start gap-4"
+                        >
+                          <div className="flex-1">
+                            <div className="font-medium leading-none">
+                              {opt.title}
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {opt.desc}
+                            </p>
+                          </div>
+                          <Button
+                            size="sm"
+                            className="shrink-0"
+                            onClick={() => navigate(opt.to)}
+                          >
+                            Explore
+                          </Button>
                         </div>
                       ))}
                     </div>
-                    
-                    <Button 
+
+                    {/* Optional: view all within category */}
+                    <Button
+                      variant="outline"
                       className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                       size="lg"
-                      onClick={() => navigate(category.link)}
+                      onClick={() => navigate(cat.link)}
                     >
-                      Explore Services
+                      View all in {cat.title}
                     </Button>
                   </CardContent>
                 </Card>
@@ -110,17 +156,19 @@ const Consultations = () => {
             })}
           </div>
 
-          {/* CTA Section */}
+          {/* CTA */}
           <div className="text-center mt-16">
             <div className="bg-gradient-primary rounded-2xl p-8 text-primary-foreground max-w-4xl mx-auto">
-              <h3 className="text-2xl font-bold mb-4">Start Your Health Journey Today</h3>
+              <h3 className="text-2xl font-bold mb-4">
+                Start Your Health Journey Today
+              </h3>
               <p className="text-primary-foreground/80 mb-6">
-                Book a consultation with our verified healthcare professionals and take the first step 
-                towards better health and wellbeing.
+                Book a consultation with our verified healthcare professionals
+                and take the first step towards better health and wellbeing.
               </p>
-              <Button 
-                variant="secondary" 
-                size="lg" 
+              <Button
+                variant="secondary"
+                size="lg"
                 className="bg-white text-accent hover:bg-white/90"
                 onClick={() => navigate("/booking")}
               >

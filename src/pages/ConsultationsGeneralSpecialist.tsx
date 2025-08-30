@@ -11,39 +11,45 @@ const ConsultationsGeneralSpecialist = () => {
   const services = [
     {
       icon: Stethoscope,
-      title: "Doctors & Specialists",
-      description: "Connect with experienced GPs and medical specialists for comprehensive care",
+      title: "General Practice Consultations",
+      description: "Comprehensive primary care consultations with experienced GPs",
+      price: "£65",
+      duration: "30 minutes",
       features: [
-        "General practice consultations",
-        "Specialist referrals",
-        "Expert medical advice",
-        "Comprehensive health assessments"
+        "Health assessments",
+        "Symptom evaluation",
+        "Prescription management",
+        "Preventive care advice"
       ],
       link: "/marketplace"
     },
     {
       icon: UserCheck,
-      title: "Second Opinions",
-      description: "Get expert second opinions on medical diagnoses and treatment plans",
+      title: "Medical Specialist Referrals",
+      description: "Connect with verified specialists across all medical disciplines",
+      price: "£95",
+      duration: "45 minutes", 
       features: [
-        "Medical record review",
-        "Treatment plan analysis",
-        "Expert recommendations",
-        "Urgent second opinions"
+        "Cardiology consultations",
+        "Endocrinology expertise",
+        "Dermatology services",
+        "Specialist treatment plans"
       ],
-      link: "/consultations/second-opinions"
+      link: "/marketplace"
     },
     {
       icon: FileText,
-      title: "Medical Reports",
-      description: "Professional medical reports for various official purposes",
+      title: "Second Opinion Services",
+      description: "Get expert second opinions on medical diagnoses and treatment plans",
+      price: "£150",
+      duration: "60 minutes",
       features: [
-        "Fit notes & sick leave certificates",
-        "DVLA medical reports",
-        "Travel health letters",
-        "Insurance medical reports"
+        "Medical record review",
+        "Urgent second opinions",
+        "Treatment plan analysis",
+        "Expert recommendations"
       ],
-      link: "/medical-reports"
+      link: "/consultations/second-opinions"
     }
   ];
 
@@ -78,6 +84,10 @@ const ConsultationsGeneralSpecialist = () => {
                     </div>
                     <CardTitle className="text-xl">{service.title}</CardTitle>
                     <p className="text-muted-foreground">{service.description}</p>
+                    <div className="flex justify-center gap-4 text-sm">
+                      <span className="font-semibold text-primary">{service.price}</span>
+                      <span className="text-muted-foreground">• {service.duration}</span>
+                    </div>
                   </CardHeader>
                   
                   <CardContent className="space-y-4">

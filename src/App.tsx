@@ -99,9 +99,10 @@ const App = () => (
           <Route path="/scans/ecg" element={<ScansECG />} />
           <Route path="/scans/cancer" element={<ScansCancer />} />
           <Route path="/mobile-services" element={<MobileServices />} />
-          <Route path="/mobile-home-collection" element={<MobileHomeCollection />} />
-          <Route path="/mobile-sample-dropoff" element={<MobileSampleDropoff />} />
-          <Route path="/mobile-corporate" element={<MobileCorporate />} />
+          <Route path="/mobile/home-collection" element={<MobileHomeCollection />} />
+          <Route path="/mobile/sample-dropoff" element={<MobileSampleDropoff />} />
+          <Route path="/mobile/corporate" element={<MobileCorporate />} />
+          <Route path="/mobile/private-ambulance" element={<PrivateAmbulance />} />
           <Route path="/join-professional" element={<JoinProfessional />} />
           <Route path="/partner-register" element={<PartnerRegister />} />
           <Route path="/partner-dashboard" element={<PartnerDashboard />} />

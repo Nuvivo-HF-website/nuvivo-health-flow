@@ -35,7 +35,7 @@ const MobileServices = () => {
       ],
       startingPrice: "From £45",
       badge: "Most Popular",
-      route: "/mobile-home-collection"
+      route: "/mobile/home-collection"
     },
     {
       id: "corporate-health",

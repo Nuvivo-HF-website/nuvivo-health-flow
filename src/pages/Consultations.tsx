@@ -16,23 +16,7 @@ const Consultations = () => {
       description:
         "Connect with GPs and medical specialists for expert diagnosis and treatment.",
       link: "/consultations/general-specialist",
-      options: [
-        {
-          title: "Doctors & Specialists",
-          desc: "Book GP appointments or connect with verified consultants across disciplines.",
-          to: "/marketplace",
-        },
-        {
-          title: "Second Opinions",
-          desc: "Independent expert review of your diagnosis or treatment plan.",
-          to: "/consultations/second-opinions",
-        },
-        {
-          title: "Medical Reports (Fit Notes, DVLA, Travel Letters)",
-          desc: "Certified medical documentation quickly and securely.",
-          to: "/medical-reports",
-        },
-      ],
+      
     },
     {
       icon: Heart,
@@ -41,18 +25,7 @@ const Consultations = () => {
       description:
         "Nutrition, fitness, and lifestyle consultations for optimal wellbeing.",
       link: "/consultations/wellbeing-lifestyle",
-      options: [
-        {
-          title: "Nutrition & Weight",
-          desc: "Evidence-based nutrition and weight management programs.",
-          to: "/consultations/nutrition",
-        },
-        {
-          title: "Mental Health & Psychology",
-          desc: "Support from qualified therapists and psychologists.",
-          to: "/consultations/mental-health",
-        },
-      ],
+      
     },
     {
       icon: Brain,
@@ -61,13 +34,6 @@ const Consultations = () => {
       description:
         "Specialised consultations focused on specific health needs.",
       link: "/consultations/specialist-health",
-      options: [
-        {
-          title: "Sexual Health",
-          desc: "Confidential consultations, testing and treatment guidance.",
-          to: "/consultations/sexual-health",
-        },
-      ],
     },
   ];
 

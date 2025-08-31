@@ -60,7 +60,7 @@ const MobileServices = () => {
           </div>
 
           {/* Services grid (matches Consultations cards) */}
-          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {services.map((service, idx) => {
               const Icon = service.icon;
               return (

@@ -11,8 +11,8 @@ const MobileServices = () => {
   const services = [
     {
       icon: Home,
-      title: "At-Home Care",
-      subtitle: "Professional Collection at Your Doorstep",
+      title: "Home Blood Collection",
+      subtitle: "Professional Collection at Home",
       description:
         "Qualified phlebotomists come to you for convenient, professional blood collection.",
       link: "/mobile/home-collection",
@@ -26,20 +26,20 @@ const MobileServices = () => {
       link: "/mobile/corporate",
     },
     {
-      icon: Package,
-      title: "Sample Drop-Off Assistance",
-      subtitle: "Convenient Sample Collection",
-      description:
-        "Reliable pickup and secure delivery to partner labs—standard or express options.",
-      link: "/mobile/sample-dropoff",
-    },
-    {
       icon: Ambulance,
       title: "Private Ambulance",
       subtitle: "Emergency & Planned Transport",
       description:
         "24/7 professional medical transport across the UK, including planned transfers.",
       link: "/private-ambulance",
+    },
+    {
+      icon: Package,
+      title: "Sample Drop-Off Assistance",
+      subtitle: "Convenient Sample Collection",
+      description:
+        "Reliable pickup and secure delivery to partner labs—standard or express options.",
+      link: "/mobile/sample-dropoff",
     },
   ];
 

@@ -16,23 +16,6 @@ const Consultations = () => {
       description:
         "Connect with GPs and medical specialists for expert diagnosis and treatment.",
       link: "/consultations/general-specialist",
-      options: [
-        {
-          title: "Doctors & Specialists",
-          desc: "Consult with GPs and medical specialists for comprehensive care",
-          to: "/consultations/general-specialist"
-        },
-        {
-          title: "Second Opinions", 
-          desc: "Get expert second opinions on medical diagnoses and treatments",
-          to: "/consultations/second-opinions"
-        },
-        {
-          title: "Medical Reports",
-          desc: "Fit notes, DVLA reports, travel letters and other medical documentation",
-          to: "/medical-reports"
-        }
-      ]
     },
     {
       icon: Heart,
@@ -41,18 +24,6 @@ const Consultations = () => {
       description:
         "Nutrition, fitness, and lifestyle consultations for optimal wellbeing.",
       link: "/consultations/wellbeing-lifestyle",
-      options: [
-        {
-          title: "Nutrition & Weight",
-          desc: "Expert dietary advice and personalized weight management programs",
-          to: "/consultations/nutrition"
-        },
-        {
-          title: "Mental Health & Psychology",
-          desc: "Professional mental health support and psychological consultations",
-          to: "/consultations/mental-health"
-        }
-      ]
     },
     {
       icon: Brain,
@@ -61,13 +32,6 @@ const Consultations = () => {
       description:
         "Specialised consultations focused on specific health needs.",
       link: "/consultations/specialist-health",
-      options: [
-        {
-          title: "Sexual Health",
-          desc: "Confidential sexual health consultations and treatments",
-          to: "/consultations/sexual-health"
-        }
-      ]
     },
   ];
 
@@ -76,79 +40,51 @@ const Consultations = () => {
       <Header />
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Page header */}
+          {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-4">
               Expert Medical Consultations
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Connect with verified healthcare professionals for comprehensive
-              medical consultations, specialist advice, and personalised
-              treatment plans.
+              Connect with verified healthcare professionals for comprehensive medical consultations,
+              specialist advice, and personalized treatment plans.
             </p>
           </div>
 
-          {/* Categories */}
+          {/* Consultation Categories */}
           <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {consultationCategories.map((cat, i) => {
-              const Icon = cat.icon;
+            {consultationCategories.map((category, index) => {
+              const IconComponent = category.icon;
               return (
                 <Card
-                  key={i}
+                  key={index}
                   className="relative transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group"
                 >
                   <CardHeader className="pb-4">
                     <div className="flex flex-col items-center text-center">
                       <div className="w-16 h-16 rounded-lg flex items-center justify-center bg-primary/10 mb-4">
-                        <Icon className="w-8 h-8 text-primary" />
+                        <IconComponent className="w-8 h-8 text-primary" />
                       </div>
                       <CardTitle className="text-xl text-foreground">
-                        {cat.title}
+                        {category.title}
                       </CardTitle>
                       <p className="text-sm text-muted-foreground">
-                        {cat.subtitle}
+                        {category.subtitle}
                       </p>
                     </div>
                     <p className="text-muted-foreground mt-4 text-center">
-                      {cat.description}
+                      {category.description}
                     </p>
                   </CardHeader>
 
-                  <CardContent className="space-y-4">
-                    {/* Options list */}
-                    <div className="space-y-3">
-                      {cat.options.map((opt, j) => (
-                        <div
-                          key={j}
-                          className="rounded-xl border border-border p-4 flex items-start gap-4"
-                        >
-                          <div className="flex-1">
-                            <div className="font-medium leading-none">
-                              {opt.title}
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {opt.desc}
-                            </p>
-                          </div>
-                          <Button
-                            size="sm"
-                            className="shrink-0"
-                            onClick={() => navigate(opt.to)}
-                          >
-                            Explore
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Optional: view all within category */}
+                  <CardContent className="space-y-6">
                     <Button
                       variant="outline"
                       className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
                       size="lg"
-                      onClick={() => navigate(cat.link)}
+                      onClick={() => navigate(category.link)}
                     >
-                      View all in {cat.title}
+                      View all in {category.title}
                     </Button>
                   </CardContent>
                 </Card>
@@ -156,15 +92,13 @@ const Consultations = () => {
             })}
           </div>
 
-          {/* CTA */}
+          {/* CTA Section */}
           <div className="text-center mt-16">
             <div className="bg-gradient-primary rounded-2xl p-8 text-primary-foreground max-w-4xl mx-auto">
-              <h3 className="text-2xl font-bold mb-4">
-                Start Your Health Journey Today
-              </h3>
+              <h3 className="text-2xl font-bold mb-4">Start Your Health Journey Today</h3>
               <p className="text-primary-foreground/80 mb-6">
-                Book a consultation with our verified healthcare professionals
-                and take the first step towards better health and wellbeing.
+                Book a consultation with our verified healthcare professionals and take the first step
+                towards better health and wellbeing.
               </p>
               <Button
                 variant="secondary"

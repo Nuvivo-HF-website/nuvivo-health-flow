@@ -21,6 +21,7 @@ import GuestBooking from "./pages/GuestBooking";
 import BloodTestBooking from "./pages/BloodTestBooking";
 import UploadResults from "./pages/UploadResults";
 import Radiology from "./pages/Radiology";
+import ScanServices from "./pages/ScanServices";
 import PrivateAmbulance from "./pages/PrivateAmbulance";
 import ClinicFinder from "./pages/ClinicFinder";
 import ProductDetail from "./pages/ProductDetail";
@@ -72,7 +73,8 @@ const App = () => (
           <Route path="/results/:orderId" element={<Results />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/blood-tests" element={<BloodTests />} />
-          <Route path="/radiology" element={<Radiology />} />
+           <Route path="/radiology" element={<Radiology />} />
+           <Route path="/scan-services" element={<ScanServices />} />
           <Route path="/private-ambulance" element={<PrivateAmbulance />} />
           <Route path="/treatments" element={<Treatments />} />
           <Route path="/booking" element={<Booking />} />

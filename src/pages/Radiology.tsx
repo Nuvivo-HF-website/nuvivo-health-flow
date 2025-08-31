@@ -313,10 +313,10 @@ const Radiology = () => {
 
                     <Button 
                       className="w-full mt-4"
-                      onClick={() => navigate(`/service/ultrasound-scan`)}
+                      onClick={() => navigate('/scan-services')}
                     >
                       <Calendar className="w-4 h-4 mr-2" />
-                      View Details
+                      Explore Scan Services
                     </Button>
                   </div>
                 </CardContent>
@@ -410,10 +410,10 @@ const Radiology = () => {
                             <Button 
                               size="lg" 
                               className="w-full"
-                              onClick={() => navigate(`/service/ultrasound-scan`)}
+                              onClick={() => navigate('/scan-services')}
                             >
                               <Calendar className="w-4 h-4 mr-2" />
-                              View Details - {service.name}
+                              Explore Scan Services
                             </Button>
                           </div>
                         </div>

@@ -51,7 +51,7 @@ const MobileServices = () => {
       ],
       startingPrice: "From £75",
       badge: "Bulk Pricing",
-      route: "/mobile-corporate"
+      route: "/mobile/corporate"
     },
     {
       id: "sample-dropoff",
@@ -67,7 +67,7 @@ const MobileServices = () => {
       ],
       startingPrice: "From £25",
       badge: "Same Day Available",
-      route: "/mobile-sample-dropoff"
+      route: "/mobile/sample-dropoff"
     },
     {
       id: "private-ambulance",

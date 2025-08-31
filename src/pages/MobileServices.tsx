@@ -35,7 +35,7 @@ const MobileServices = () => {
       ],
       startingPrice: "From £45",
       badge: "Most Popular",
-      route: "/home-collection"
+      route: "/mobile/home-collection"
     },
     {
       id: "corporate-health",
@@ -51,7 +51,7 @@ const MobileServices = () => {
       ],
       startingPrice: "From £75",
       badge: "Bulk Pricing",
-      route: "/corporate"
+      route: "/mobile/corporate"
     },
     {
       id: "sample-dropoff",
@@ -67,7 +67,7 @@ const MobileServices = () => {
       ],
       startingPrice: "From £25",
       badge: "Same Day Available",
-      route: "/sample-dropoff"
+      route: "/mobile/sample-dropoff"
     },
     {
       id: "private-ambulance",
@@ -83,7 +83,7 @@ const MobileServices = () => {
       ],
       startingPrice: "From £180",
       badge: "24/7 Available",
-      route: "/private-ambulance"
+      route: "/mobile/private-ambulance"
     }
   ];
 

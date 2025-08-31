@@ -98,7 +98,7 @@ const Services = () => {
       ],
       popular: false,
       startingPrice: "£65",
-      link: "/marketplace",
+      link: "/consultations",
       services: ["General Practice", "Cardiology", "Endocrinology", "Dermatology"]
     },
     {

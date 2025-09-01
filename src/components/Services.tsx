@@ -71,7 +71,7 @@ const Services = () => {
   const serviceCategories = [
     {
       icon: TestTube2,
-      title: "Blood Testing",
+      title: "Blood Tests",
       subtitle: "Comprehensive Lab Analysis",
       description: "From basic health checks to advanced wellness panels",
       features: [
@@ -87,7 +87,7 @@ const Services = () => {
     },
     {
       icon: Users,
-      title: "Doctor Consultations", 
+      title: "Consultations", 
       subtitle: "Expert Medical Advice",
       description: "Connect with verified specialists and GPs",
       features: [
@@ -103,7 +103,7 @@ const Services = () => {
     },
     {
       icon: Zap,
-      title: "Treatments",
+      title: "Treatments & Therapies",
       subtitle: "Recovery & Performance",
       description: "Advanced wellness and recovery treatments",
       features: [
@@ -119,7 +119,7 @@ const Services = () => {
     },
     {
       icon: Scan,
-      title: "Radiology Services",
+      title: "Scans & Imaging",
       subtitle: "Advanced Medical Imaging",
       description: "Professional diagnostic imaging and scans",
       features: [
@@ -135,7 +135,7 @@ const Services = () => {
     },
     {
       icon: Truck,
-      title: "Mobile Services",
+      title: "Mobile & On-Site Services",
       subtitle: "Healthcare at Your Doorstep",
       description: "Professional medical services delivered directly to you",
       features: [

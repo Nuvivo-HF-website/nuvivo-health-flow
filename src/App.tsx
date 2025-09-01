@@ -58,6 +58,7 @@ import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import StaffDashboard from "./pages/StaffDashboard";
 
 import Testing from "./pages/Testing";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/results/:orderId" element={<Results />} />

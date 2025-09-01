@@ -130,7 +130,7 @@ const Services = () => {
       ],
       popular: false,
       startingPrice: "£150",
-      link: "/scan-service",
+      link: "/scan-services",
       services: ["MRI Scans", "CT Scans", "Ultrasound", "X-Ray"]
     },
     {

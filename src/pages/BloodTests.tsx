@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 import { 
   Search, Filter, Clock, TestTube2, Heart, Droplets, 
-  Zap, Shield, Calendar, CheckCircle, Users, Star, Home, Building2, ClipboardCheck
+  Zap, Shield, Calendar, CheckCircle, Users, Star, Home, Building2, ClipboardCheck, ShoppingBasket
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -18,6 +19,20 @@ const BloodTests = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedTests, setSelectedTests] = useState<Set<string>>(new Set());
+  const [basketTests, setBasketTests] = useState<Set<string>>(new Set());
+
+  // Load basket from localStorage on component mount
+  useEffect(() => {
+    const savedBasket = localStorage.getItem('bloodTestBasket');
+    if (savedBasket) {
+      setBasketTests(new Set(JSON.parse(savedBasket)));
+    }
+  }, []);
+
+  // Save basket to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('bloodTestBasket', JSON.stringify(Array.from(basketTests)));
+  }, [basketTests]);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -55,6 +70,33 @@ const BloodTests = () => {
       const test = bloodTests.find(t => t.id === testId);
       return total + (test?.basePrice || 0);
     }, 0);
+  };
+
+  const getBasketTotalPrice = () => {
+    return Array.from(basketTests).reduce((total, testId) => {
+      const test = bloodTests.find(t => t.id === testId);
+      return total + (test?.basePrice || 0);
+    }, 0);
+  };
+
+  const addToBasket = () => {
+    if (selectedTests.size === 0) {
+      toast.error("Please select tests to add to basket");
+      return;
+    }
+
+    const newBasketTests = new Set([...basketTests, ...selectedTests]);
+    setBasketTests(newBasketTests);
+    setSelectedTests(new Set()); // Clear selection after adding to basket
+    
+    toast.success(`Added ${selectedTests.size} test${selectedTests.size !== 1 ? 's' : ''} to basket`);
+  };
+
+  const removeFromBasket = (testId: string) => {
+    const newBasketTests = new Set(basketTests);
+    newBasketTests.delete(testId);
+    setBasketTests(newBasketTests);
+    toast.success("Removed test from basket");
   };
 
   return (
@@ -288,51 +330,94 @@ const BloodTests = () => {
             <Card className="sticky top-[28rem]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TestTube2 className="w-5 h-5" />
+                  <ShoppingBasket className="w-5 h-5" />
                   Your Test Package
                 </CardTitle>
                 <CardDescription>
-                  {selectedTests.size} test{selectedTests.size !== 1 ? 's' : ''} selected
+                  {basketTests.size} test{basketTests.size !== 1 ? 's' : ''} in basket
+                  {selectedTests.size > 0 && ` | ${selectedTests.size} selected`}
                 </CardDescription>
               </CardHeader>
               
               <CardContent className="space-y-4">
-                {selectedTests.size === 0 ? (
+                {basketTests.size === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    Select tests to build your package
+                    Your basket is empty. Select tests to add them.
                   </p>
                 ) : (
                   <>
-                    <div className="space-y-3">
-                      {Array.from(selectedTests).map(testId => {
-                        const test = bloodTests.find(t => t.id === testId);
-                        return test ? (
-                          <div key={testId} className="flex items-center justify-between text-sm">
-                            <span className="flex-1">{test.name}</span>
-                            <span className="font-medium">from £{test.basePrice}</span>
-                          </div>
-                        ) : null;
-                      })}
+                    <div>
+                      <h4 className="font-medium mb-2 text-sm">Basket Items:</h4>
+                      <div className="space-y-2">
+                        {Array.from(basketTests).map(testId => {
+                          const test = bloodTests.find(t => t.id === testId);
+                          return test ? (
+                            <div key={testId} className="flex items-center justify-between text-sm bg-muted/50 p-2 rounded">
+                              <span className="flex-1">{test.name}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">£{test.basePrice}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeFromBasket(testId)}
+                                  className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                                >
+                                  ×
+                                </Button>
+                              </div>
+                            </div>
+                          ) : null;
+                        })}
+                      </div>
                     </div>
+
+                    {selectedTests.size > 0 && (
+                      <>
+                        <Separator />
+                        <div>
+                          <h4 className="font-medium mb-2 text-sm">Currently Selected:</h4>
+                          <div className="space-y-1">
+                            {Array.from(selectedTests).map(testId => {
+                              const test = bloodTests.find(t => t.id === testId);
+                              return test ? (
+                                <div key={testId} className="flex items-center justify-between text-sm">
+                                  <span className="flex-1">{test.name}</span>
+                                  <span className="font-medium text-muted-foreground">£{test.basePrice}</span>
+                                </div>
+                              ) : null;
+                            })}
+                          </div>
+                        </div>
+                      </>
+                    )}
 
                     <Separator />
 
                     <div className="flex items-center justify-between font-semibold">
-                      <span>Total:</span>
-                      <span className="text-lg text-accent">£{getTotalPrice()}</span>
+                      <span>Basket Total:</span>
+                      <span className="text-lg text-accent">£{getBasketTotalPrice()}</span>
                     </div>
 
                     <div className="space-y-2">
+                      {selectedTests.size > 0 && (
+                        <Button 
+                          variant="outline" 
+                          className="w-full" 
+                          size="sm"
+                          onClick={addToBasket}
+                        >
+                          <ShoppingBasket className="w-4 h-4 mr-2" />
+                          Add Selected to Basket
+                        </Button>
+                      )}
                       <Button 
                         className="w-full" 
                         size="lg"
                         onClick={() => navigate('/booking')}
+                        disabled={basketTests.size === 0}
                       >
                         <Calendar className="w-4 h-4 mr-2" />
                         Book Appointment
-                      </Button>
-                      <Button variant="outline" className="w-full" size="sm">
-                        Add to Basket
                       </Button>
                     </div>
 
@@ -351,6 +436,18 @@ const BloodTests = () => {
                       </div>
                     </div>
                   </>
+                )}
+
+                {basketTests.size === 0 && selectedTests.size > 0 && (
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    size="sm"
+                    onClick={addToBasket}
+                  >
+                    <ShoppingBasket className="w-4 h-4 mr-2" />
+                    Add Selected to Basket
+                  </Button>
                 )}
               </CardContent>
             </Card>

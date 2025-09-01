@@ -71,7 +71,7 @@ const Services = () => {
   const serviceCategories = [
     {
       icon: TestTube2,
-      title: "Blood Testing",
+      title: "Blood Tests",
       subtitle: "Comprehensive Lab Analysis",
       description: "From basic health checks to advanced wellness panels",
       features: [
@@ -87,7 +87,7 @@ const Services = () => {
     },
     {
       icon: Users,
-      title: "Doctor Consultations", 
+      title: "Consultations", 
       subtitle: "Expert Medical Advice",
       description: "Connect with verified specialists and GPs",
       features: [
@@ -103,7 +103,7 @@ const Services = () => {
     },
     {
       icon: Zap,
-      title: "Treatments",
+      title: "Treatments & Therapies",
       subtitle: "Recovery & Performance",
       description: "Advanced wellness and recovery treatments",
       features: [
@@ -119,7 +119,7 @@ const Services = () => {
     },
     {
       icon: Scan,
-      title: "Radiology Services",
+      title: "Scans & Imaging",
       subtitle: "Advanced Medical Imaging",
       description: "Professional diagnostic imaging and scans",
       features: [
@@ -135,7 +135,7 @@ const Services = () => {
     },
     {
       icon: Truck,
-      title: "Mobile Services",
+      title: "Mobile & On-Site Services",
       subtitle: "Healthcare at Your Doorstep",
       description: "Professional medical services delivered directly to you",
       features: [
@@ -173,189 +173,99 @@ const Services = () => {
         </div>
 
         {/* Service Categories */}
-        {/* Service Categories — compact 2/2/1 layout */}
-<div className="space-y-8 mb-20">
-  {/* Top 2 rows (2 x 2) */}
-  <div className="grid md:grid-cols-2 gap-6">
-    {serviceCategories.slice(0, 4).map((category, index) => {
-      const IconComponent = category.icon;
-      return (
-        <Card
-          key={index}
-          className={`relative transition-all duration-300 hover:shadow-md group ${
-            category.popular ? "border-primary shadow-primary/20 ring-1 ring-primary/20" : ""
-          }`}
-        >
-          {category.popular && (
-            <div className="absolute -top-2 left-4">
-              <Badge className="bg-primary text-primary-foreground text-[10px] py-0.5 px-2">
-                Most Popular
-              </Badge>
-            </div>
-          )}
-
-          <CardHeader className="pb-3 pt-3">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center space-x-3">
-                <div
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    category.popular ? "bg-primary/10" : "bg-accent/10"
-                  }`}
-                >
-                  <IconComponent className="w-5 h-5 text-black" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg text-black leading-tight">
-                    {category.title}
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground">{category.subtitle}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-[11px] text-muted-foreground leading-none">From</div>
-                <div className="text-xl font-bold text-primary leading-none">
-                  {category.startingPrice}
-                </div>
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              {category.description}
-            </p>
-          </CardHeader>
-
-          <CardContent className="space-y-4 pt-0">
-            <div className="grid grid-cols-2 gap-2">
-              {category.features.map((feature, featureIndex) => (
-                <div key={featureIndex} className="flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-success shrink-0" />
-                  <span className="text-[13px] leading-snug">{feature}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap gap-1.5">
-              {category.services.map((service, serviceIndex) => (
-                <Badge
-                  key={serviceIndex}
-                  variant="secondary"
-                  className="text-[11px] py-1 px-2"
-                >
-                  {service}
-                </Badge>
-              ))}
-            </div>
-
-            <div className="flex">
-              <Button
-                variant={category.popular ? "hero" : "default"}
-                size="lg"
-                className="flex-1 py-3 text-sm group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                onClick={() =>
-                  navigate(
-                    category.title === "Treatments & Therapies"
-                      ? "/consultations"
-                      : category.link
-                  )
-                }
+        <div className="grid lg:grid-cols-2 gap-8 mb-20">
+          {serviceCategories.map((category, index) => {
+            const IconComponent = category.icon;
+            return (
+              <Card 
+                key={index} 
+                className={`relative transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group ${
+                  category.popular ? 'border-primary shadow-primary/20 ring-2 ring-primary/20' : ''
+                } ${index === 4 ? 'lg:justify-self-center' : ''}`}
               >
-                Explore {category.title}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    })}
-  </div>
+                {category.popular && (
+                  <div className="absolute -top-3 left-6">
+                    <Badge className="bg-primary text-primary-foreground">
+                      Most Popular
+                    </Badge>
+                  </div>
+                )}
+                
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                        category.popular ? 'bg-primary/10' : 'bg-accent/10'
+                      }`}>
+                        <IconComponent className={`w-6 h-6 ${
+                          category.popular ? 'text-black' : 'text-black'
+                        }`} />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl text-black">{category.title}</CardTitle>
+                        <p className="text-sm text-muted-foreground">{category.subtitle}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-muted-foreground">Starting from</div>
+                      <div className="text-2xl font-bold text-primary">{category.startingPrice}</div>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground mt-2">{category.description}</p>
+                </CardHeader>
+                
+                <CardContent className="space-y-6">
+                  {/* Key Features */}
+                  <div className="grid grid-cols-2 gap-3">
+                    {category.features.map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-success flex-shrink-0" />
+                        <span className="text-sm text-foreground">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
 
-  {/* Bottom row (1 card centered) */}
-  <div className="flex justify-center">
-    {(() => {
-      const category = serviceCategories[4];
-      const IconComponent = category.icon;
-      return (
-        <Card
-          className={`w-full md:max-w-xl lg:max-w-2xl transition-all duration-300 hover:shadow-md group ${
-            category.popular ? "border-primary shadow-primary/20 ring-1 ring-primary/20" : ""
-          }`}
-        >
-          {category.popular && (
-            <div className="absolute -top-2 left-4">
-              <Badge className="bg-primary text-primary-foreground text-[10px] py-0.5 px-2">
-                Most Popular
-              </Badge>
-            </div>
-          )}
-
-          <CardHeader className="pb-3 pt-3">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center space-x-3">
-                <div
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    category.popular ? "bg-primary/10" : "bg-accent/10"
-                  }`}
-                >
-                  <IconComponent className="w-5 h-5 text-black" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg text-black leading-tight">
-                    {category.title}
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground">{category.subtitle}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-[11px] text-muted-foreground leading-none">From</div>
-                <div className="text-xl font-bold text-primary leading-none">
-                  {category.startingPrice}
-                </div>
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              {category.description}
-            </p>
-          </CardHeader>
-
-          <CardContent className="space-y-4 pt-0">
-            <div className="grid grid-cols-2 gap-2">
-              {category.features.map((feature, featureIndex) => (
-                <div key={featureIndex} className="flex items-center gap-2">
-                  <CheckCircle className="w-3.5 h-3.5 text-success shrink-0" />
-                  <span className="text-[13px] leading-snug">{feature}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap gap-1.5">
-              {category.services.map((service, serviceIndex) => (
-                <Badge key={serviceIndex} variant="secondary" className="text-[11px] py-1 px-2">
-                  {service}
-                </Badge>
-              ))}
-            </div>
-
-            <div className="flex">
-              <Button
-                variant={category.popular ? "hero" : "default"}
-                size="lg"
-                className="flex-1 py-3 text-sm group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                onClick={() =>
-                  navigate(
-                    category.title === "Treatments & Therapies"
-                      ? "/consultations"
-                      : category.link
-                  )
-                }
-              >
-                Explore {category.title}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    })()}
-  </div>
-</div>
-
+                  {/* Service Types */}
+                  <div>
+                    <h4 className="font-medium text-sm mb-3">Available Services:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {category.services.map((service, serviceIndex) => (
+                        <Badge 
+                          key={serviceIndex} 
+                          variant="secondary" 
+                          className={`text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors ${
+                            category.title === "Treatments" ? "hover:scale-105" : ""
+                          }`}
+                          onClick={() => {
+                            if (category.title === "Treatments & Therapies") {
+                              setSelectedTreatment(service);
+                            }
+                          }}
+                        >
+                          {service}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <Button 
+                      variant={category.popular ? "hero" : "default"} 
+                      className="flex-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                      size="lg"
+                      onClick={() => navigate(category.title === "Treatments & Therapies" ? "/consultations" : category.link)}
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        {category.title === "Treatments & Therapies" ? "Explore Treatments & Therapies" : `Explore ${category.title}`}
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
         {/* Stats Section */}
         <div className="bg-secondary/30 rounded-2xl p-8 mb-16">

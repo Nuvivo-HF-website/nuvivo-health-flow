@@ -360,7 +360,7 @@ const Services = () => {
         {/* Stats Section */}
         <div className="bg-secondary/30 rounded-2xl p-8 mb-16">
           <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-accent mb-2">The Global Standard in Health</h3>
+            <h3 className="text-2xl font-bold text-primary mb-2">The Global Standard in Health</h3>
             <p className="text-muted-foreground">Join millions worldwide who trust the most advanced health platform</p>
           </div>
           
@@ -370,7 +370,7 @@ const Services = () => {
               return (
                 <div key={index} className="text-center">
                   <IconComponent className="w-8 h-8 text-primary mx-auto mb-3" />
-                  <div className="text-2xl font-bold text-accent">{stat.number}</div>
+                  <div className="text-2xl font-bold text-primary">{stat.number}</div>
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </div>
               );
@@ -382,21 +382,21 @@ const Services = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="text-center">
             <Shield className="w-8 h-8 text-primary mx-auto mb-3" />
-            <h3 className="font-semibold text-accent mb-2">GDPR Compliant</h3>
+            <h3 className="font-semibold text-primary mb-2">GDPR Compliant</h3>
             <p className="text-sm text-muted-foreground">
               Your health data is encrypted and stored securely in the EU
             </p>
           </div>
           <div className="text-center">
             <Award className="w-8 h-8 text-primary mx-auto mb-3" />
-            <h3 className="font-semibold text-accent mb-2">Accredited Laboratories</h3>
+            <h3 className="font-semibold text-primary mb-2">Accredited Laboratories</h3>
             <p className="text-sm text-muted-foreground">
               All tests processed in fully accredited medical laboratories
             </p>
           </div>
           <div className="text-center">
             <Calendar className="w-8 h-8 text-primary mx-auto mb-3" />
-            <h3 className="font-semibold text-accent mb-2">Easy Booking</h3>
+            <h3 className="font-semibold text-primary mb-2">Easy Booking</h3>
             <p className="text-sm text-muted-foreground">
               Book appointments online with flexible scheduling options
             </p>

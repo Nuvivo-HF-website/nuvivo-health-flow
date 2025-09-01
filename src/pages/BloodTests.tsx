@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { 
   Search, Filter, Clock, TestTube2, Heart, Droplets, 
-  Zap, Shield, Calendar, CheckCircle, Users, Star, Home, Building2
+  Zap, Shield, Calendar, CheckCircle, Users, Star, Home, Building2, ClipboardCheck
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -256,8 +256,35 @@ const BloodTests = () => {
             </div>
           </div>
 
-          {/* Sidebar - Cart */}
-          <div className="lg:col-span-1">
+          {/* Sidebar */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Health Symptom Assessment Card */}
+            <Card className="sticky top-24">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <ClipboardCheck className="w-5 h-5" />
+                  Health Symptom Assessment
+                </CardTitle>
+                <CardDescription>
+                  Get personalized test recommendations based on your symptoms
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Answer a few questions about your health and we'll recommend the most relevant tests for you.
+                </p>
+                <Button 
+                  className="w-full" 
+                  size="lg"
+                  onClick={() => navigate('/health-survey')}
+                >
+                  <ClipboardCheck className="w-4 h-4 mr-2" />
+                  Start Assessment
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Test Package Card */}
             <Card className="sticky top-24">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

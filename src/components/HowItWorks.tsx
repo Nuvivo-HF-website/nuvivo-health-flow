@@ -2,9 +2,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Search, Calendar, Users, FileCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/EnhancedAuthContext";
 
 const HowItWorks = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  const handleJoinUsClick = () => {
+    if (user) {
+      // User is authenticated, navigate to portal
+      navigate('/portal');
+    } else {
+      // User is not authenticated, navigate to sign up/in page
+      navigate('/signin');
+    }
+  };
   
   const steps = [
     {
@@ -95,7 +107,7 @@ const HowItWorks = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                onClick={() => navigate('/blood-tests')}
+                onClick={handleJoinUsClick}
                 className="bg-primary hover:bg-primary/90"
               >
                 Join us

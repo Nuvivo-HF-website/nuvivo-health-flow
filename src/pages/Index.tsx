@@ -2,7 +2,6 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import HowItWorks from "@/components/HowItWorks";
-import MedicalQuiz from "@/components/MedicalQuiz";
 import Footer from "@/components/Footer";
 import Testimonials from "@/components/Testimonials";
 import CTASection from "@/components/CTASection";
@@ -20,11 +19,7 @@ const Index = () => {
       <Services />
       <Testimonials />
       
-    
-
-      <MedicalQuiz />
-      
-      <CTASection 
+      <CTASection
         title="Ready to Join the Health Revolution?"
         subtitle="Experience the world's most powerful health platform trusted by millions globally"
         primaryButtonText="Book Your Test Now"

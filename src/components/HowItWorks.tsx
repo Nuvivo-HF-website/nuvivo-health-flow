@@ -14,7 +14,7 @@ const HowItWorks = () => {
       navigate('/portal');
     } else {
       // User is not authenticated, navigate to sign up/in page
-      navigate('/signin');
+      navigate('/sign-in');
     }
   };
   

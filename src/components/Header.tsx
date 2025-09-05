@@ -152,13 +152,13 @@ const Header = () => {
 
         {/* 2. Wellbeing & Lifestyle */}
         <div className="space-y-2">
-          <div className="px-1 min-h-[40px] flex items-end">
+          <div className="px-1 min-h-[20px] flex items-end">
             <h4 className="text-[15px] font-semibold">
               Wellbeing &amp; Lifestyle
             </h4>
           </div>
           
-<div className="h-2 md:h-3" aria-hidden />
+<div className="h-[14px]" aria-hidden />
           
           <NavigationMenuLink asChild>
             <NavigationLink
@@ -181,13 +181,13 @@ const Header = () => {
 
         {/* 3. Specialist Health Areas */}
         <div className="space-y-2">
-          <div className="px-1 min-h-[40px] flex items-end">
+          <div className="px-1 min-h-[20px] flex items-end">
             <h4 className="text-[15px] font-semibold">
               Specialist Health Areas
             </h4>
           </div>
           
-<div className="h-2 md:h-3" aria-hidden />
+<div className="h-[14px]" aria-hidden />
           
           <NavigationMenuLink asChild>
             <NavigationLink

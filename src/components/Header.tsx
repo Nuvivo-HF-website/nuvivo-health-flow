@@ -157,7 +157,9 @@ const Header = () => {
               Wellbeing &amp; Lifestyle
             </h4>
           </div>
-
+          
+<div className="h-2 md:h-3" aria-hidden />
+          
           <NavigationMenuLink asChild>
             <NavigationLink
               to="/consultations/nutrition"
@@ -184,7 +186,9 @@ const Header = () => {
               Specialist Health Areas
             </h4>
           </div>
-
+          
+<div className="h-2 md:h-3" aria-hidden />
+          
           <NavigationMenuLink asChild>
             <NavigationLink
               to="/consultations/sexual-health"

@@ -158,7 +158,7 @@ const Header = () => {
             </h4>
           </div>
           
-<div className="h-2 md:h-3" aria-hidden />
+<div className="h-[14px]" aria-hidden />
           
           <NavigationMenuLink asChild>
             <NavigationLink
@@ -187,7 +187,7 @@ const Header = () => {
             </h4>
           </div>
           
-<div className="h-2 md:h-3" aria-hidden />
+<div className="h-[14px]" aria-hidden />
           
           <NavigationMenuLink asChild>
             <NavigationLink

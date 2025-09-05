@@ -1,4 +1,4 @@
-import { Shield } from "lucide-react";
+// Removed Shield import since we're using the proper logo image
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -12,9 +12,11 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                <Shield className="w-5 h-5 text-accent-foreground" />
-              </div>
+              <img
+                src="/lovable-uploads/d10bf310-8418-438d-af09-376e2c242db8.png"
+                alt="Nuvivo Health Logo"
+                className="w-8 h-8 object-contain"
+              />
               <span className="text-xl font-semibold">Nuvivo Health</span>
             </div>
             <p className="text-primary-foreground/70 text-sm leading-relaxed">

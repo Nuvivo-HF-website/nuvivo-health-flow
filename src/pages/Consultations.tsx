@@ -31,7 +31,7 @@ const Consultations = () => {
       subtitle: "Targeted Health Services",
       description:
         "Specialised consultations focused on specific health needs.",
-      link: "/consultations/specialist-health",
+      link: "/consultations/sexual-health",
     },
   ];
 

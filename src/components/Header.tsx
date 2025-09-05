@@ -137,6 +137,17 @@ const Header = () => {
               <div className="text-sm font-medium leading-none">Second Opinions</div>
             </NavigationLink>
           </NavigationMenuLink>
+
+          <NavigationMenuLink asChild>
+            <NavigationLink
+              to="/medical-reports"
+              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+            >
+              <div className="text-sm font-medium leading-none">
+                Medical Reports (Fit Notes, DVLA, Travel Letters)
+              </div>
+            </NavigationLink>
+          </NavigationMenuLink>
         </div>
 
         {/* 2. Wellbeing & Lifestyle */}
@@ -158,12 +169,10 @@ const Header = () => {
 
           <NavigationMenuLink asChild>
             <NavigationLink
-              to="/medical-reports"
+              to="/consultations/mental-health"
               className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
             >
-              <div className="text-sm font-medium leading-none">
-                Medical Reports (Fit Notes, DVLA, Travel Letters)
-              </div>
+              <div className="text-sm font-medium leading-none">Mental Health &amp; Psychology</div>
             </NavigationLink>
           </NavigationMenuLink>
         </div>
@@ -182,15 +191,6 @@ const Header = () => {
               className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
             >
               <div className="text-sm font-medium leading-none">Sexual Health</div>
-            </NavigationLink>
-          </NavigationMenuLink>
-
-          <NavigationMenuLink asChild>
-            <NavigationLink
-              to="/consultations/mental-health"
-              className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-            >
-              <div className="text-sm font-medium leading-none">Mental Health &amp; Psychology</div>
             </NavigationLink>
           </NavigationMenuLink>
         </div>

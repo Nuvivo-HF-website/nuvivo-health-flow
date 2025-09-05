@@ -93,23 +93,7 @@ const Consultations = () => {
           </div>
 
           {/* CTA Section */}
-          <div className="text-center mt-16">
-            <div className="bg-gradient-primary rounded-2xl p-8 text-primary-foreground max-w-4xl mx-auto">
-              <h3 className="text-2xl font-bold mb-4">Start Your Health Journey Today</h3>
-              <p className="text-primary-foreground/80 mb-6">
-                Book a consultation with our verified healthcare professionals and take the first step
-                towards better health and wellbeing.
-              </p>
-              <Button
-                variant="secondary"
-                size="lg"
-                className="bg-white text-accent hover:bg-white/90"
-                onClick={() => navigate("/booking")}
-              >
-                Book Consultation
-              </Button>
-            </div>
-          </div>
+          
         </div>
       </main>
       <Footer />

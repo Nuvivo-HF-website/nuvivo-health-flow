@@ -10,10 +10,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Upload, Shield, Check, ArrowLeft, User, Building, Stethoscope } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/EnhancedAuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function PartnerRegister() {
   const navigate = useNavigate();
+  const { signUp } = useAuth();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [accountType, setAccountType] = useState<"individual" | "clinic">("individual");
   const [formData, setFormData] = useState({
     fullName: "",
@@ -32,35 +36,115 @@ export default function PartnerRegister() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
-    // Basic validation
-    if (!formData.fullName || !formData.email || !formData.mobile || !formData.profession || !formData.registrationNumber || !formData.password) {
+    try {
+      // Basic validation
+      if (!formData.fullName || !formData.email || !formData.mobile || !formData.profession || !formData.registrationNumber || !formData.password) {
+        toast({
+          title: "Missing Information",
+          description: "Please fill in all required fields.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        toast({
+          title: "Password Mismatch",
+          description: "Passwords do not match. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Create user account
+      const { error: signUpError } = await signUp(formData.email, formData.password, {
+        full_name: formData.fullName,
+        user_type: 'doctor'
+      });
+
+      if (signUpError) {
+        toast({
+          title: "Registration Failed",
+          description: signUpError.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Update profile with professional information
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        // Update profiles table
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            user_type: 'doctor',
+            full_name: formData.fullName
+          })
+          .eq('user_id', user.id);
+
+        if (profileError) {
+          console.error('Profile update error:', profileError);
+        }
+
+        // Add doctor role
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: user.id,
+            role: 'doctor'
+          });
+
+        if (roleError) {
+          console.error('Role assignment error:', roleError);
+        }
+
+        // Create specialist profile if individual account
+        if (accountType === 'individual') {
+          const { error: specialistError } = await supabase
+            .from('specialists')
+            .insert({
+              user_id: user.id,
+              specialty: formData.profession,
+              experience_years: 0, // This can be updated later
+              bio: `${formData.profession} with registration number ${formData.registrationNumber}`,
+              consultation_fee: 0, // To be set by the professional
+              is_active: true
+            });
+
+          if (specialistError) {
+            console.error('Specialist profile error:', specialistError);
+          }
+        }
+      }
+
+      setIsSubmitted(true);
+      
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
+        title: "Registration Successful!",
+        description: "Your professional account has been created. You can now access the staff dashboard.",
+      });
+
+      // Redirect to portal after a short delay
+      setTimeout(() => {
+        navigate('/portal');
+      }, 2000);
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Registration Failed",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive"
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Password Mismatch",
-        description: "Passwords do not match. Please try again.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Simulate registration process
-    setIsSubmitted(true);
-    
-    toast({
-      title: "Application Submitted!",
-      description: "We'll review your details and activate your profile shortly.",
-    });
   };
 
   if (isSubmitted) {
@@ -85,9 +169,8 @@ export default function PartnerRegister() {
                 <li>• Welcome email with dashboard access</li>
               </ul>
             </div>
-            <Button onClick={() => navigate("/")} className="w-full">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Return to Homepage
+            <Button onClick={() => navigate("/portal")} className="w-full">
+              Go to Staff Dashboard
             </Button>
           </CardContent>
         </Card>
@@ -498,8 +581,8 @@ export default function PartnerRegister() {
                 </p>
               </div>
 
-              <Button type="submit" className="w-full" size="lg">
-                {accountType === "clinic" ? "Submit Clinic Application" : "Submit Application"}
+              <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                {isLoading ? "Creating Account..." : (accountType === "clinic" ? "Create Clinic Account" : "Create Professional Account")}
               </Button>
             </form>
           </CardContent>

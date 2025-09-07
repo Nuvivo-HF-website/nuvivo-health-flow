@@ -1670,6 +1670,10 @@ export type Database = {
       }
     }
     Functions: {
+      assign_admin_role: {
+        Args: { user_email: string }
+        Returns: Json
+      }
       create_notification: {
         Args: {
           _action_label?: string
@@ -1682,6 +1686,14 @@ export type Database = {
           _user_id: string
         }
         Returns: string
+      }
+      create_super_admin: {
+        Args: {
+          admin_email: string
+          admin_name: string
+          admin_password: string
+        }
+        Returns: Json
       }
       decode_message_content: {
         Args: { encoded_content: string }

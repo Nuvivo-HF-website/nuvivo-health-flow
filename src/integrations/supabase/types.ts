@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
@@ -1672,14 +1672,14 @@ export type Database = {
     Functions: {
       create_notification: {
         Args: {
-          _user_id: string
-          _title: string
-          _message: string
-          _type?: string
-          _category?: string
-          _action_url?: string
           _action_label?: string
+          _action_url?: string
+          _category?: string
           _data?: Json
+          _message: string
+          _title: string
+          _type?: string
+          _user_id: string
         }
         Returns: string
       }
@@ -1706,13 +1706,13 @@ export type Database = {
       get_upcoming_appointments: {
         Args: { _user_id: string }
         Returns: {
-          id: string
           appointment_date: string
           appointment_type: string
-          status: string
+          duration_minutes: number
+          id: string
           specialist_name: string
           specialist_specialty: string
-          duration_minutes: number
+          status: string
         }[]
       }
       get_user_roles: {
@@ -1723,25 +1723,25 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
       log_gdpr_action: {
         Args: {
-          _user_id: string
           _action: string
-          _table_name?: string
-          _record_id?: string
-          _ip_address?: unknown
-          _user_agent?: string
           _data_category?: string
+          _ip_address?: unknown
+          _record_id?: string
+          _table_name?: string
+          _user_agent?: string
+          _user_id: string
         }
         Returns: string
       }
       log_message_action: {
-        Args: { _message_id: string; _action: string; _actor_id: string }
+        Args: { _action: string; _actor_id: string; _message_id: string }
         Returns: undefined
       }
       process_gdpr_deletion: {
@@ -1749,11 +1749,11 @@ export type Database = {
         Returns: Json
       }
       update_health_goal_progress: {
-        Args: { _goal_id: string; _current_value: number }
+        Args: { _current_value: number; _goal_id: string }
         Returns: undefined
       }
       withdraw_consent: {
-        Args: { _user_id: string; _consent_type: string }
+        Args: { _consent_type: string; _user_id: string }
         Returns: Json
       }
     }

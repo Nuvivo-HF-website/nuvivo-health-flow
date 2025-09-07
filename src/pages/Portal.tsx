@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/EnhancedAuthContext';
 import ComprehensivePatientPortal from './ComprehensivePatientPortal';
 import StaffDashboard from './StaffDashboard';
+import AdminDashboard from './AdminDashboard';
 
 export default function Portal() {
   const { user, userRoles, loading } = useAuth();
@@ -23,9 +24,14 @@ export default function Portal() {
   }
 
   // Check user roles and redirect to appropriate dashboard
-  const hasStaffRole = userRoles.includes('doctor') || userRoles.includes('admin');
+  const hasAdminRole = userRoles.includes('admin');
+  const hasDoctorRole = userRoles.includes('doctor');
   
-  if (hasStaffRole) {
+  if (hasAdminRole) {
+    return <AdminDashboard />;
+  }
+  
+  if (hasDoctorRole) {
     return <StaffDashboard />;
   }
 

@@ -142,13 +142,13 @@ export function AvailabilityCalendar({
       <Card className="mb-6">
         <CardContent className="flex items-center space-x-4 p-6">
           <Avatar className="w-16 h-16">
-            <AvatarImage src={specialist.image} alt={specialist.name} />
+            <AvatarImage src={specialist.image} alt={specialist.name || 'Specialist'} />
             <AvatarFallback>
-              {specialist.name.split(' ').map(n => n[0]).join('')}
+              {specialist.name ? specialist.name.split(' ').map(n => n[0]).join('') : 'SP'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h3 className="text-xl font-semibold">{specialist.name}</h3>
+            <h3 className="text-xl font-semibold">{specialist.name || 'Specialist'}</h3>
             <Badge variant="secondary" className="mb-1">
               {specialist.specialty}
             </Badge>

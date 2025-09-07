@@ -139,7 +139,12 @@ export function SpecialistSelection({ selectedService, onSpecialistSelect, onBac
             ? specialist.available_hours 
             : { start: '09:00', end: '17:00' },
           profile: profile || { full_name: 'Unknown', avatar_url: undefined },
-          specialist_services: specialist.specialist_services || []
+          specialist_services: specialist.specialist_services || [],
+          // Add name property for compatibility with AvailabilityCalendar
+          name: profile?.full_name || 'Unknown',
+          price: specialist.consultation_fee,
+          qualifications: specialist.qualifications?.join(', ') || '',
+          duration: `${specialist.consultation_duration} min`
         };
       });
 

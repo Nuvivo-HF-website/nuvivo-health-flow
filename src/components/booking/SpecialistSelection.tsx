@@ -143,7 +143,7 @@ export function SpecialistSelection({ selectedService, onSpecialistSelect, onBac
           // Add name property for compatibility with AvailabilityCalendar
           name: profile?.full_name || 'Unknown',
           price: specialist.consultation_fee,
-          qualifications: specialist.qualifications?.join(', ') || '',
+          qualifications: specialist.qualifications || [],
           duration: `${specialist.consultation_duration} min`
         };
       });

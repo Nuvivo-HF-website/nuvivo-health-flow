@@ -61,9 +61,10 @@ export default function PartnerRegister() {
       }
 
       // Create user account
+      const userType = accountType === 'clinic' ? 'clinic_staff' : 'doctor';
       const { error: signUpError } = await signUp(formData.email, formData.password, {
         full_name: formData.fullName,
-        user_type: 'doctor'
+        user_type: userType
       });
 
       if (signUpError) {
@@ -80,10 +81,11 @@ export default function PartnerRegister() {
       
       if (user) {
         // Update profiles table
+        const userType = accountType === 'clinic' ? 'clinic_staff' : 'doctor';
         const { error: profileError } = await supabase
           .from('profiles')
           .update({
-            user_type: 'doctor',
+            user_type: userType,
             full_name: formData.fullName
           })
           .eq('user_id', user.id);
@@ -92,12 +94,13 @@ export default function PartnerRegister() {
           console.error('Profile update error:', profileError);
         }
 
-        // Add doctor role
+        // Add appropriate role
+        const role = accountType === 'clinic' ? 'clinic_staff' : 'doctor';
         const { error: roleError } = await supabase
           .from('user_roles')
           .insert({
             user_id: user.id,
-            role: 'doctor'
+            role: role
           });
 
         if (roleError) {

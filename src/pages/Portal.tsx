@@ -26,12 +26,13 @@ export default function Portal() {
   // Check user roles and redirect to appropriate dashboard
   const hasAdminRole = userRoles.includes('admin');
   const hasDoctorRole = userRoles.includes('doctor');
+  const hasClinicStaffRole = userRoles.includes('clinic_staff');
   
   if (hasAdminRole) {
     return <AdminDashboard />;
   }
   
-  if (hasDoctorRole) {
+  if (hasDoctorRole || hasClinicStaffRole) {
     return <StaffDashboard />;
   }
 

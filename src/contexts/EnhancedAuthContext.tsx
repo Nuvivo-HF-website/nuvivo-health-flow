@@ -20,6 +20,7 @@ interface AuthContextType {
   hasRole: (role: UserRole) => boolean;
   isAdmin: () => boolean;
   isDoctor: () => boolean;
+  isClinicStaff: () => boolean;
   isPatient: () => boolean;
   requestDataExport: () => Promise<void>;
   requestDataDeletion: () => Promise<void>;
@@ -259,6 +260,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isAdmin = (): boolean => hasRole('admin');
   const isDoctor = (): boolean => hasRole('doctor');
+  const isClinicStaff = (): boolean => hasRole('clinic_staff');
   const isPatient = (): boolean => hasRole('patient');
 
   // GDPR compliance functions
@@ -329,6 +331,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     hasRole,
     isAdmin,
     isDoctor,
+    isClinicStaff,
     isPatient,
     requestDataExport,
     requestDataDeletion,

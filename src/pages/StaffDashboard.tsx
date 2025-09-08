@@ -9,7 +9,7 @@ import Footer from '@/components/Footer';
 
 export default function StaffDashboard() {
   const { hasRole } = useAuth();
-  const isStaff = hasRole('admin') || hasRole('doctor');
+  const isStaff = hasRole('admin') || hasRole('doctor') || hasRole('clinic_staff');
 
   if (!isStaff) {
     return (

@@ -2,6 +2,7 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { PatientProfileForm } from '@/components/PatientProfileForm'
+import { DoctorProfileForm } from '@/components/DoctorProfileForm'
 import { AIConsent } from '@/components/AIConsent'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -59,13 +60,16 @@ export default function Profile() {
         
         <div className="space-y-6">
           {userProfile?.user_type === 'patient' || !userProfile?.user_type ? (
-            // Patient profile form
             <>
               <PatientProfileForm />
               <AIConsent />
             </>
+          ) : userProfile?.user_type === 'doctor' ? (
+            <>
+              <DoctorProfileForm />
+              <AIConsent />
+            </>
           ) : (
-            // Healthcare professional or admin profile
             <Card>
               <CardHeader>
                 <CardTitle>Professional Profile</CardTitle>

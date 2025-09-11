@@ -426,6 +426,84 @@ export type Database = {
         }
         Relationships: []
       }
+      doctor_profiles: {
+        Row: {
+          address_line_1: string | null
+          address_line_2: string | null
+          available_days: string[] | null
+          available_hours: Json | null
+          bio: string | null
+          city: string | null
+          clinic_address: string | null
+          clinic_name: string | null
+          consultation_fee: number | null
+          country: string | null
+          created_at: string
+          first_name: string | null
+          id: string
+          languages: string[] | null
+          last_name: string | null
+          license_number: string | null
+          phone: string | null
+          postcode: string | null
+          qualification: string | null
+          specialty: string | null
+          updated_at: string
+          user_id: string
+          years_of_experience: number | null
+        }
+        Insert: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          available_days?: string[] | null
+          available_hours?: Json | null
+          bio?: string | null
+          city?: string | null
+          clinic_address?: string | null
+          clinic_name?: string | null
+          consultation_fee?: number | null
+          country?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          languages?: string[] | null
+          last_name?: string | null
+          license_number?: string | null
+          phone?: string | null
+          postcode?: string | null
+          qualification?: string | null
+          specialty?: string | null
+          updated_at?: string
+          user_id: string
+          years_of_experience?: number | null
+        }
+        Update: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          available_days?: string[] | null
+          available_hours?: Json | null
+          bio?: string | null
+          city?: string | null
+          clinic_address?: string | null
+          clinic_name?: string | null
+          consultation_fee?: number | null
+          country?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          languages?: string[] | null
+          last_name?: string | null
+          license_number?: string | null
+          phone?: string | null
+          postcode?: string | null
+          qualification?: string | null
+          specialty?: string | null
+          updated_at?: string
+          user_id?: string
+          years_of_experience?: number | null
+        }
+        Relationships: []
+      }
       document_categories: {
         Row: {
           color: string | null

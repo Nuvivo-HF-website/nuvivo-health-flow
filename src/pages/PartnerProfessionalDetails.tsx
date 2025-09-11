@@ -68,24 +68,100 @@ export default function PartnerProfessionalDetails() {
     "Counsellor"
   ];
 
-  const specializations = [
-    "Cardiology",
-    "Dermatology",
-    "Endocrinology",
-    "Gastroenterology",
-    "General Medicine",
-    "Geriatrics",
-    "Hematology",
-    "Infectious Disease",
-    "Nephrology",
-    "Neurology",
-    "Oncology",
-    "Orthopedics",
-    "Psychiatry",
-    "Pulmonology",
-    "Rheumatology",
-    "Urology"
-  ];
+  const specializationsByProfession = {
+    "GP (General Practitioner)": [
+      "Family Medicine",
+      "Preventive Care",
+      "Chronic Disease Management",
+      "Minor Surgery",
+      "Women's Health",
+      "Men's Health",
+      "Elderly Care",
+      "Travel Medicine"
+    ],
+    "Nurse": [
+      "Critical Care",
+      "Pediatric Nursing", 
+      "Geriatric Nursing",
+      "Mental Health Nursing",
+      "Community Nursing",
+      "Surgical Nursing",
+      "Emergency Nursing",
+      "Oncology Nursing"
+    ],
+    "Physiotherapist": [
+      "Sports Therapy",
+      "Neurological Physiotherapy",
+      "Orthopedic Physiotherapy",
+      "Pediatric Physiotherapy",
+      "Geriatric Physiotherapy",
+      "Respiratory Physiotherapy",
+      "Women's Health Physiotherapy",
+      "Manual Therapy"
+    ],
+    "Psychologist": [
+      "Clinical Psychology",
+      "Counseling Psychology",
+      "Child Psychology",
+      "Health Psychology",
+      "Neuropsychology",
+      "Forensic Psychology",
+      "Educational Psychology",
+      "Occupational Psychology"
+    ],
+    "Medical Specialist": [
+      "Cardiology",
+      "Dermatology",
+      "Endocrinology",
+      "Gastroenterology",
+      "General Medicine",
+      "Geriatrics",
+      "Hematology",
+      "Infectious Disease",
+      "Nephrology",
+      "Neurology",
+      "Oncology",
+      "Orthopedics",
+      "Psychiatry",
+      "Pulmonology",
+      "Rheumatology",
+      "Urology"
+    ],
+    "Therapist": [
+      "Occupational Therapy",
+      "Speech Therapy",
+      "Art Therapy",
+      "Music Therapy",
+      "Behavioral Therapy",
+      "Cognitive Behavioral Therapy",
+      "Family Therapy",
+      "Group Therapy"
+    ],
+    "Nutritionist": [
+      "Clinical Nutrition",
+      "Sports Nutrition",
+      "Pediatric Nutrition",
+      "Geriatric Nutrition",
+      "Weight Management",
+      "Eating Disorders",
+      "Community Nutrition",
+      "Food Allergies & Intolerances"
+    ],
+    "Counsellor": [
+      "Marriage Counseling",
+      "Addiction Counseling",
+      "Grief Counseling",
+      "Career Counseling",
+      "Trauma Counseling",
+      "Youth Counseling",
+      "Family Counseling",
+      "Mental Health Counseling"
+    ]
+  };
+
+  const getCurrentSpecializations = () => {
+    return specializationsByProfession[professionalData.profession as keyof typeof specializationsByProfession] || [];
+  };
 
   const days = [
     { key: "monday", label: "Monday" },
@@ -108,7 +184,13 @@ export default function PartnerProfessionalDetails() {
   }, [navigate]);
 
   const handleInputChange = (field: keyof ProfessionalData, value: any) => {
-    setProfessionalData(prev => ({ ...prev, [field]: value }));
+    setProfessionalData(prev => {
+      // Clear specializations when profession changes
+      if (field === 'profession' && prev.profession !== value) {
+        return { ...prev, [field]: value, specializations: [] };
+      }
+      return { ...prev, [field]: value };
+    });
   };
 
   const handleSpecializationToggle = (specialization: string) => {
@@ -339,11 +421,11 @@ export default function PartnerProfessionalDetails() {
               </div>
 
               {/* Specializations */}
-              {professionalData.profession === "Medical Specialist" && (
+              {professionalData.profession && getCurrentSpecializations().length > 0 && (
                 <div className="space-y-4">
                   <Label>Specializations (Select multiple) *</Label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {specializations.map(specialization => (
+                    {getCurrentSpecializations().map(specialization => (
                       <div key={specialization} className="flex items-center space-x-2">
                         <Checkbox 
                           id={specialization}

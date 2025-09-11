@@ -441,14 +441,14 @@ export default function PartnerProfessionalDetails() {
                 </div>
               )}
 
-              {/* GMC Number */}
+              {/* HCPC Number */}
               <div className="space-y-2">
-                <Label htmlFor="gmcNumber">GMC Number *</Label>
+                <Label htmlFor="gmcNumber">HCPC Registration Number *</Label>
                 <Input
                   id="gmcNumber"
                   value={professionalData.gmcNumber}
                   onChange={(e) => handleInputChange("gmcNumber", e.target.value)}
-                  placeholder="Enter your GMC number"
+                  placeholder="Enter your HCPC registration number"
                   required
                 />
               </div>

@@ -339,23 +339,25 @@ export default function PartnerProfessionalDetails() {
               </div>
 
               {/* Specializations */}
-              <div className="space-y-4">
-                <Label>Specializations (Select multiple) *</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {specializations.map(specialization => (
-                    <div key={specialization} className="flex items-center space-x-2">
-                      <Checkbox 
-                        id={specialization}
-                        checked={professionalData.specializations.includes(specialization)}
-                        onCheckedChange={() => handleSpecializationToggle(specialization)}
-                      />
-                      <Label htmlFor={specialization} className="text-sm">
-                        {specialization}
-                      </Label>
-                    </div>
-                  ))}
+              {professionalData.profession === "Medical Specialist" && (
+                <div className="space-y-4">
+                  <Label>Specializations (Select multiple) *</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {specializations.map(specialization => (
+                      <div key={specialization} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={specialization}
+                          checked={professionalData.specializations.includes(specialization)}
+                          onCheckedChange={() => handleSpecializationToggle(specialization)}
+                        />
+                        <Label htmlFor={specialization} className="text-sm">
+                          {specialization}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* GMC Number */}
               <div className="space-y-2">

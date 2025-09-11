@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { doctorService, DoctorProfile } from '@/services/doctorService'
+import { supabase } from '@/integrations/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import { Loader2, Plus, X } from "lucide-react"
 
 const SPECIALTIES = [
@@ -80,7 +81,6 @@ export function DoctorProfileForm() {
       
       if (error) {
         console.error('Error loading doctor profile:', error)
-        return
       }
 
       if (data) {
@@ -113,6 +113,67 @@ export function DoctorProfileForm() {
           bio: data.bio || '',
           languages: data.languages || ['English']
         })
+      } else {
+        // No doctor profile exists, check if there's a specialists profile to migrate
+        const { data: specialistData, error: specialistError } = await supabase
+          .from('specialists')
+          .select('*')
+          .eq('user_id', user.id)
+          .single()
+
+        if (specialistData && !specialistError) {
+          // Migrate specialist data to doctor profile
+          const doctorProfileData = {
+            user_id: user.id,
+            first_name: user.user_metadata?.full_name?.split(' ')[0] || '',
+            last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+            specialty: specialistData.specialty || '',
+            qualification: '',
+            license_number: '',
+            years_of_experience: specialistData.experience_years || null,
+            phone: '',
+            address_line_1: '',
+            address_line_2: '',
+            city: '',
+            postcode: '',
+            country: 'United Kingdom',
+            clinic_name: '',
+            clinic_address: '',
+            consultation_fee: specialistData.consultation_fee || 100,
+            available_hours: { start: '09:00', end: '17:00' },
+            available_days: specialistData.available_days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+            bio: specialistData.bio || '',
+            languages: ['English']
+          }
+
+          // Create doctor profile from specialist data
+          const { data: newDoctorProfile, error: createError } = await doctorService.createDoctorProfile(doctorProfileData)
+          
+          if (!createError && newDoctorProfile) {
+            setDoctorProfile(newDoctorProfile)
+            setFormData({
+              first_name: doctorProfileData.first_name,
+              last_name: doctorProfileData.last_name,
+              specialty: doctorProfileData.specialty,
+              qualification: doctorProfileData.qualification,
+              license_number: doctorProfileData.license_number,
+              years_of_experience: doctorProfileData.years_of_experience?.toString() || '',
+              phone: doctorProfileData.phone,
+              address_line_1: doctorProfileData.address_line_1,
+              address_line_2: doctorProfileData.address_line_2,
+              city: doctorProfileData.city,
+              postcode: doctorProfileData.postcode,
+              country: doctorProfileData.country,
+              clinic_name: doctorProfileData.clinic_name,
+              clinic_address: doctorProfileData.clinic_address,
+              consultation_fee: doctorProfileData.consultation_fee?.toString() || '',
+              available_hours: doctorProfileData.available_hours,
+              available_days: doctorProfileData.available_days,
+              bio: doctorProfileData.bio,
+              languages: doctorProfileData.languages
+            })
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading doctor profile:', error)

@@ -46,31 +46,68 @@ const days = [
   { key: "sunday", label: "Sunday" }
 ]
 
-// Helper function to convert old format to new format
-const convertAvailabilityToNewFormat = (availableDays: string[], availableHours: { start: string; end: string }) => {
+// Helper function to convert old format to new format - preserves individual day times if available
+const convertAvailabilityToNewFormat = (availableDays: string[], availableHours: any) => {
   const availability: Record<string, { enabled: boolean; startTime: string; endTime: string }> = {}
   
+  // Check if availableHours contains individual day settings
+  const hasIndividualDayTimes = typeof availableHours === 'object' && 
+    availableHours !== null && 
+    Object.keys(availableHours).some(key => DAYS_OF_WEEK.includes(key))
+  
   DAYS_OF_WEEK.forEach(day => {
+    const isEnabled = availableDays.includes(day)
+    let startTime = '09:00'
+    let endTime = '17:00'
+    
+    if (hasIndividualDayTimes && availableHours[day]) {
+      // Use individual day times if available
+      startTime = availableHours[day].startTime || availableHours[day].start || '09:00'
+      endTime = availableHours[day].endTime || availableHours[day].end || '17:00'
+    } else if (typeof availableHours === 'object' && availableHours.start && availableHours.end) {
+      // Use global times as fallback
+      startTime = availableHours.start
+      endTime = availableHours.end
+    }
+    
     availability[day] = {
-      enabled: availableDays.includes(day),
-      startTime: availableHours.start,
-      endTime: availableHours.end
+      enabled: isEnabled,
+      startTime,
+      endTime
     }
   })
   
   return availability
 }
 
-// Helper function to convert new format to old format
+// Helper function to convert new format to old format - stores individual day times
 const convertAvailabilityToOldFormat = (availability: Record<string, { enabled: boolean; startTime: string; endTime: string }>) => {
   const enabledDays = Object.entries(availability)
     .filter(([_, config]) => config.enabled)
     .map(([day]) => day)
   
+  // Store individual day times in the available_hours object
+  const availableHours: any = {}
+  
+  // Add individual day configurations
+  Object.entries(availability).forEach(([day, config]) => {
+    if (config.enabled) {
+      availableHours[day] = {
+        startTime: config.startTime,
+        endTime: config.endTime
+      }
+    }
+  })
+  
+  // Also include global start/end for backward compatibility
   const firstEnabledDay = Object.values(availability).find(config => config.enabled)
-  const availableHours = firstEnabledDay 
-    ? { start: firstEnabledDay.startTime, end: firstEnabledDay.endTime }
-    : { start: '09:00', end: '17:00' }
+  if (firstEnabledDay) {
+    availableHours.start = firstEnabledDay.startTime
+    availableHours.end = firstEnabledDay.endTime
+  } else {
+    availableHours.start = '09:00'
+    availableHours.end = '17:00'
+  }
     
   return { availableDays: enabledDays, availableHours }
 }

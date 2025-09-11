@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { doctorService, DoctorProfile } from '@/services/doctorService'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -247,6 +247,11 @@ export function DoctorProfileForm() {
     <Card>
       <CardHeader>
         <CardTitle>Doctor Profile</CardTitle>
+        {!doctorProfile && (
+          <CardDescription className="text-amber-600">
+            Complete your professional profile to start offering consultations
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">

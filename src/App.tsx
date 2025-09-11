@@ -51,6 +51,7 @@ import MobileSampleDropoff from "./pages/MobileSampleDropoff";
 import MobileCorporate from "./pages/MobileCorporate";
 import JoinProfessional from "./pages/JoinProfessional";
 import PartnerRegister from "./pages/PartnerRegister";
+import PartnerProfessionalDetails from "./pages/PartnerProfessionalDetails";
 import PartnerDashboard from "./pages/PartnerDashboard";
 import ClinicDashboard from "./pages/ClinicDashboard";
 import AdminReferrals from "./pages/AdminReferrals";
@@ -112,6 +113,7 @@ const App = () => (
           <Route path="/mobile/private-ambulance" element={<PrivateAmbulance />} />
           <Route path="/join-professional" element={<JoinProfessional />} />
           <Route path="/partner-register" element={<PartnerRegister />} />
+          <Route path="/partner-professional-details" element={<PartnerProfessionalDetails />} />
           <Route path="/partner-dashboard" element={<PartnerDashboard />} />
           <Route path="/clinic-dashboard" element={<ClinicDashboard />} />
           <Route path="/admin-referrals" element={<AdminReferrals />} />

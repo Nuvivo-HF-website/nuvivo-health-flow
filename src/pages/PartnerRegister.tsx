@@ -3,31 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Upload, Shield, Check, ArrowLeft, User, Building, Stethoscope } from "lucide-react";
+import { Stethoscope, Building } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/EnhancedAuthContext";
-import { supabase } from "@/integrations/supabase/client";
 
 export default function PartnerRegister() {
   const navigate = useNavigate();
-  const { signUp } = useAuth();
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [accountType, setAccountType] = useState<"individual" | "clinic">("individual");
   const [formData, setFormData] = useState({
     fullName: "",
     clinicName: "",
     email: "",
     mobile: "",
-    profession: "",
-    registrationNumber: "",
-    clinicAddress: "",
-    teamSize: "",
     password: "",
     confirmPassword: ""
   });
@@ -36,150 +25,42 @@ export default function PartnerRegister() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    try {
-      // Basic validation
-      if (!formData.fullName || !formData.email || !formData.mobile || !formData.profession || !formData.registrationNumber || !formData.password) {
-        toast({
-          title: "Missing Information",
-          description: "Please fill in all required fields.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      if (formData.password !== formData.confirmPassword) {
-        toast({
-          title: "Password Mismatch",
-          description: "Passwords do not match. Please try again.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Create user account
-      const userType = accountType === 'clinic' ? 'clinic_staff' : 'doctor';
-      const { error: signUpError } = await signUp(formData.email, formData.password, {
-        full_name: formData.fullName,
-        user_type: userType
-      });
-
-      if (signUpError) {
-        toast({
-          title: "Registration Failed",
-          description: signUpError.message,
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Update profile with professional information
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
-        // Update profiles table
-        const userType = accountType === 'clinic' ? 'clinic_staff' : 'doctor';
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({
-            user_type: userType,
-            full_name: formData.fullName
-          })
-          .eq('user_id', user.id);
-
-        if (profileError) {
-          console.error('Profile update error:', profileError);
-        }
-
-        // Add appropriate role
-        const role = accountType === 'clinic' ? 'clinic_staff' : 'doctor';
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: user.id,
-            role: role
-          });
-
-        if (roleError) {
-          console.error('Role assignment error:', roleError);
-        }
-
-        // Create specialist profile if individual account
-        if (accountType === 'individual') {
-          const { error: specialistError } = await supabase
-            .from('specialists')
-            .insert({
-              user_id: user.id,
-              specialty: formData.profession,
-              experience_years: 0, // This can be updated later
-              bio: `${formData.profession} with registration number ${formData.registrationNumber}`,
-              consultation_fee: 0, // To be set by the professional
-              is_active: true
-            });
-
-          if (specialistError) {
-            console.error('Specialist profile error:', specialistError);
-          }
-        }
-      }
-
-      setIsSubmitted(true);
-      
+    // Basic validation
+    if (!formData.fullName || !formData.email || !formData.mobile || !formData.password) {
       toast({
-        title: "Registration Successful!",
-        description: "Your professional account has been created. You can now access the staff dashboard.",
-      });
-
-      // Redirect to portal after a short delay
-      setTimeout(() => {
-        navigate('/portal');
-      }, 2000);
-
-    } catch (error) {
-      console.error('Registration error:', error);
-      toast({
-        title: "Registration Failed",
-        description: "An unexpected error occurred. Please try again.",
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
         variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match. Please try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Store form data in sessionStorage and navigate to next step
+    sessionStorage.setItem('partnerRegisterData', JSON.stringify({
+      ...formData,
+      accountType
+    }));
+
+    if (accountType === 'individual') {
+      navigate('/partner-professional-details');
+    } else {
+      // For clinic registration, we can navigate to a different page or handle differently
+      navigate('/partner-professional-details');
     }
   };
 
-  if (isSubmitted) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full text-center">
-          <CardHeader>
-            <div className="mx-auto mb-4 p-3 bg-green-100 rounded-full w-fit">
-              <Check className="h-8 w-8 text-green-600" />
-            </div>
-            <CardTitle className="text-2xl">Application Submitted!</CardTitle>
-            <CardDescription>
-              Thanks for applying! We'll review your details and activate your profile shortly.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-sm text-muted-foreground">
-              <p>What happens next:</p>
-              <ul className="mt-2 space-y-1 text-left">
-                <li>• Document verification (1-2 business days)</li>
-                <li>• Profile activation</li>
-                <li>• Welcome email with dashboard access</li>
-              </ul>
-            </div>
-            <Button onClick={() => navigate("/portal")} className="w-full">
-              Go to Staff Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 py-8">
@@ -381,19 +262,16 @@ export default function PartnerRegister() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Professional Information
-            </CardTitle>
+            <CardTitle>Basic Information</CardTitle>
             <CardDescription>
-              All information will be verified before account activation
+              Enter your basic details to get started
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Conditional Fields Based on Account Type */}
               {accountType === "individual" ? (
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name *</Label>
                     <Input
@@ -415,6 +293,17 @@ export default function PartnerRegister() {
                       required
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="mobile">Mobile Number *</Label>
+                    <Input
+                      id="mobile"
+                      type="tel"
+                      value={formData.mobile}
+                      onChange={(e) => handleInputChange("mobile", e.target.value)}
+                      placeholder="+44 7XXX XXXXXX"
+                      required
+                    />
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -428,124 +317,40 @@ export default function PartnerRegister() {
                       required
                     />
                   </div>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="fullName">Admin Contact Name *</Label>
-                      <Input
-                        id="fullName"
-                        value={formData.fullName}
-                        onChange={(e) => handleInputChange("fullName", e.target.value)}
-                        placeholder="Dr. Sarah Johnson"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Contact Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange("email", e.target.value)}
-                        placeholder="admin@activehealthclinic.co.uk"
-                        required
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Admin Contact Name *</Label>
+                    <Input
+                      id="fullName"
+                      value={formData.fullName}
+                      onChange={(e) => handleInputChange("fullName", e.target.value)}
+                      placeholder="Dr. Sarah Johnson"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Contact Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      placeholder="admin@activehealthclinic.co.uk"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="mobile">Mobile Number *</Label>
+                    <Input
+                      id="mobile"
+                      type="tel"
+                      value={formData.mobile}
+                      onChange={(e) => handleInputChange("mobile", e.target.value)}
+                      placeholder="+44 7XXX XXXXXX"
+                      required
+                    />
                   </div>
                 </div>
               )}
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="mobile">Mobile Number *</Label>
-                  <Input
-                    id="mobile"
-                    type="tel"
-                    value={formData.mobile}
-                    onChange={(e) => handleInputChange("mobile", e.target.value)}
-                    placeholder="+44 7XXX XXXXXX"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="profession">Profession *</Label>
-                  <Select value={formData.profession} onValueChange={(value) => handleInputChange("profession", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your profession" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="gp">GP (General Practitioner)</SelectItem>
-                      <SelectItem value="nurse">Nurse</SelectItem>
-                      <SelectItem value="physio">Physiotherapist</SelectItem>
-                      <SelectItem value="psychologist">Psychologist</SelectItem>
-                      <SelectItem value="specialist">Medical Specialist</SelectItem>
-                      <SelectItem value="therapist">Therapist</SelectItem>
-                      <SelectItem value="nutritionist">Nutritionist</SelectItem>
-                      <SelectItem value="counsellor">Counsellor</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="registrationNumber">Professional Registration Number *</Label>
-                <Input
-                  id="registrationNumber"
-                  value={formData.registrationNumber}
-                  onChange={(e) => handleInputChange("registrationNumber", e.target.value)}
-                  placeholder="GMC, NMC, HCPC, etc."
-                  required
-                />
-                <p className="text-sm text-muted-foreground">
-                  Your GMC, NMC, HCPC or other relevant professional registration number
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="clinicAddress">Clinic Address (Optional)</Label>
-                <Textarea
-                  id="clinicAddress"
-                  value={formData.clinicAddress}
-                  onChange={(e) => handleInputChange("clinicAddress", e.target.value)}
-                  placeholder="Enter your clinic address if you have one"
-                  rows={3}
-                />
-              </div>
-
-              {/* Document Uploads */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Required Documents</h3>
-                
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Indemnity Insurance *</Label>
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                      <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-                      <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
-                      <p className="text-xs text-muted-foreground mt-1">PDF, JPG, PNG (max 10MB)</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>DBS / PVG Check *</Label>
-                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                      <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-                      <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
-                      <p className="text-xs text-muted-foreground mt-1">PDF, JPG, PNG (max 10MB)</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Setup */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Payment Setup</h3>
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <p className="text-sm text-muted-foreground">
-                    Payment processing will be set up via Stripe Connect after your application is approved. 
-                    You'll receive a secure link to complete your payment details.
-                  </p>
-                </div>
-              </div>
 
               {/* Account Security */}
               <div className="space-y-4">
@@ -576,16 +381,8 @@ export default function PartnerRegister() {
                 </div>
               </div>
 
-              {/* Terms */}
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm text-muted-foreground">
-                  By submitting this application, you agree to our Terms of Service and Privacy Policy. 
-                  Your application will be reviewed within 1-2 business days.
-                </p>
-              </div>
-
-              <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
-                {isLoading ? "Creating Account..." : (accountType === "clinic" ? "Create Clinic Account" : "Create Professional Account")}
+              <Button type="submit" className="w-full" size="lg">
+                Continue to Professional Details
               </Button>
             </form>
           </CardContent>

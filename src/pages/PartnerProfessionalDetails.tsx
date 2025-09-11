@@ -163,6 +163,25 @@ export default function PartnerProfessionalDetails() {
     return specializationsByProfession[professionalData.profession as keyof typeof specializationsByProfession] || [];
   };
 
+  const getRegistrationBodyInfo = () => {
+    switch (professionalData.profession) {
+      case "GP (General Practitioner)":
+      case "Medical Specialist":
+        return { label: "GMC Number", placeholder: "Enter your GMC number" };
+      case "Nurse":
+        return { label: "NMC Number", placeholder: "Enter your NMC number" };
+      case "Physiotherapist":
+      case "Psychologist":
+      case "Therapist":
+      case "Nutritionist":
+        return { label: "HCPC Registration Number", placeholder: "Enter your HCPC registration number" };
+      case "Counsellor":
+        return { label: "BACP/UKCP Registration Number", placeholder: "Enter your BACP/UKCP registration number" };
+      default:
+        return { label: "Professional Registration Number", placeholder: "Enter your registration number" };
+    }
+  };
+
   const days = [
     { key: "monday", label: "Monday" },
     { key: "tuesday", label: "Tuesday" },
@@ -441,14 +460,14 @@ export default function PartnerProfessionalDetails() {
                 </div>
               )}
 
-              {/* HCPC Number */}
+              {/* Registration Number */}
               <div className="space-y-2">
-                <Label htmlFor="gmcNumber">HCPC Registration Number *</Label>
+                <Label htmlFor="gmcNumber">{getRegistrationBodyInfo().label} *</Label>
                 <Input
                   id="gmcNumber"
                   value={professionalData.gmcNumber}
                   onChange={(e) => handleInputChange("gmcNumber", e.target.value)}
-                  placeholder="Enter your HCPC registration number"
+                  placeholder={getRegistrationBodyInfo().placeholder}
                   required
                 />
               </div>

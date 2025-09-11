@@ -14,7 +14,8 @@ export default function PartnerRegister() {
   const navigate = useNavigate();
   const [accountType, setAccountType] = useState<"individual" | "clinic">("individual");
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
+    lastName: "",
     clinicName: "",
     email: "",
     mobile: "",
@@ -44,7 +45,7 @@ export default function PartnerRegister() {
     e.preventDefault();
     
     // Basic validation
-    if (!formData.fullName || !formData.email || !formData.mobile || !formData.password) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.mobile || !formData.password) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -339,15 +340,27 @@ export default function PartnerRegister() {
               {/* Conditional Fields Based on Account Type */}
               {accountType === "individual" ? (
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name *</Label>
-                    <Input
-                      id="fullName"
-                      value={formData.fullName}
-                      onChange={(e) => handleInputChange("fullName", e.target.value)}
-                      placeholder="Dr. John Smith"
-                      required
-                    />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name *</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => handleInputChange("firstName", e.target.value)}
+                        placeholder="John"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name *</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => handleInputChange("lastName", e.target.value)}
+                        placeholder="Smith"
+                        required
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address *</Label>
@@ -384,15 +397,27 @@ export default function PartnerRegister() {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Admin Contact Name *</Label>
-                    <Input
-                      id="fullName"
-                      value={formData.fullName}
-                      onChange={(e) => handleInputChange("fullName", e.target.value)}
-                      placeholder="Dr. Sarah Johnson"
-                      required
-                    />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">Admin First Name *</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => handleInputChange("firstName", e.target.value)}
+                        placeholder="Sarah"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Admin Last Name *</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => handleInputChange("lastName", e.target.value)}
+                        placeholder="Johnson"
+                        required
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Contact Email *</Label>

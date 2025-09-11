@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Stethoscope, Building } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Stethoscope, Building, Plus, Minus } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
@@ -20,6 +21,20 @@ export default function PartnerRegister() {
     password: "",
     confirmPassword: ""
   });
+
+  const [collapsibleStates, setCollapsibleStates] = useState({
+    pricing: false,
+    professional: false,
+    patientCare: false,
+    support: false
+  });
+
+  const toggleCollapsible = (key: keyof typeof collapsibleStates) => {
+    setCollapsibleStates(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -164,43 +179,95 @@ export default function PartnerRegister() {
             <div>
               <h3 className="font-semibold text-lg mb-3">Partnership Terms & Standards</h3>
               <div className="space-y-4">
-                <div className="p-4 border-l-4 border-primary bg-muted/50">
-                  <h4 className="font-medium mb-2">Pricing Guidelines</h4>
-                  <p className="text-sm">
-                    To maintain market integrity and professional standards, partners must adhere to our pricing guidelines. 
-                    You're free to set competitive prices but cannot advertise below our recommended retail prices without prior approval. 
-                    Payment terms are flexible and will be discussed individually based on your practice requirements and partnership agreement.
-                  </p>
-                </div>
+                <Collapsible open={collapsibleStates.pricing} onOpenChange={() => toggleCollapsible('pricing')}>
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-center justify-between p-4 border-l-4 border-primary bg-muted/50 hover:bg-muted/70 transition-colors cursor-pointer">
+                      <h4 className="font-medium">Pricing Guidelines</h4>
+                      {collapsibleStates.pricing ? (
+                        <Minus className="h-5 w-5 text-primary" />
+                      ) : (
+                        <Plus className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="p-4 border-l-4 border-primary bg-muted/30">
+                      <p className="text-sm">
+                        To maintain market integrity and professional standards, partners must adhere to our pricing guidelines. 
+                        You're free to set competitive prices but cannot advertise below our recommended retail prices without prior approval. 
+                        Payment terms are flexible and will be discussed individually based on your practice requirements and partnership agreement.
+                      </p>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
 
-                <div className="p-4 border-l-4 border-orange-500 bg-orange-50">
-                  <h4 className="font-medium mb-2">Professional Requirements</h4>
-                  <p className="text-sm">
-                    All partners must maintain current professional registration with relevant bodies (GMC, NMC, HCPC, etc.) and 
-                    hold valid indemnity insurance. We require compliance with NICE guidelines for test recommendations and regular 
-                    CPD participation. These standards ensure we maintain the highest quality of care across our partner network 
-                    and protect both patients and practitioners.
-                  </p>
-                </div>
+                <Collapsible open={collapsibleStates.professional} onOpenChange={() => toggleCollapsible('professional')}>
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-center justify-between p-4 border-l-4 border-orange-500 bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer">
+                      <h4 className="font-medium">Professional Requirements</h4>
+                      {collapsibleStates.professional ? (
+                        <Minus className="h-5 w-5 text-orange-500" />
+                      ) : (
+                        <Plus className="h-5 w-5 text-orange-500" />
+                      )}
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="p-4 border-l-4 border-orange-500 bg-orange-25">
+                      <p className="text-sm">
+                        All partners must maintain current professional registration with relevant bodies (GMC, NMC, HCPC, etc.) and 
+                        hold valid indemnity insurance. We require compliance with NICE guidelines for test recommendations and regular 
+                        CPD participation. These standards ensure we maintain the highest quality of care across our partner network 
+                        and protect both patients and practitioners.
+                      </p>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
 
-                <div className="p-4 border-l-4 border-blue-500 bg-blue-50">
-                  <h4 className="font-medium mb-2">Patient Care Excellence</h4>
-                  <p className="text-sm">
-                    Our partnership is built on delivering exceptional patient care. Partners are expected to provide thorough 
-                    consultations before recommending tests, explain results clearly and comprehensively, and offer appropriate 
-                    follow-up care or specialist referrals when needed. All patient interactions must maintain strict confidentiality 
-                    and full GDPR compliance to protect sensitive health information.
-                  </p>
-                </div>
+                <Collapsible open={collapsibleStates.patientCare} onOpenChange={() => toggleCollapsible('patientCare')}>
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-center justify-between p-4 border-l-4 border-blue-500 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer">
+                      <h4 className="font-medium">Patient Care Excellence</h4>
+                      {collapsibleStates.patientCare ? (
+                        <Minus className="h-5 w-5 text-blue-500" />
+                      ) : (
+                        <Plus className="h-5 w-5 text-blue-500" />
+                      )}
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="p-4 border-l-4 border-blue-500 bg-blue-25">
+                      <p className="text-sm">
+                        Our partnership is built on delivering exceptional patient care. Partners are expected to provide thorough 
+                        consultations before recommending tests, explain results clearly and comprehensively, and offer appropriate 
+                        follow-up care or specialist referrals when needed. All patient interactions must maintain strict confidentiality 
+                        and full GDPR compliance to protect sensitive health information.
+                      </p>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
 
-                <div className="p-4 border-l-4 border-green-500 bg-green-50">
-                  <h4 className="font-medium mb-2">Comprehensive Support</h4>
-                  <p className="text-sm">
-                    When you join Nuvivo, you gain access to our extensive support network. This includes our nationwide laboratory 
-                    infrastructure, automated result delivery systems, professional reporting tools, marketing support with co-branded 
-                    materials, and a dedicated partner support team available to assist with any questions or technical issues you may encounter.
-                  </p>
-                </div>
+                <Collapsible open={collapsibleStates.support} onOpenChange={() => toggleCollapsible('support')}>
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-center justify-between p-4 border-l-4 border-green-500 bg-green-50 hover:bg-green-100 transition-colors cursor-pointer">
+                      <h4 className="font-medium">Comprehensive Support</h4>
+                      {collapsibleStates.support ? (
+                        <Minus className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <Plus className="h-5 w-5 text-green-500" />
+                      )}
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="p-4 border-l-4 border-green-500 bg-green-25">
+                      <p className="text-sm">
+                        When you join Nuvivo, you gain access to our extensive support network. This includes our nationwide laboratory 
+                        infrastructure, automated result delivery systems, professional reporting tools, marketing support with co-branded 
+                        materials, and a dedicated partner support team available to assist with any questions or technical issues you may encounter.
+                      </p>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
             </div>
 

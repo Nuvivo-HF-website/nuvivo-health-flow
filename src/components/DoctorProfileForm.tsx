@@ -36,6 +36,45 @@ const LANGUAGES = [
   'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Arabic', 'Hindi', 'Mandarin', 'Other'
 ]
 
+const days = [
+  { key: "monday", label: "Monday" },
+  { key: "tuesday", label: "Tuesday" },
+  { key: "wednesday", label: "Wednesday" },
+  { key: "thursday", label: "Thursday" },
+  { key: "friday", label: "Friday" },  
+  { key: "saturday", label: "Saturday" },
+  { key: "sunday", label: "Sunday" }
+]
+
+// Helper function to convert old format to new format
+const convertAvailabilityToNewFormat = (availableDays: string[], availableHours: { start: string; end: string }) => {
+  const availability: Record<string, { enabled: boolean; startTime: string; endTime: string }> = {}
+  
+  DAYS_OF_WEEK.forEach(day => {
+    availability[day] = {
+      enabled: availableDays.includes(day),
+      startTime: availableHours.start,
+      endTime: availableHours.end
+    }
+  })
+  
+  return availability
+}
+
+// Helper function to convert new format to old format
+const convertAvailabilityToOldFormat = (availability: Record<string, { enabled: boolean; startTime: string; endTime: string }>) => {
+  const enabledDays = Object.entries(availability)
+    .filter(([_, config]) => config.enabled)
+    .map(([day]) => day)
+  
+  const firstEnabledDay = Object.values(availability).find(config => config.enabled)
+  const availableHours = firstEnabledDay 
+    ? { start: firstEnabledDay.startTime, end: firstEnabledDay.endTime }
+    : { start: '09:00', end: '17:00' }
+    
+  return { availableDays: enabledDays, availableHours }
+}
+
 export function DoctorProfileForm() {
   const { user } = useAuth()
   const { toast } = useToast()
@@ -60,8 +99,15 @@ export function DoctorProfileForm() {
     clinic_name: '',
     clinic_address: '',
     consultation_fee: '',
-    available_hours: { start: '09:00', end: '17:00' },
-    available_days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+    availability: {
+      monday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      tuesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      wednesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      thursday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      friday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+      sunday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+    },
     bio: '',
     languages: ['English']
   })
@@ -108,8 +154,7 @@ export function DoctorProfileForm() {
           clinic_name: data.clinic_name || '',
           clinic_address: data.clinic_address || '',
           consultation_fee: data.consultation_fee?.toString() || '',
-          available_hours: parsedHours,
-          available_days: data.available_days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+          availability: convertAvailabilityToNewFormat(data.available_days || [], parsedHours) as any,
           bio: data.bio || '',
           languages: data.languages || ['English']
         })
@@ -167,8 +212,7 @@ export function DoctorProfileForm() {
               clinic_name: doctorProfileData.clinic_name,
               clinic_address: doctorProfileData.clinic_address,
               consultation_fee: doctorProfileData.consultation_fee?.toString() || '',
-              available_hours: doctorProfileData.available_hours,
-              available_days: doctorProfileData.available_days,
+              availability: convertAvailabilityToNewFormat(doctorProfileData.available_days, doctorProfileData.available_hours) as any,
               bio: doctorProfileData.bio,
               languages: doctorProfileData.languages
             })
@@ -189,22 +233,16 @@ export function DoctorProfileForm() {
     }))
   }
 
-  const handleAvailableHoursChange = (field: 'start' | 'end', value: string) => {
+  const handleAvailabilityChange = (day: string, field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
-      available_hours: {
-        ...prev.available_hours,
-        [field]: value
+      availability: {
+        ...prev.availability,
+        [day]: {
+          ...prev.availability[day],
+          [field]: value
+        }
       }
-    }))
-  }
-
-  const handleDayToggle = (day: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      available_days: checked
-        ? [...prev.available_days, day]
-        : prev.available_days.filter(d => d !== day)
     }))
   }
 
@@ -240,6 +278,8 @@ export function DoctorProfileForm() {
     try {
       setLoading(true)
 
+      const { availableDays, availableHours } = convertAvailabilityToOldFormat(formData.availability)
+
       const profileData = {
         user_id: user.id,
         first_name: formData.first_name,
@@ -257,8 +297,8 @@ export function DoctorProfileForm() {
         clinic_name: formData.clinic_name,
         clinic_address: formData.clinic_address,
         consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : null,
-        available_hours: formData.available_hours,
-        available_days: formData.available_days,
+        available_hours: availableHours,
+        available_days: availableDays,
         bio: formData.bio,
         languages: formData.languages
       }
@@ -493,44 +533,42 @@ export function DoctorProfileForm() {
           {/* Availability */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Availability</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="start_time">Start Time</Label>
-                <Input
-                  id="start_time"
-                  type="time"
-                  value={formData.available_hours.start}
-                  onChange={(e) => handleAvailableHoursChange('start', e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="end_time">End Time</Label>
-                <Input
-                  id="end_time"
-                  type="time"
-                  value={formData.available_hours.end}
-                  onChange={(e) => handleAvailableHoursChange('end', e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label>Available Days</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
-                {DAYS_OF_WEEK.map((day) => (
-                  <div key={day} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={day}
-                      checked={formData.available_days.includes(day)}
-                      onCheckedChange={(checked) => handleDayToggle(day, checked as boolean)}
-                    />
-                    <Label htmlFor={day} className="capitalize">
-                      {day}
-                    </Label>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-3">
+              {days.map(({ key, label }) => (
+                <div key={key} className="flex items-center space-x-4 p-3 border rounded-lg">
+                  <Checkbox 
+                    id={key}
+                    checked={formData.availability[key].enabled}
+                    onCheckedChange={(checked) => 
+                      handleAvailabilityChange(key, "enabled", checked)
+                    }
+                  />
+                  <Label htmlFor={key} className="w-20">
+                    {label}
+                  </Label>
+                  {formData.availability[key].enabled && (
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        type="time"
+                        value={formData.availability[key].startTime}
+                        onChange={(e) => 
+                          handleAvailabilityChange(key, "startTime", e.target.value)
+                        }
+                        className="w-24"
+                      />
+                      <span className="text-sm text-muted-foreground">to</span>
+                      <Input
+                        type="time"
+                        value={formData.availability[key].endTime}
+                        onChange={(e) => 
+                          handleAvailabilityChange(key, "endTime", e.target.value)
+                        }
+                        className="w-24"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 

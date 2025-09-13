@@ -327,11 +327,15 @@ const Header = () => {
                 >
                   Blood Tests
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <BloodTestsMenu onLinkClick={closePinned} />
-                </NavigationMenuContent>
 
-                {/* Pinned dropdown under trigger (looks like hover menu) */}
+                {/* Disable hover popovers while pinned */}
+                {!pinnedMenu && (
+                  <NavigationMenuContent>
+                    <BloodTestsMenu onLinkClick={closePinned} />
+                  </NavigationMenuContent>
+                )}
+
+                {/* Pinned dropdown (looks like hover menu, anchored under trigger) */}
                 {pinnedMenu === "blood" && (
                   <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">
                     <div className="rounded-md border bg-popover text-popover-foreground shadow-md">
@@ -352,9 +356,12 @@ const Header = () => {
                 >
                   Consultations
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ConsultationsMenu onLinkClick={closePinned} />
-                </NavigationMenuContent>
+
+                {!pinnedMenu && (
+                  <NavigationMenuContent>
+                    <ConsultationsMenu onLinkClick={closePinned} />
+                  </NavigationMenuContent>
+                )}
 
                 {pinnedMenu === "consult" && (
                   <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">
@@ -376,9 +383,12 @@ const Header = () => {
                 >
                   Treatments &amp; Therapies
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <TreatmentsMenu onLinkClick={closePinned} />
-                </NavigationMenuContent>
+
+                {!pinnedMenu && (
+                  <NavigationMenuContent>
+                    <TreatmentsMenu onLinkClick={closePinned} />
+                  </NavigationMenuContent>
+                )}
 
                 {pinnedMenu === "treat" && (
                   <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">
@@ -400,9 +410,12 @@ const Header = () => {
                 >
                   Scans &amp; Imaging
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ScansMenu onLinkClick={closePinned} />
-                </NavigationMenuContent>
+
+                {!pinnedMenu && (
+                  <NavigationMenuContent>
+                    <ScansMenu onLinkClick={closePinned} />
+                  </NavigationMenuContent>
+                )}
 
                 {pinnedMenu === "scans" && (
                   <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">
@@ -424,9 +437,12 @@ const Header = () => {
                 >
                   Mobile &amp; On-Site Services
                 </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <MobileMenu onLinkClick={closePinned} />
-                </NavigationMenuContent>
+
+                {!pinnedMenu && (
+                  <NavigationMenuContent>
+                    <MobileMenu onLinkClick={closePinned} />
+                  </NavigationMenuContent>
+                )}
 
                 {pinnedMenu === "mobile" && (
                   <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">

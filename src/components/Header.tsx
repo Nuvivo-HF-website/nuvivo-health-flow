@@ -14,12 +14,12 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
+/* ---------- Helpers ---------- */
+
 // Custom navigation link component to avoid full page reloads
 const NavigationLink = React.forwardRef<
   React.ElementRef<typeof Link>,
-  React.ComponentPropsWithoutRef<typeof Link> & {
-    className?: string;
-  }
+  React.ComponentPropsWithoutRef<typeof Link> & { className?: string }
 >(({ className, children, ...props }, ref) => (
   <Link ref={ref} className={className} {...props}>
     {children}
@@ -27,7 +27,8 @@ const NavigationLink = React.forwardRef<
 ));
 NavigationLink.displayName = "NavigationLink";
 
-/** Reusable dropdown content components (used for hover content + pinned bar) */
+/* Menu content blocks reused for hover + pinned modes */
+
 const BloodTestsMenu = ({ onLinkClick }: { onLinkClick: () => void }) => (
   <div className="grid w-[300px] gap-3 p-4" onClick={onLinkClick}>
     <NavigationMenuLink asChild>
@@ -243,47 +244,59 @@ const MobileMenu = ({ onLinkClick }: { onLinkClick: () => void }) => (
   </div>
 );
 
+/* ---------- Header ---------- */
+
+type MenuKey = "blood" | "consult" | "treat" | "scans" | "mobile";
+
 const Header = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [authModalOpen, setAuthModalOpen] = React.useState(false);
 
-  // Pin state
-  const headerRef = React.useRef<HTMLElement | null>(null);
-  const [pinnedMenu, setPinnedMenu] = React.useState<
-    null | "blood" | "consult" | "treat" | "scans" | "mobile"
-  >(null);
+  const [pinnedMenu, setPinnedMenu] = React.useState<MenuKey | null>(null);
 
+  // Refs to each category <li> to detect outside-click relative to the active one
+  const bloodRef = React.useRef<HTMLLIElement | null>(null);
+  const consultRef = React.useRef<HTMLLIElement | null>(null);
+  const treatRef = React.useRef<HTMLLIElement | null>(null);
+  const scansRef = React.useRef<HTMLLIElement | null>(null);
+  const mobileRef = React.useRef<HTMLLIElement | null>(null);
+
+  const refs: Record<MenuKey, React.RefObject<HTMLLIElement>> = {
+    blood: bloodRef,
+    consult: consultRef,
+    treat: treatRef,
+    scans: scansRef,
+    mobile: mobileRef,
+  };
+
+  // Click anywhere outside the active category (including other header items) -> unpin
   React.useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       if (!pinnedMenu) return;
-      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+      const activeWrapper = refs[pinnedMenu].current;
+      if (!activeWrapper) return;
+      if (!activeWrapper.contains(e.target as Node)) {
         setPinnedMenu(null);
       }
     };
     document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
-  }, [pinnedMenu]);
+  }, [pinnedMenu]); // eslint-disable-line
 
-  const togglePin = (id: typeof pinnedMenu) => {
-    setPinnedMenu((prev) => (prev === id ? null : id));
+  const togglePin = (key: MenuKey) => {
+    setPinnedMenu((prev) => (prev === key ? null : key));
   };
   const closePinned = () => setPinnedMenu(null);
 
   return (
-    <header
-      ref={headerRef}
-      className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50"
-    >
+    <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top row */}
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="flex items-center shrink-0">
-            <Link
-              to="/"
-              className="flex items-center hover:opacity-80 transition-opacity relative z-20"
-            >
+            <Link to="/" className="flex items-center hover:opacity-80 transition-opacity relative z-20">
               <img
                 src="/lovable-uploads/d10bf310-8418-438d-af09-376e2c242db8.png"
                 alt="Nuvivo Health Logo"
@@ -297,17 +310,14 @@ const Header = () => {
             <NavigationMenuList className="space-x-2">
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <NavigationLink
-                    to="/"
-                    className="text-muted-foreground hover:text-primary transition-colors px-3 py-2"
-                  >
+                  <NavigationLink to="/" className="text-muted-foreground hover:text-primary transition-colors px-3 py-2">
                     Home
                   </NavigationLink>
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
               {/* Blood Tests */}
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem hasDropdown ref={bloodRef} className="relative">
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {
@@ -320,10 +330,19 @@ const Header = () => {
                 <NavigationMenuContent>
                   <BloodTestsMenu onLinkClick={closePinned} />
                 </NavigationMenuContent>
+
+                {/* Pinned dropdown under trigger (looks like hover menu) */}
+                {pinnedMenu === "blood" && (
+                  <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">
+                    <div className="rounded-md border bg-popover text-popover-foreground shadow-md">
+                      <BloodTestsMenu onLinkClick={closePinned} />
+                    </div>
+                  </div>
+                )}
               </NavigationMenuItem>
 
               {/* Consultations */}
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem hasDropdown ref={consultRef} className="relative">
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {
@@ -336,10 +355,18 @@ const Header = () => {
                 <NavigationMenuContent>
                   <ConsultationsMenu onLinkClick={closePinned} />
                 </NavigationMenuContent>
+
+                {pinnedMenu === "consult" && (
+                  <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">
+                    <div className="rounded-md border bg-popover text-popover-foreground shadow-md">
+                      <ConsultationsMenu onLinkClick={closePinned} />
+                    </div>
+                  </div>
+                )}
               </NavigationMenuItem>
 
               {/* Treatments & Therapies */}
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem hasDropdown ref={treatRef} className="relative">
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {
@@ -352,10 +379,18 @@ const Header = () => {
                 <NavigationMenuContent>
                   <TreatmentsMenu onLinkClick={closePinned} />
                 </NavigationMenuContent>
+
+                {pinnedMenu === "treat" && (
+                  <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">
+                    <div className="rounded-md border bg-popover text-popover-foreground shadow-md">
+                      <TreatmentsMenu onLinkClick={closePinned} />
+                    </div>
+                  </div>
+                )}
               </NavigationMenuItem>
 
               {/* Scans & Imaging */}
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem hasDropdown ref={scansRef} className="relative">
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {
@@ -368,10 +403,18 @@ const Header = () => {
                 <NavigationMenuContent>
                   <ScansMenu onLinkClick={closePinned} />
                 </NavigationMenuContent>
+
+                {pinnedMenu === "scans" && (
+                  <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">
+                    <div className="rounded-md border bg-popover text-popover-foreground shadow-md">
+                      <ScansMenu onLinkClick={closePinned} />
+                    </div>
+                  </div>
+                )}
               </NavigationMenuItem>
 
               {/* Mobile & On-Site Services */}
-              <NavigationMenuItem hasDropdown>
+              <NavigationMenuItem hasDropdown ref={mobileRef} className="relative">
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {
@@ -384,6 +427,14 @@ const Header = () => {
                 <NavigationMenuContent>
                   <MobileMenu onLinkClick={closePinned} />
                 </NavigationMenuContent>
+
+                {pinnedMenu === "mobile" && (
+                  <div className="absolute top-full left-0 mt-2 z-[60] hidden md:block">
+                    <div className="rounded-md border bg-popover text-popover-foreground shadow-md">
+                      <MobileMenu onLinkClick={closePinned} />
+                    </div>
+                  </div>
+                )}
               </NavigationMenuItem>
 
               {/* Find Clinic */}
@@ -413,7 +464,6 @@ const Header = () => {
 
             {!loading && (
               <>
-                {/* Unified Patient Portal Button */}
                 <Button
                   variant="default"
                   size="sm"
@@ -431,7 +481,6 @@ const Header = () => {
                   <span className="sm:hidden">Portal</span>
                 </Button>
 
-                {/* Show user menu if logged in */}
                 {user && <UserMenu />}
               </>
             )}
@@ -439,25 +488,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Pinned dropdown bar */}
-      {pinnedMenu && (
-        <div className="border-t border-border bg-background">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2">
-            <div className="flex justify-center">
-              {pinnedMenu === "blood" && <BloodTestsMenu onLinkClick={closePinned} />}
-              {pinnedMenu === "consult" && <ConsultationsMenu onLinkClick={closePinned} />}
-              {pinnedMenu === "treat" && <TreatmentsMenu onLinkClick={closePinned} />}
-              {pinnedMenu === "scans" && <ScansMenu onLinkClick={closePinned} />}
-              {pinnedMenu === "mobile" && <MobileMenu onLinkClick={closePinned} />}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-      />
+      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </header>
   );
 };

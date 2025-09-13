@@ -84,11 +84,6 @@ const Header = () => {
           {/* Navigation */}
           <NavigationMenu
             className="hidden md:flex"
-            // keep open while pinned; allow hover to control when not pinned
-            value={activeMenu ?? undefined}
-            onValueChange={(v) => {
-              if (!pinned) setActiveMenu((v as MenuKey) ?? null);
-            }}
             onMouseLeave={() => {
               if (!pinned) setActiveMenu(null);
             }}
@@ -110,7 +105,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* Blood Tests */}
-              <NavigationMenuItem value="blood">
+              <NavigationMenuItem>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   {...triggerHandlers("blood")}
@@ -169,7 +164,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* Consultations */}
-              <NavigationMenuItem value="consultations">
+              <NavigationMenuItem>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   {...triggerHandlers("consultations")}
@@ -263,7 +258,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* Treatments & Therapies */}
-              <NavigationMenuItem value="treatments">
+              <NavigationMenuItem>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   {...triggerHandlers("treatments")}
@@ -368,7 +363,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* Scans & Imaging */}
-              <NavigationMenuItem value="scans">
+              <NavigationMenuItem>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   {...triggerHandlers("scans")}
@@ -411,7 +406,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* Mobile & On-Site */}
-              <NavigationMenuItem value="mobile">
+              <NavigationMenuItem>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   {...triggerHandlers("mobile")}

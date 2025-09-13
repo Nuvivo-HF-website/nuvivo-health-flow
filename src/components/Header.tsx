@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
@@ -7,14 +7,16 @@ import { AuthModal } from "./auth/AuthModal";
 import { UserMenu } from "./auth/UserMenu";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
-// Custom navigation link component to avoid full page reloads
+/* ------------------------------------------------------------------ */
+/* Link passthrough (no full page reloads)                             */
+/* ------------------------------------------------------------------ */
 const NavigationLink = React.forwardRef<
   React.ElementRef<typeof Link>,
   React.ComponentPropsWithoutRef<typeof Link> & { className?: string }
@@ -25,53 +27,148 @@ const NavigationLink = React.forwardRef<
 ));
 NavigationLink.displayName = "NavigationLink";
 
-// NEW: keys for top-level menus
-type MenuKey = "blood" | "consultations" | "treatments" | "scans" | "mobile" | null;
+/* ------------------------------------------------------------------ */
+/* Shared dropdown trigger                                             */
+/* ------------------------------------------------------------------ */
+function MenuTriggerButton({
+  children,
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "text-muted-foreground hover:text-primary transition-colors px-3 py-2",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
 
+/* ------------------------------------------------------------------ */
+/* Pinned / Hoverable Popover wrapper                                  */
+/* - Hover opens when not pinned                                       */
+/* - Click toggles pinned open state                                   */
+/* - Selecting a sub-link closes                                       */
+/* - Clicking another category pins that one and unpins others         */
+/* ------------------------------------------------------------------ */
+type MenuKey =
+  | "blood"
+  | "consultations"
+  | "treatments"
+  | "scans"
+  | "mobile";
+
+function PinnedMenu({
+  menuKey,
+  label,
+  children,
+  activeKey,
+  setActiveKey,
+  pinned,
+  setPinned,
+}: {
+  menuKey: MenuKey;
+  label: string;
+  children: React.ReactNode;
+  activeKey: MenuKey | null;
+  setActiveKey: (k: MenuKey | null) => void;
+  pinned: boolean;
+  setPinned: (p: boolean) => void;
+}) {
+  const isOpen = activeKey === menuKey;
+
+  // Hover only opens when not pinned
+  const onEnter = () => {
+    if (!pinned) setActiveKey(menuKey);
+  };
+  const onLeave = () => {
+    if (!pinned) setActiveKey(null);
+  };
+
+  // Click toggles pinned
+  const onClick = () => {
+    if (pinned && isOpen) {
+      setPinned(false);
+      setActiveKey(null);
+    } else {
+      setPinned(true);
+      setActiveKey(menuKey);
+    }
+  };
+
+  return (
+    <Popover open={isOpen} onOpenChange={(open) => {
+      // Only allow uncontrolled changes when not pinned
+      if (!pinned) setActiveKey(open ? menuKey : null);
+    }}>
+      <PopoverTrigger asChild>
+        <MenuTriggerButton
+          onMouseEnter={onEnter}
+          onClick={onClick}
+          aria-expanded={isOpen}
+          aria-haspopup="menu"
+        >
+          {label}
+        </MenuTriggerButton>
+      </PopoverTrigger>
+
+      <PopoverContent
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+        align="start"
+        sideOffset={8}
+        className="p-0"
+      >
+        {/* We wrap children to inject a close-on-click helper to sub-links */}
+        <div
+          onClick={(e) => {
+            // If a nested link inside is clicked, close & unpin
+            const target = e.target as HTMLElement;
+            if (target.closest("a")) {
+              setPinned(false);
+              setActiveKey(null);
+            }
+          }}
+        >
+          {children}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Header                                                              */
+/* ------------------------------------------------------------------ */
 const Header = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  // NEW: control which menu is open and whether it's pinned
-  const [activeMenu, setActiveMenu] = useState<MenuKey>(null);
+  // Global pinned menu state
+  const [activeKey, setActiveKey] = useState<MenuKey | null>(null);
   const [pinned, setPinned] = useState(false);
 
-  const closeMenu = () => {
-    setPinned(false);
-    setActiveMenu(null);
-  };
-
-  // helpers to attach consistent trigger behavior
-  const triggerHandlers = (key: Exclude<MenuKey, null>) => ({
-    onMouseEnter: () => {
-      if (!pinned) setActiveMenu(key);
-    },
-    onClick: (e: React.MouseEvent) => {
-      e.preventDefault(); // prevent default toggle; we control it
-      if (activeMenu === key && pinned) {
-        // clicking the same open item unpins/closes
-        closeMenu();
-      } else {
-        setActiveMenu(key);
-        setPinned(true);
-      }
-    },
-  });
-
-  // add to every submenu link so menu closes on navigate
-  const subLinkProps = { onClick: closeMenu };
+  // Clicking anywhere outside the nav should unpin (optional).
+  // If you prefer to keep pinned until another category/sub-link, comment out this handler.
+  const handleBlurNav = useCallback(() => {
+    // do nothing; stays pinned until user clicks another category or a sub-link
+  }, []);
 
   return (
     <header className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-4" onBlur={handleBlurNav}>
           {/* Logo */}
           <div className="flex items-center shrink-0">
             <Link
               to="/"
               className="flex items-center hover:opacity-80 transition-opacity relative z-20"
-              onClick={closeMenu}
             >
               <img
                 src="/lovable-uploads/d10bf310-8418-438d-af09-376e2c242db8.png"
@@ -82,22 +179,19 @@ const Header = () => {
           </div>
 
           {/* Navigation */}
-          <NavigationMenu
-            className="hidden md:flex"
-            onMouseLeave={() => {
-              if (!pinned) setActiveMenu(null);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") closeMenu();
-            }}
-          >
+          <NavigationMenu className="hidden md:flex">
             <NavigationMenuList className="space-x-2">
+
+              {/* Home (simple link) */}
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <NavigationLink
                     to="/"
                     className="text-muted-foreground hover:text-primary transition-colors px-3 py-2"
-                    onClick={closeMenu}
+                    onClick={() => {
+                      setPinned(false);
+                      setActiveKey(null);
+                    }}
                   >
                     Home
                   </NavigationLink>
@@ -106,19 +200,19 @@ const Header = () => {
 
               {/* Blood Tests */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className="text-muted-foreground hover:text-primary"
-                  {...triggerHandlers("blood")}
+                <PinnedMenu
+                  menuKey="blood"
+                  label="Blood Tests"
+                  activeKey={activeKey}
+                  setActiveKey={setActiveKey}
+                  pinned={pinned}
+                  setPinned={setPinned}
                 >
-                  Blood Tests
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
                   <div className="grid w-[300px] gap-3 p-4">
                     <NavigationMenuLink asChild>
                       <NavigationLink
                         to="/blood-tests"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        {...subLinkProps}
                       >
                         <div className="text-sm font-medium leading-none">All Blood Test Packages</div>
                       </NavigationLink>
@@ -127,25 +221,22 @@ const Header = () => {
                       <NavigationLink
                         to="/blood-tests?category=womens-health"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        {...subLinkProps}
                       >
-                        <div className="text-sm font-medium leading-none">Women's Health Panels</div>
+                        <div className="text-sm font-medium leading-none">Women&apos;s Health Panels</div>
                       </NavigationLink>
                     </NavigationMenuLink>
                     <NavigationMenuLink asChild>
                       <NavigationLink
                         to="/blood-tests?category=mens-health"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        {...subLinkProps}
                       >
-                        <div className="text-sm font-medium leading-none">Men's Health Panels</div>
+                        <div className="text-sm font-medium leading-none">Men&apos;s Health Panels</div>
                       </NavigationLink>
                     </NavigationMenuLink>
                     <NavigationMenuLink asChild>
                       <NavigationLink
                         to="/blood-tests?category=sports"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        {...subLinkProps}
                       >
                         <div className="text-sm font-medium leading-none">Sports Performance</div>
                       </NavigationLink>
@@ -154,54 +245,56 @@ const Header = () => {
                       <NavigationLink
                         to="/blood-tests?category=cancer"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        {...subLinkProps}
                       >
                         <div className="text-sm font-medium leading-none">Cancer Screening</div>
                       </NavigationLink>
                     </NavigationMenuLink>
                   </div>
-                </NavigationMenuContent>
+                </PinnedMenu>
               </NavigationMenuItem>
 
               {/* Consultations */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className="text-muted-foreground hover:text-primary"
-                  {...triggerHandlers("consultations")}
+                <PinnedMenu
+                  menuKey="consultations"
+                  label="Consultations"
+                  activeKey={activeKey}
+                  setActiveKey={setActiveKey}
+                  pinned={pinned}
+                  setPinned={setPinned}
                 >
-                  Consultations
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
                   <div className="w-[600px] p-4">
                     <div className="grid gap-6 md:grid-cols-3">
                       {/* 1. General & Specialist Care */}
                       <div className="space-y-2">
                         <div className="px-1 min-h-[40px] flex items-end">
-                          <h4 className="text-[15px] font-semibold">General &amp; Specialist Care</h4>
+                          <h4 className="text-[15px] font-semibold">
+                            General &amp; Specialist Care
+                          </h4>
                         </div>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/marketplace"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Doctors &amp; Specialists</div>
                           </NavigationLink>
                         </NavigationMenuLink>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/consultations/second-opinions"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Second Opinions</div>
                           </NavigationLink>
                         </NavigationMenuLink>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/medical-reports"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">
                               Medical Reports (Fit Notes, DVLA, Travel Letters)
@@ -213,23 +306,26 @@ const Header = () => {
                       {/* 2. Wellbeing & Lifestyle */}
                       <div className="space-y-2">
                         <div className="px-1 min-h-[20px] flex items-end">
-                          <h4 className="text-[15px] font-semibold">Wellbeing &amp; Lifestyle</h4>
+                          <h4 className="text-[15px] font-semibold">
+                            Wellbeing &amp; Lifestyle
+                          </h4>
                         </div>
+
                         <div className="h-[14px]" aria-hidden />
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/consultations/nutrition"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Nutrition &amp; Weight</div>
                           </NavigationLink>
                         </NavigationMenuLink>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/consultations/mental-health"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Mental Health &amp; Psychology</div>
                           </NavigationLink>
@@ -239,14 +335,17 @@ const Header = () => {
                       {/* 3. Specialist Health Areas */}
                       <div className="space-y-2">
                         <div className="px-1 min-h-[20px] flex items-end">
-                          <h4 className="text-[15px] font-semibold">Specialist Health Areas</h4>
+                          <h4 className="text-[15px] font-semibold">
+                            Specialist Health Areas
+                          </h4>
                         </div>
+
                         <div className="h-[14px]" aria-hidden />
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/consultations/sexual-health"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Sexual Health</div>
                           </NavigationLink>
@@ -254,87 +353,96 @@ const Header = () => {
                       </div>
                     </div>
                   </div>
-                </NavigationMenuContent>
+                </PinnedMenu>
               </NavigationMenuItem>
 
               {/* Treatments & Therapies */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className="text-muted-foreground hover:text-primary"
-                  {...triggerHandlers("treatments")}
+                <PinnedMenu
+                  menuKey="treatments"
+                  label="Treatments & Therapies"
+                  activeKey={activeKey}
+                  setActiveKey={setActiveKey}
+                  pinned={pinned}
+                  setPinned={setPinned}
                 >
-                  Treatments &amp; Therapies
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
                   <div className="w-[800px] p-4 not-prose">
                     <div className="grid gap-6 md:grid-cols-4">
-                      {/* columns unchanged; add {...subLinkProps} to each link */}
+                      {/* Physical & Sports Therapy */}
                       <div className="space-y-2">
                         <div className="px-1 h-10 md:h-12 flex items-end">
-                          <h4 className="text-[15px] font-semibold">Physical &amp; Sports Therapy</h4>
+                          <h4 className="text-[15px] font-semibold">
+                            Physical &amp; Sports Therapy
+                          </h4>
                         </div>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/treatments?category=physio"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Physiotherapy</div>
                           </NavigationLink>
                         </NavigationMenuLink>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/treatments?category=sports"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Sports Therapy</div>
                           </NavigationLink>
                         </NavigationMenuLink>
                       </div>
 
+                      {/* Wellness & Nutrient Therapy */}
                       <div className="space-y-2">
                         <div className="px-1 h-10 md:h-12 flex items-end">
-                          <h4 className="text-[15px] font-semibold">Wellness &amp; Nutrient Therapy</h4>
+                          <h4 className="text-[15px] font-semibold">
+                            Wellness &amp; Nutrient Therapy
+                          </h4>
                         </div>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/treatments?category=iv-drips"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">IV Vitamin Drips</div>
                           </NavigationLink>
                         </NavigationMenuLink>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/treatments?category=b12-shots"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">B12 Shots</div>
                           </NavigationLink>
                         </NavigationMenuLink>
                       </div>
 
+                      {/* Hormone & Endocrine Support */}
                       <div className="space-y-2">
                         <div className="px-1 h-10 md:h-12 flex items-end">
-                          <h4 className="text-[15px] font-semibold">Hormone &amp; Endocrine Support</h4>
+                          <h4 className="text-[15px] font-semibold">
+                            Hormone &amp; Endocrine Support
+                          </h4>
                         </div>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/treatments?category=hormones"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">HRT &amp; TRT Support</div>
                           </NavigationLink>
                         </NavigationMenuLink>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/treatments?category=chronic"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">
                               Chronic Conditions (Thyroid, Diabetes, PCOS)
@@ -343,15 +451,18 @@ const Header = () => {
                         </NavigationMenuLink>
                       </div>
 
+                      {/* Lifestyle Change Support */}
                       <div className="space-y-2">
                         <div className="px-1 h-10 md:h-12 flex items-end">
-                          <h4 className="text-[15px] font-semibold">Lifestyle Change Support</h4>
+                          <h4 className="text-[15px] font-semibold">
+                            Lifestyle Change Support
+                          </h4>
                         </div>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/treatments?category=smoking"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Smoking Cessation</div>
                           </NavigationLink>
@@ -359,36 +470,35 @@ const Header = () => {
                       </div>
                     </div>
                   </div>
-                </NavigationMenuContent>
+                </PinnedMenu>
               </NavigationMenuItem>
 
               {/* Scans & Imaging */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className="text-muted-foreground hover:text-primary"
-                  {...triggerHandlers("scans")}
+                <PinnedMenu
+                  menuKey="scans"
+                  label="Scans & Imaging"
+                  activeKey={activeKey}
+                  setActiveKey={setActiveKey}
+                  pinned={pinned}
+                  setPinned={setPinned}
                 >
-                  Scans &amp; Imaging
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
                   <div className="grid w-[300px] gap-3 p-4">
                     <NavigationMenuLink asChild>
                       <NavigationLink
                         to="/radiology"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        {...subLinkProps}
                       >
-                        <div className="text-sm font-medium leading-none">Ultrasound & Radiology</div>
+                        <div className="text-sm font-medium leading-none">Ultrasound &amp; Radiology</div>
                       </NavigationLink>
                     </NavigationMenuLink>
                     <NavigationMenuLink asChild>
                       <NavigationLink
                         to="/scans/ecg"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        {...subLinkProps}
                       >
                         <div className="text-sm font-medium leading-none">
-                          Heart Monitoring & ECG (Home or Clinic)
+                          Heart Monitoring &amp; ECG (Home or Clinic)
                         </div>
                       </NavigationLink>
                     </NavigationMenuLink>
@@ -396,44 +506,44 @@ const Header = () => {
                       <NavigationLink
                         to="/scans/cancer"
                         className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                        {...subLinkProps}
                       >
                         <div className="text-sm font-medium leading-none">Specialist Cancer Screening</div>
                       </NavigationLink>
                     </NavigationMenuLink>
                   </div>
-                </NavigationMenuContent>
+                </PinnedMenu>
               </NavigationMenuItem>
 
-              {/* Mobile & On-Site */}
+              {/* Mobile & On-Site Services */}
               <NavigationMenuItem>
-                <NavigationMenuTrigger
-                  className="text-muted-foreground hover:text-primary"
-                  {...triggerHandlers("mobile")}
+                <PinnedMenu
+                  menuKey="mobile"
+                  label="Mobile & On-Site Services"
+                  activeKey={activeKey}
+                  setActiveKey={setActiveKey}
+                  pinned={pinned}
+                  setPinned={setPinned}
                 >
-                  Mobile &amp; On-Site Services
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
                   <div className="w-[600px] p-4">
                     <div className="grid gap-6 md:grid-cols-2">
                       <div className="space-y-2">
                         <div className="px-1 min-h-[20px] flex items-end">
                           <h4 className="text-[15px] font-semibold">At-Home Care</h4>
                         </div>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/mobile/home-collection"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Home Blood Collection</div>
                           </NavigationLink>
                         </NavigationMenuLink>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/mobile/corporate"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Corporate Health Days</div>
                           </NavigationLink>
@@ -442,22 +552,24 @@ const Header = () => {
 
                       <div className="space-y-2">
                         <div className="px-1 min-h-[20px] flex items-end">
-                          <h4 className="text-[15px] font-semibold">Medical Transport &amp; Support</h4>
+                          <h4 className="text-[15px] font-semibold">
+                            Medical Transport &amp; Support
+                          </h4>
                         </div>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/private-ambulance"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Private Ambulance</div>
                           </NavigationLink>
                         </NavigationMenuLink>
+
                         <NavigationMenuLink asChild>
                           <NavigationLink
                             to="/mobile/sample-dropoff"
                             className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            {...subLinkProps}
                           >
                             <div className="text-sm font-medium leading-none">Sample Drop-Off Assistance</div>
                           </NavigationLink>
@@ -465,16 +577,19 @@ const Header = () => {
                       </div>
                     </div>
                   </div>
-                </NavigationMenuContent>
+                </PinnedMenu>
               </NavigationMenuItem>
 
-              {/* Find Clinic (simple link) */}
+              {/* Find Clinic (keep on one line) */}
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <NavigationLink
                     to="/clinic-finder"
                     className="whitespace-nowrap text-muted-foreground hover:text-primary transition-colors px-3 py-2"
-                    onClick={closeMenu}
+                    onClick={() => {
+                      setPinned(false);
+                      setActiveKey(null);
+                    }}
                   >
                     Find Clinic
                   </NavigationLink>
@@ -483,16 +598,13 @@ const Header = () => {
             </NavigationMenuList>
           </NavigationMenu>
 
-          {/* Right side items */}
+          {/* Right side */}
           <div className="flex items-center space-x-3">
             <Button
               variant="outline"
               size="sm"
               className="hidden sm:flex"
-              onClick={() => {
-                closeMenu();
-                navigate("/join-professional");
-              }}
+              onClick={() => navigate("/join-professional")}
             >
               Join as a Professional
             </Button>
@@ -504,7 +616,6 @@ const Header = () => {
                   size="sm"
                   className="flex items-center space-x-2"
                   onClick={() => {
-                    closeMenu();
                     if (user) navigate("/portal");
                     else navigate("/sign-in");
                   }}
@@ -513,7 +624,6 @@ const Header = () => {
                   <span className="hidden sm:inline">My Portal</span>
                   <span className="sm:hidden">Portal</span>
                 </Button>
-
                 {user && <UserMenu />}
               </>
             )}
@@ -521,7 +631,10 @@ const Header = () => {
         </div>
       </div>
 
-      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+      />
     </header>
   );
 };

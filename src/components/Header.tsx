@@ -88,11 +88,6 @@ const Header = () => {
           {/* Navigation */}
           <NavigationMenu
             className="hidden md:flex"
-            value={navValue}
-            onValueChange={(v) => {
-              // let hover/focus continue to work when not pinned
-              if (!pinnedMenu) setActiveMenu(v as string | undefined);
-            }}
           >
             <NavigationMenuList className="space-x-2">
               <NavigationMenuItem>
@@ -108,7 +103,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* BLOOD TESTS */}
-              <NavigationMenuItem hasDropdown value="blood-tests">
+              <NavigationMenuItem hasDropdown>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {
@@ -150,7 +145,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* CONSULTATIONS */}
-              <NavigationMenuItem hasDropdown value="consultations">
+              <NavigationMenuItem hasDropdown>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {
@@ -221,7 +216,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* TREATMENTS & THERAPIES */}
-              <NavigationMenuItem hasDropdown value="treatments">
+              <NavigationMenuItem hasDropdown>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {
@@ -299,7 +294,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* SCANS & IMAGING */}
-              <NavigationMenuItem hasDropdown value="scans">
+              <NavigationMenuItem hasDropdown>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {
@@ -331,7 +326,7 @@ const Header = () => {
               </NavigationMenuItem>
 
               {/* MOBILE & ON-SITE */}
-              <NavigationMenuItem hasDropdown value="mobile">
+              <NavigationMenuItem hasDropdown>
                 <NavigationMenuTrigger
                   className="text-muted-foreground hover:text-primary"
                   onClick={(e) => {

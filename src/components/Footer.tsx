@@ -47,8 +47,8 @@ const Footer = () => {
               <li><button onClick={() => navigate("/blood-tests")} className="hover:text-accent transition-colors text-left">Blood Tests</button></li>
               <li><button onClick={() => navigate("/treatments")} className="hover:text-accent transition-colors text-left">Treatments & Therapies</button></li>
               <li><button onClick={() => navigate("/consultations")} className="hover:text-accent transition-colors text-left">Consultations</button></li>
-              <li><button onClick={() => navigate("/scans")} className="hover:text-accent transition-colors text-left">Scans & Imaging</button></li>
-              <li><button onClick={() => navigate("/mobile/home-collection")} className="hover:text-accent transition-colors text-left">Mobile & On-site Services</button></li>
+              <li><button onClick={() => navigate("/scan-services")} className="hover:text-accent transition-colors text-left">Scans & Imaging</button></li>
+              <li><button onClick={() => navigate("/mobile-services")} className="hover:text-accent transition-colors text-left">Mobile & On-site Services</button></li>
               <li><button onClick={() => navigate("/clinic-finder")} className="hover:text-accent transition-colors text-left">Find Clinic</button></li>
             </ul>
           </div>

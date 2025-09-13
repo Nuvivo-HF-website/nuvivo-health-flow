@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Mail, Lock, ArrowLeft, User } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowLeft, User, Shield, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/EnhancedAuthContext";
+import { ValidationUtils } from "@/lib/validation";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -24,6 +25,8 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState({ score: 0, feedback: [] });
+  const [rateLimitError, setRateLimitError] = useState("");
   const { toast } = useToast();
 
   const redirectTo = searchParams.get('redirect') || '/';
@@ -35,18 +38,95 @@ const SignIn = () => {
     }
   }, [user, navigate, redirectTo]);
 
+  // Password strength calculation
+  const calculatePasswordStrength = (password: string) => {
+    const criteria = [
+      { test: /.{8,}/, message: "At least 8 characters" },
+      { test: /[A-Z]/, message: "One uppercase letter" },
+      { test: /[a-z]/, message: "One lowercase letter" },
+      { test: /\d/, message: "One number" },
+      { test: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?]/, message: "One special character" }
+    ];
+
+    const passed = criteria.filter(criterion => criterion.test.test(password));
+    const failed = criteria.filter(criterion => !criterion.test.test(password));
+
+    return {
+      score: passed.length,
+      feedback: failed.map(f => f.message)
+    };
+  };
+
+  // Enhanced password change handler
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (isSignUp && value) {
+      setPasswordStrength(calculatePasswordStrength(value));
+    }
+  };
+
+  // Enhanced error handling
+  const getErrorMessage = (error: any) => {
+    const message = error.message?.toLowerCase() || '';
+    
+    if (message.includes('invalid login credentials') || message.includes('invalid credentials')) {
+      return 'Invalid email or password. Please check your credentials and try again.';
+    }
+    if (message.includes('email not confirmed')) {
+      return 'Please check your email and click the verification link before signing in.';
+    }
+    if (message.includes('user not found')) {
+      return 'No account found with this email address. Please sign up first.';
+    }
+    if (message.includes('weak password') || message.includes('password')) {
+      return 'Password must be at least 6 characters long with a mix of letters and numbers.';
+    }
+    if (message.includes('email')) {
+      return 'Please enter a valid email address.';
+    }
+    if (message.includes('rate limit')) {
+      return 'Too many attempts. Please wait a moment before trying again.';
+    }
+    if (message.includes('network')) {
+      return 'Network error. Please check your connection and try again.';
+    }
+    
+    return error.message || 'An unexpected error occurred. Please try again.';
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setRateLimitError("");
     
+    // Rate limiting check
+    const rateLimitKey = `auth_${email}_${Date.now() - (Date.now() % 60000)}`; // Per minute window
+    if (!ValidationUtils.checkRateLimit(rateLimitKey, 5, 60000)) {
+      setRateLimitError("Too many attempts. Please wait a minute before trying again.");
+      return;
+    }
+
+    // Enhanced validation
     if (!email || !password) {
       setError("Please enter both email and password");
       return;
     }
 
-    if (isSignUp && password !== confirmPassword) {
-      setError("Passwords do not match");
+    if (!ValidationUtils.isValidEmail(email)) {
+      setError("Please enter a valid email address");
       return;
+    }
+
+    if (isSignUp) {
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+      
+      if (passwordStrength.score < 3) {
+        setError("Please choose a stronger password. " + passwordStrength.feedback.slice(0, 2).join(", "));
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -55,7 +135,7 @@ const SignIn = () => {
       if (isSignUp) {
         // Sign up
         const { error } = await supabase.auth.signUp({
-          email,
+          email: email.trim().toLowerCase(),
           password,
           options: {
             emailRedirectTo: `${window.location.origin}${redirectTo}`
@@ -68,10 +148,16 @@ const SignIn = () => {
           title: "Account created successfully!",
           description: "Please check your email to verify your account.",
         });
+        
+        // Switch to sign-in mode after successful signup
+        setIsSignUp(false);
+        setPassword("");
+        setConfirmPassword("");
+        setPasswordStrength({ score: 0, feedback: [] });
       } else {
         // Sign in
         const { error } = await supabase.auth.signInWithPassword({
-          email,
+          email: email.trim().toLowerCase(),
           password
         });
 
@@ -86,7 +172,12 @@ const SignIn = () => {
       }
     } catch (error: any) {
       console.error('Auth error:', error);
-      setError(error.message || 'An error occurred during authentication');
+      const enhancedError = getErrorMessage(error);
+      setError(enhancedError);
+      
+      // Additional rate limiting for failed attempts
+      const failedAttemptKey = `failed_${email}_${Date.now() - (Date.now() % 300000)}`; // 5 minute window
+      ValidationUtils.checkRateLimit(failedAttemptKey, 3, 300000);
     } finally {
       setIsLoading(false);
     }
@@ -184,7 +275,15 @@ const SignIn = () => {
             <CardContent className="space-y-6">
               {error && (
                 <Alert variant="destructive">
+                  <AlertCircle className="w-4 h-4" />
                   <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
+              {rateLimitError && (
+                <Alert variant="destructive">
+                  <Shield className="w-4 h-4" />
+                  <AlertDescription>{rateLimitError}</AlertDescription>
                 </Alert>
               )}
 
@@ -214,7 +313,7 @@ const SignIn = () => {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => handlePasswordChange(e.target.value)}
                       className="pl-10 pr-10 h-11"
                       required
                     />
@@ -232,6 +331,37 @@ const SignIn = () => {
                       )}
                     </Button>
                   </div>
+                  
+                  {/* Password Strength Indicator */}
+                  {isSignUp && password && (
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 bg-muted rounded-full h-1.5 overflow-hidden">
+                          <div 
+                            className={`h-full transition-all duration-200 ${
+                              passwordStrength.score < 2 ? 'bg-destructive w-1/5' :
+                              passwordStrength.score < 4 ? 'bg-yellow-500 w-3/5' :
+                              'bg-green-500 w-full'
+                            }`}
+                          />
+                        </div>
+                        <span className={`text-xs font-medium ${
+                          passwordStrength.score < 2 ? 'text-destructive' :
+                          passwordStrength.score < 4 ? 'text-yellow-600' :
+                          'text-green-600'
+                        }`}>
+                          {passwordStrength.score < 2 ? 'Weak' :
+                           passwordStrength.score < 4 ? 'Good' :
+                           'Strong'}
+                        </span>
+                      </div>
+                      {passwordStrength.feedback.length > 0 && (
+                        <div className="text-xs text-muted-foreground">
+                          Missing: {passwordStrength.feedback.slice(0, 2).join(", ")}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {isSignUp && (

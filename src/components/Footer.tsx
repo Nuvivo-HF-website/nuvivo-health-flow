@@ -44,11 +44,12 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Services</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><button onClick={() => navigate("/blood-tests")} className="hover:text-accent transition-colors text-left">Essential Health</button></li>
-              <li><button onClick={() => navigate("/treatments")} className="hover:text-accent transition-colors text-left">Advanced Wellness</button></li>
-              <li><button onClick={() => navigate("/marketplace")} className="hover:text-accent transition-colors text-left">Performance Plus</button></li>
-              <li><button onClick={() => navigate("/mobile/home-collection")} className="hover:text-accent transition-colors text-left">Home Visits</button></li>
-              <li><button onClick={() => navigate("/clinic-finder")} className="hover:text-accent transition-colors text-left">Clinic Locations</button></li>
+              <li><button onClick={() => navigate("/blood-tests")} className="hover:text-accent transition-colors text-left">Blood Tests</button></li>
+              <li><button onClick={() => navigate("/treatments")} className="hover:text-accent transition-colors text-left">Treatments & Therapies</button></li>
+              <li><button onClick={() => navigate("/marketplace")} className="hover:text-accent transition-colors text-left">Consultations</button></li>
+              <li><button onClick={() => navigate("/scans")} className="hover:text-accent transition-colors text-left">Scans & Imaging</button></li>
+              <li><button onClick={() => navigate("/mobile/home-collection")} className="hover:text-accent transition-colors text-left">Mobile & On-site Services</button></li>
+              <li><button onClick={() => navigate("/clinic-finder")} className="hover:text-accent transition-colors text-left">Find Clinic</button></li>
             </ul>
           </div>
 

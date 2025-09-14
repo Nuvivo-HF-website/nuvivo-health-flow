@@ -50,6 +50,7 @@ import MobileHomeCollection from "./pages/MobileHomeCollection";
 import MobileSampleDropoff from "./pages/MobileSampleDropoff";
 import MobileCorporate from "./pages/MobileCorporate";
 import JoinProfessional from "./pages/JoinProfessional";
+import Benefits from "./pages/Benefits";
 import PartnerRegister from "./pages/PartnerRegister";
 import PartnerProfessionalDetails from "./pages/PartnerProfessionalDetails";
 import PartnerDashboard from "./pages/PartnerDashboard";
@@ -111,8 +112,9 @@ const App = () => (
           <Route path="/mobile/sample-dropoff" element={<MobileSampleDropoff />} />
           <Route path="/mobile/corporate" element={<MobileCorporate />} />
           <Route path="/mobile/private-ambulance" element={<PrivateAmbulance />} />
-          <Route path="/join-professional" element={<JoinProfessional />} />
-          <Route path="/partner-register" element={<PartnerRegister />} />
+        <Route path="/join-professional" element={<JoinProfessional />} />
+        <Route path="/benefits" element={<Benefits />} />
+        <Route path="/partner-register" element={<PartnerRegister />} />
           <Route path="/partner-professional-details" element={<PartnerProfessionalDetails />} />
           <Route path="/partner-dashboard" element={<PartnerDashboard />} />
           <Route path="/clinic-dashboard" element={<ClinicDashboard />} />

@@ -51,12 +51,9 @@ export default function Benefits() {
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto mb-16">
-          <Badge variant="secondary" className="mb-4">
-            Partnership Benefits & Terms
-          </Badge>
-          
+                    
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-            <span className="text-primary">Partnership Details</span>
+            <span className="text-primary">Partnership Benefits & Terms</span>
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
@@ -69,10 +66,7 @@ export default function Benefits() {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                  Partnership Benefits
-                </Badge>
-              </CardTitle>
+                </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Subscription & Pricing Structure */}

@@ -190,32 +190,8 @@ export default function JoinProfessional() {
       </div>
 
 
-      {/* Benefits Grid */}
-      <div className="py-16 bg-muted/50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Join Nuvivo?</h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {benefits.map((benefit, index) => (
-              <Card key={index} className="border-0 shadow-sm bg-background/50 backdrop-blur-sm">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                      {benefit.icon}
-                    </div>
-                    <CardTitle className="text-lg">{benefit.title}</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    {benefit.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
+     
+      
     </div>
   );
 }

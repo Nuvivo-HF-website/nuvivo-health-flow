@@ -130,7 +130,7 @@ const App = () => (
           <Route path="/result/:resultId" element={<ResultView />} />
           <Route path="/my-medications" element={<MyMedications />} />
           <Route path="/my-files" element={<MyFiles />} />
-          <Route path="/partner-review" element={<div className="p-8">Review & Submit – coming soon</div>} />
+          
           <Route path="/testing" element={<Testing />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/subscription-success" element={<SubscriptionSuccess />} />

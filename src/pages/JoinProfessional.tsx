@@ -130,19 +130,6 @@ export default function JoinProfessional() {
               </div>
             </div>
 
-            {/* Learn More Button */}
-            <div className="text-center mb-8">
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={() => navigate("/benefits")}
-                className="px-8 py-3"
-              >
-                Learn More About Benefits
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-
             {/* Trust Badges */}
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               <Badge variant="outline" className="flex items-center gap-2">
@@ -172,6 +159,19 @@ export default function JoinProfessional() {
                 <Globe className="h-4 w-4" />
                 Global platform access
               </Badge>
+            </div>
+
+            {/* Learn More Button */}
+            <div className="text-center mb-8">
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => navigate("/benefits")}
+                className="px-8 py-3 bg-foreground text-background border-foreground hover:bg-foreground/90"
+              >
+                Learn More About Benefits
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
 
             <div className="text-center mb-8">

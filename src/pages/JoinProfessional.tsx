@@ -164,13 +164,12 @@ export default function JoinProfessional() {
             {/* Learn More Button */}
             <div className="text-center mb-8">
               <Button 
-                variant="outline" 
                 size="lg"
                 onClick={() => navigate("/benefits")}
-                className="px-8 py-3 bg-foreground text-background border-foreground hover:bg-foreground/90"
+                className="text-lg px-8 py-6"
               >
                 Learn More About Benefits
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
 

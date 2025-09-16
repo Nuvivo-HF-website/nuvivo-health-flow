@@ -53,6 +53,7 @@ import JoinProfessional from "./pages/JoinProfessional";
 import Benefits from "./pages/Benefits";
 import PartnerRegister from "./pages/PartnerRegister";
 import PartnerProfessionalDetails from "./pages/PartnerProfessionalDetails";
+import PartnerClinicDetails from "./pages/PartnerClinicDetails";
 import PartnerDashboard from "./pages/PartnerDashboard";
 import ClinicDashboard from "./pages/ClinicDashboard";
 import AdminReferrals from "./pages/AdminReferrals";
@@ -116,6 +117,7 @@ const App = () => (
         <Route path="/benefits" element={<Benefits />} />
         <Route path="/partner-register" element={<PartnerRegister />} />
           <Route path="/partner-professional-details" element={<PartnerProfessionalDetails />} />
+          <Route path="/partner-clinic-details" element={<PartnerClinicDetails />} />
           <Route path="/partner-dashboard" element={<PartnerDashboard />} />
           <Route path="/clinic-dashboard" element={<ClinicDashboard />} />
           <Route path="/admin-referrals" element={<AdminReferrals />} />

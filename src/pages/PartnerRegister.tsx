@@ -72,8 +72,7 @@ export default function PartnerRegister() {
     if (accountType === 'individual') {
       navigate('/partner-professional-details');
     } else {
-      // For clinic registration, we can navigate to a different page or handle differently
-      navigate('/partner-professional-details');
+      navigate('/partner-clinic-details');
     }
   };
 

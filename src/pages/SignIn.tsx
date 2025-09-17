@@ -278,7 +278,7 @@ const SignIn = () => {
               </div>
               <div>
                 <CardTitle className="text-3xl font-bold">
-                  {isSignUp ? "Join Nuvivo Health" : "Patient Portal"}
+                  {isSignUp ? "Join Nuvivo Health" : "Sign-In"}
                 </CardTitle>
                 <CardDescription className="text-base mt-2">
                   {isSignUp
@@ -495,7 +495,7 @@ const SignIn = () => {
                 >
                   {isLoading
                     ? (isSignUp ? "Creating account..." : "Signing in...")
-                    : (isSignUp ? "Create Patient Account" : "Access Patient Portal")}
+                    : (isSignUp ? "Create Patient Account" : "Access My Portal")}
                 </Button>
               </form>
 

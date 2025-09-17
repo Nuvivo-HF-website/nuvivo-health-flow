@@ -247,29 +247,9 @@ export default function PartnerClinicDetails() {
           console.error('Role assignment error:', roleError);
         }
 
-        // Create clinic record
-        const { error: clinicError } = await supabase
-          .from('clinics')
-          .insert({
-            user_id: user.id,
-            clinic_name: basicData.clinicName,
-            clinic_type: clinicData.clinicType,
-            address: clinicData.address,
-            region: clinicData.region,
-            phone: clinicData.phone,
-            nhs_number: clinicData.nhsNumber,
-            operating_hours: clinicData.operatingHours,
-            services_offered: clinicData.servicesOffered,
-            facilities: clinicData.facilities,
-            certifications: clinicData.certifications,
-            staff_count: parseInt(clinicData.staffCount) || 0,
-            description: clinicData.description,
-            is_verified: false
-          });
-
-        if (clinicError) {
-          console.error('Clinic creation error:', clinicError);
-        }
+        // Store basic clinic info for future development
+        // For now, clinic data is collected but stored in session/local storage
+        // This can be extended when clinic management tables are added to the database
       }
 
       // Clear session storage

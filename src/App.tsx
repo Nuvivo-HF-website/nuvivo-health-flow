@@ -26,7 +26,6 @@ import ScanServices from "./pages/ScanServices";
 import HealthSurvey from "./pages/HealthSurvey";
 import PrivateAmbulance from "./pages/PrivateAmbulance";
 import ClinicFinder from "./pages/ClinicFinder";
-import DoctorsMarketplace from "./pages/DoctorsMarketplace";
 import ProductDetail from "./pages/ProductDetail";
 import ServiceDetail from "./pages/ServiceDetail";
 import SignIn from "./pages/SignIn";
@@ -91,7 +90,6 @@ const App = () => (
           <Route path="/blood-test-booking" element={<BloodTestBooking />} />
           <Route path="/upload-results" element={<UploadResults />} />
           <Route path="/clinic-finder" element={<ClinicFinder />} />
-          <Route path="/doctors-marketplace" element={<DoctorsMarketplace />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/service/:id" element={<ServiceDetail />} />
           <Route path="/sign-in" element={<SignIn />} />

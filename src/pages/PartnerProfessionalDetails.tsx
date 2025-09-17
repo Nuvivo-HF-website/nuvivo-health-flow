@@ -312,7 +312,8 @@ export default function PartnerProfessionalDetails() {
               bio: professionalData.bio || `${professionalData.profession} specializing in ${professionalData.specializations.join(', ')}`,
               consultation_fee: parseFloat(professionalData.servicePrice),
               available_days: availableDays,
-              is_active: false // Will be activated after verification
+              registration_number: professionalData.gmcNumber,
+              is_active: true // Activate immediately for demo purposes
             });
 
           if (specialistError) {

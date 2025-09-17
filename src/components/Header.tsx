@@ -464,6 +464,18 @@ const Header = () => {
                   </NavigationLink>
                 </NavigationMenuLink>
               </NavigationMenuItem>
+
+              {/* Doctors Marketplace */}
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <NavigationLink
+                    to="/doctors-marketplace"
+                    className="whitespace-nowrap text-muted-foreground hover:text-primary transition-colors px-3 py-2"
+                  >
+                    Find Doctors
+                  </NavigationLink>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
 

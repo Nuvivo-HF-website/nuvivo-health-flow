@@ -63,31 +63,14 @@ export default function Marketplace() {
     try {
       setLoading(true);
       
-      // Fetch specialists with their profile data using user_id join
-      const { data: specialists, error } = await supabase
+      // Fetch specialists and then get their profile data separately
+      const { data: specialists, error: specialistsError } = await supabase
         .from('specialists')
-        .select(`
-          id,
-          user_id,
-          specialty,
-          experience_years,
-          bio,
-          consultation_fee,
-          available_days,
-          clinic_name,
-          address,
-          rating,
-          verified,
-          registration_number,
-          profiles!specialists_user_id_fkey(
-            full_name,
-            email
-          )
-        `)
+        .select('*')
         .eq('is_active', true);
 
-      if (error) {
-        console.error('Error fetching doctors:', error);
+      if (specialistsError) {
+        console.error('Error fetching specialists:', specialistsError);
         toast({
           title: "Error",
           description: "Failed to load doctors. Please try again later.",
@@ -96,27 +79,59 @@ export default function Marketplace() {
         return;
       }
 
+      if (!specialists || specialists.length === 0) {
+        setDoctors([]);
+        return;
+      }
+
+      // Get user IDs to fetch profiles
+      const userIds = specialists.map(s => s.user_id);
+      
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, email')
+        .in('user_id', userIds);
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        toast({
+          title: "Error",
+          description: "Failed to load doctor profiles. Please try again later.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Create a map for quick profile lookup
+      const profileMap = new Map();
+      profiles?.forEach(profile => {
+        profileMap.set(profile.user_id, profile);
+      });
+
       // Transform the data to match the expected Doctor interface
-      const transformedDoctors: Doctor[] = specialists?.map((specialist: any, index) => ({
-        id: specialist.id,
-        name: specialist.profiles?.full_name || `Dr. ${specialist.profiles?.email?.split('@')[0] || 'Unknown'}`,
-        specialty: specialist.specialty || 'General Practice',
-        location: specialist.address || 'UK',
-        rating: specialist.rating || 4.5,
-        reviews: Math.floor(Math.random() * 200) + 50, // Random reviews for now
-        experience: `${specialist.experience_years || 0}+ years`,
-        avatar: "/placeholder.svg",
-        isVerified: specialist.verified || false,
-        isOnline: Math.random() > 0.5, // Random online status
-        price: `£${specialist.consultation_fee || 100}/consultation`,
-        nextAvailable: index % 3 === 0 ? "Today 3:00 PM" : index % 3 === 1 ? "Tomorrow 10:00 AM" : "Wed 2:00 PM",
-        tags: specialist.specialty ? specialist.specialty.split(', ').slice(0, 3) : [],
-        followers: Math.floor(Math.random() * 2000) + 100,
-        posts: Math.floor(Math.random() * 200) + 50,
-        bio: specialist.bio || `Specialist in ${specialist.specialty}`,
-        hospital: specialist.clinic_name || 'Private Practice',
-        gmcNumber: specialist.registration_number
-      })) || [];
+      const transformedDoctors: Doctor[] = specialists.map((specialist: any, index) => {
+        const profile = profileMap.get(specialist.user_id);
+        return {
+          id: specialist.id,
+          name: profile?.full_name || `Dr. ${profile?.email?.split('@')[0] || 'Unknown'}`,
+          specialty: specialist.specialty || 'General Practice',
+          location: specialist.address || 'UK',
+          rating: specialist.rating || 4.5,
+          reviews: Math.floor(Math.random() * 200) + 50, // Random reviews for now
+          experience: `${specialist.experience_years || 0}+ years`,
+          avatar: "/placeholder.svg",
+          isVerified: specialist.verified || false,
+          isOnline: Math.random() > 0.5, // Random online status
+          price: `£${specialist.consultation_fee || 100}/consultation`,
+          nextAvailable: index % 3 === 0 ? "Today 3:00 PM" : index % 3 === 1 ? "Tomorrow 10:00 AM" : "Wed 2:00 PM",
+          tags: specialist.specialty ? specialist.specialty.split(', ').slice(0, 3) : [],
+          followers: Math.floor(Math.random() * 2000) + 100,
+          posts: Math.floor(Math.random() * 200) + 50,
+          bio: specialist.bio || `Specialist in ${specialist.specialty}`,
+          hospital: specialist.clinic_name || 'Private Practice',
+          gmcNumber: specialist.registration_number
+        };
+      });
 
       setDoctors(transformedDoctors);
     } catch (error) {

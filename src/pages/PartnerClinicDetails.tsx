@@ -26,10 +26,12 @@ interface ClinicData {
   clinicType: string;
   address: string;
   phone: string;
-  website: string;
+  region: string;
   nhsNumber: string;
   operatingHours: string;
-  servicesOffered: string;
+  servicesOffered: string[];
+  facilities: string[];
+  certifications: string[];
   staffCount: string;
   description: string;
 }
@@ -44,10 +46,12 @@ export default function PartnerClinicDetails() {
     clinicType: "",
     address: "",
     phone: "",
-    website: "",
+    region: "",
     nhsNumber: "",
     operatingHours: "",
-    servicesOffered: "",
+    servicesOffered: [],
+    facilities: [],
+    certifications: [],
     staffCount: "",
     description: ""
   });
@@ -62,7 +66,95 @@ export default function PartnerClinicDetails() {
     "Specialist Clinic",
     "Multi-Specialty Centre",
     "Walk-in Centre",
+    "Health Lab",
+    "Blood Centre",
+    "Medical Centre",
+    "Health Hub",
     "Other"
+  ];
+
+  const regions = [
+    "England",
+    "Wales", 
+    "Scotland",
+    "Northern Ireland"
+  ];
+
+  const availableServices = [
+    "Fasting Blood Tests",
+    "Standard Blood Tests", 
+    "Health Screenings",
+    "Home Visits",
+    "Express Blood Tests",
+    "Corporate Health",
+    "Nutrition Testing",
+    "Allergy Testing",
+    "Hormone Testing",
+    "Executive Health Checks",
+    "STI Testing",
+    "Travel Medicine",
+    "Premium Health Screenings",
+    "Genetic Testing",
+    "Wellness Programs",
+    "Community Health",
+    "Family Testing",
+    "Preventive Care",
+    "Sports Medicine",
+    "Occupational Health",
+    "Walk-in Services",
+    "Emergency Testing",
+    "Full Health Assessments",
+    "Thyroid Testing",
+    "Vitamin Deficiency",
+    "Comprehensive Health Panels",
+    "Diabetes Testing",
+    "Cardiac Markers",
+    "Liver Function",
+    "Kidney Function",
+    "Women's Health",
+    "Men's Health"
+  ];
+
+  const availableFacilities = [
+    "Parking Available",
+    "Wheelchair Access",
+    "Air Conditioning",
+    "WiFi",
+    "Underground Parking",
+    "Cafe",
+    "Express Service",
+    "Valet Parking",
+    "Private Rooms",
+    "Same Day Results",
+    "Luxury Waiting Area",
+    "Concierge Service",
+    "Refreshments",
+    "Free Parking",
+    "Play Area",
+    "Family Friendly",
+    "Public Transport",
+    "Central Location",
+    "Extended Hours",
+    "Multilingual Staff",
+    "Ground Floor Access",
+    "Senior Friendly",
+    "Children's Area",
+    "Secure Parking",
+    "Fast Track Service",
+    "Online Results",
+    "Comfortable Waiting Area"
+  ];
+
+  const availableCertifications = [
+    "CQC Registered",
+    "CQC Good",
+    "CQC Outstanding", 
+    "ISO 15189",
+    "UKAS Accredited",
+    "Private Healthcare UK",
+    "HIW Registered",
+    "HSE Approved",
+    "Academic Partnership"
   ];
 
   useEffect(() => {
@@ -80,8 +172,16 @@ export default function PartnerClinicDetails() {
     setBasicData(data);
   }, [navigate]);
 
-  const handleInputChange = (field: keyof ClinicData, value: string) => {
+  const handleInputChange = (field: keyof ClinicData, value: string | string[]) => {
     setClinicData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleArrayFieldChange = (field: keyof ClinicData, value: string) => {
+    const currentArray = clinicData[field] as string[];
+    const newArray = currentArray.includes(value) 
+      ? currentArray.filter(item => item !== value)
+      : [...currentArray, value];
+    setClinicData(prev => ({ ...prev, [field]: newArray }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -92,7 +192,7 @@ export default function PartnerClinicDetails() {
     
     try {
       // Basic validation
-      if (!clinicData.clinicType || !clinicData.address || !clinicData.phone) {
+      if (!clinicData.clinicType || !clinicData.address || !clinicData.phone || !clinicData.region) {
         toast({
           title: "Missing Information",
           description: "Please fill in all required fields.",
@@ -282,28 +382,33 @@ export default function PartnerClinicDetails() {
               </div>
 
               {/* Contact Information */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Clinic Phone Number *</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={clinicData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    placeholder="+44 20 XXXX XXXX"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="website">Website (Optional)</Label>
-                  <Input
-                    id="website"
-                    type="url"
-                    value={clinicData.website}
-                    onChange={(e) => handleInputChange("website", e.target.value)}
-                    placeholder="https://www.yourclinic.co.uk"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Clinic Phone Number *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={clinicData.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  placeholder="+44 20 XXXX XXXX"
+                  required
+                />
+              </div>
+
+              {/* Region */}
+              <div className="space-y-2">
+                <Label htmlFor="region">Region *</Label>
+                <select
+                  id="region"
+                  value={clinicData.region}
+                  onChange={(e) => handleInputChange("region", e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  required
+                >
+                  <option value="">Select region</option>
+                  {regions.map(region => (
+                    <option key={region} value={region}>{region}</option>
+                  ))}
+                </select>
               </div>
 
               {/* NHS Number */}
@@ -331,14 +436,56 @@ export default function PartnerClinicDetails() {
 
               {/* Services Offered */}
               <div className="space-y-2">
-                <Label htmlFor="servicesOffered">Services Offered</Label>
-                <Textarea
-                  id="servicesOffered"
-                  value={clinicData.servicesOffered}
-                  onChange={(e) => handleInputChange("servicesOffered", e.target.value)}
-                  placeholder="List the main services your clinic provides"
-                  className="min-h-[80px]"
-                />
+                <Label>Services Offered</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border border-input rounded-md p-3">
+                  {availableServices.map(service => (
+                    <label key={service} className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={clinicData.servicesOffered.includes(service)}
+                        onChange={() => handleArrayFieldChange("servicesOffered", service)}
+                        className="rounded border-gray-300"
+                      />
+                      <span>{service}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Facilities */}
+              <div className="space-y-2">
+                <Label>Facilities Available</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border border-input rounded-md p-3">
+                  {availableFacilities.map(facility => (
+                    <label key={facility} className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={clinicData.facilities.includes(facility)}
+                        onChange={() => handleArrayFieldChange("facilities", facility)}
+                        className="rounded border-gray-300"
+                      />
+                      <span>{facility}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Certifications */}
+              <div className="space-y-2">
+                <Label>Certifications & Accreditations</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto border border-input rounded-md p-3">
+                  {availableCertifications.map(cert => (
+                    <label key={cert} className="flex items-center space-x-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={clinicData.certifications.includes(cert)}
+                        onChange={() => handleArrayFieldChange("certifications", cert)}
+                        className="rounded border-gray-300"
+                      />
+                      <span>{cert}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
               {/* Staff Count */}

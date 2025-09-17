@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -239,17 +239,15 @@ export default function Marketplace() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 bg-muted rounded-full" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-muted rounded w-3/4" />
-                      <div className="h-3 bg-muted rounded w-1/2" />
-                      <div className="h-3 bg-muted rounded w-2/3" />
-                    </div>
+              <Card key={i} className="animate-pulse p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-muted rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                    <div className="h-3 bg-muted rounded w-1/2" />
+                    <div className="h-3 bg-muted rounded w-2/3" />
                   </div>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>
@@ -263,39 +261,33 @@ export default function Marketplace() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDoctors.map((doctor) => (
-              <Card key={doctor.id} className="hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start gap-4">
-                    <div className="relative">
-                      <Avatar className="h-16 w-16">
-                        <AvatarImage src={doctor.avatar} alt={doctor.name} />
-                        <AvatarFallback className="text-lg font-semibold">
-                          {doctor.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      {doctor.isOnline && (
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-background rounded-full"></div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-lg truncate">{doctor.name}</h3>
-                        {doctor.isVerified && (
-                          <Verified className="h-5 w-5 text-blue-500 flex-shrink-0" />
+              <Card key={doctor.id} className="hover:shadow-lg transition-shadow duration-300 p-6">
+                <div className="space-y-4">
+                  {/* Header with name and heart icon */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={doctor.avatar} alt={doctor.name} />
+                          <AvatarFallback className="text-sm font-semibold">
+                            {doctor.name.split(' ').map(n => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                        {doctor.isOnline && (
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full"></div>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground mb-1">{doctor.specialty}</p>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        <span className="truncate">{doctor.location}</span>
+                      <div>
+                        <h3 className="font-semibold text-lg text-foreground">{doctor.name}</h3>
+                        <p className="text-muted-foreground">{doctor.specialty}</p>
                       </div>
                     </div>
                     <button
                       onClick={() => toggleLike(doctor.id)}
-                      className="p-2 hover:bg-muted rounded-full transition-colors"
+                      className="p-1 hover:bg-muted rounded-full transition-colors"
                     >
                       <Heart 
-                        className={`h-4 w-4 ${
+                        className={`h-5 w-5 ${
                           likedDoctors.includes(doctor.id) 
                             ? 'fill-red-500 text-red-500' 
                             : 'text-muted-foreground'
@@ -303,76 +295,64 @@ export default function Marketplace() {
                       />
                     </button>
                   </div>
-                </CardHeader>
 
-                <CardContent className="pt-0 space-y-4">
-                  {/* Rating & Reviews */}
-                  <div className="flex items-center justify-between">
+                  {/* Bio with GMC number */}
+                  <div className="text-sm text-muted-foreground">
+                    <p>{doctor.bio}</p>
+                    {doctor.gmcNumber && (
+                      <p className="mt-1">GMC Number: {doctor.gmcNumber}</p>
+                    )}
+                  </div>
+
+                  {/* Rating and Location */}
+                  <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       <span className="font-medium">{doctor.rating}</span>
-                      <span className="text-sm text-muted-foreground">({doctor.reviews} reviews)</span>
+                      <span className="text-muted-foreground">({doctor.reviews})</span>
                     </div>
-                    <div className="text-sm text-muted-foreground">{doctor.experience}</div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span>{doctor.location}</span>
+                    </div>
                   </div>
 
-                  {/* Bio */}
-                  <p className="text-sm text-muted-foreground line-clamp-2">{doctor.bio}</p>
-
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-2">
                     {doctor.tags.slice(0, 3).map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
+                      <Badge key={index} variant="secondary" className="text-xs px-3 py-1">
                         {tag}
                       </Badge>
                     ))}
                   </div>
 
-                  {/* Hospital/Clinic */}
-                  <div className="text-sm">
-                    <span className="font-medium">Practice:</span> {doctor.hospital}
-                  </div>
-
-                  {/* GMC Number */}
-                  {doctor.gmcNumber && (
-                    <div className="text-sm">
-                      <span className="font-medium">Registration:</span> {doctor.gmcNumber}
-                    </div>
-                  )}
-
                   {/* Stats */}
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center gap-4">
-                      <span>{doctor.followers} followers</span>
-                      <span>{doctor.posts} posts</span>
-                    </div>
+                  <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                    <span>{doctor.followers} followers</span>
+                    <span>{doctor.posts} posts</span>
+                    <span>{doctor.experience}</span>
                   </div>
 
-                  {/* Availability & Price */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-sm">
-                      <Clock className="h-3 w-3" />
-                      <span>{doctor.nextAvailable}</span>
-                    </div>
-                    <div className="font-semibold text-primary">{doctor.price}</div>
+                  {/* Availability */}
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>{doctor.nextAvailable}</span>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-2">
+                  <div className="flex gap-3 pt-2">
                     <Button 
                       size="sm" 
                       className="flex-1"
                       onClick={() => navigate(`/booking?doctor=${doctor.id}`)}
                     >
-                      <Calendar className="h-4 w-4 mr-1" />
-                      Book Now
+                      Book Consultation
                     </Button>
                     <Button size="sm" variant="outline" className="flex-1">
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      Message
+                      View Details
                     </Button>
                   </div>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>

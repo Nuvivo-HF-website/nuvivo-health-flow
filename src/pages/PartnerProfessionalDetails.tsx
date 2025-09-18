@@ -319,6 +319,38 @@ export default function PartnerProfessionalDetails() {
           if (specialistError) {
             console.error('Specialist profile error:', specialistError);
           }
+
+          // Also create doctor_profiles record so "My Profile" page is pre-filled
+          const availableHours = Object.entries(professionalData.availability)
+            .filter(([_, config]) => config.enabled)
+            .reduce((acc, [day, config]) => {
+              acc[day] = { start: config.startTime, end: config.endTime };
+              return acc;
+            }, {} as Record<string, { start: string; end: string }>);
+
+          const [firstName, ...lastNameParts] = basicData.fullName.split(' ');
+          const lastName = lastNameParts.join(' ');
+
+          const { error: doctorProfileError } = await supabase
+            .from('doctor_profiles')
+            .insert({
+              user_id: user.id,
+              first_name: firstName,
+              last_name: lastName,
+              specialty: professionalData.profession,
+              qualification: professionalData.specializations.join(', '),
+              license_number: professionalData.gmcNumber,
+              bio: professionalData.bio || `${professionalData.profession} specializing in ${professionalData.specializations.join(', ')}`,
+              consultation_fee: parseFloat(professionalData.servicePrice),
+              available_days: availableDays,
+              available_hours: { start: "09:00", end: "17:00" }, // Default hours
+              clinic_address: professionalData.clinicAddress,
+              phone: basicData.mobile
+            });
+
+          if (doctorProfileError) {
+            console.error('Doctor profile error:', doctorProfileError);
+          }
         }
       }
 

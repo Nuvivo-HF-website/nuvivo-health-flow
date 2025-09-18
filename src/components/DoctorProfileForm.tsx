@@ -642,7 +642,7 @@ export function DoctorProfileForm() {
               </div>
 
              {/* Qualification */}
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="qualification">Qualification</Label>
                 <Input id="qualification" className={fieldClass} value={formData.qualification} onChange={(e) => handleInputChange('qualification', e.target.value)} placeholder="e.g., MBBS, MD" />
               </div>

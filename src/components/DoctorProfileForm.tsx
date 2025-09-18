@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/contexts/EnhancedAuthContext'
 import { doctorService, DoctorProfile } from '@/services/doctorService'
 import { supabase } from '@/integrations/supabase/client'
@@ -10,9 +10,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2, Plus, X } from "lucide-react"
+import { Loader2, Plus, X, Upload, Shield, Check } from "lucide-react"
 
-const SPECIALTIES = [
+/*************************
+ * Constants & Helpers
+ *************************/
+const MEDICAL_SPECIALTIES = [
   'General Practice',
   'Cardiology', 
   'Dermatology',
@@ -46,60 +49,161 @@ const days = [
   { key: "sunday", label: "Sunday" }
 ]
 
-// Helper function to convert old format to new format - preserves individual day times if available
+// Profession -> Specializations mapping (from your registration flow)
+const PROFESSIONS = [
+  "GP (General Practitioner)",
+  "Nurse",
+  "Physiotherapist", 
+  "Psychologist",
+  "Medical Specialist",
+  "Therapist",
+  "Nutritionist",
+  "Counsellor"
+]
+
+const SPECIALIZATIONS_BY_PROFESSION: Record<string, string[]> = {
+  "GP (General Practitioner)": [
+    "Family Medicine",
+    "Preventive Care",
+    "Chronic Disease Management",
+    "Minor Surgery",
+    "Women's Health",
+    "Men's Health",
+    "Elderly Care",
+    "Travel Medicine"
+  ],
+  "Nurse": [
+    "Critical Care",
+    "Pediatric Nursing", 
+    "Geriatric Nursing",
+    "Mental Health Nursing",
+    "Community Nursing",
+    "Surgical Nursing",
+    "Emergency Nursing",
+    "Oncology Nursing"
+  ],
+  "Physiotherapist": [
+    "Sports Therapy",
+    "Neurological Physiotherapy",
+    "Orthopedic Physiotherapy",
+    "Pediatric Physiotherapy",
+    "Geriatric Physiotherapy",
+    "Respiratory Physiotherapy",
+    "Women's Health Physiotherapy",
+    "Manual Therapy"
+  ],
+  "Psychologist": [
+    "Clinical Psychology",
+    "Counseling Psychology",
+    "Child Psychology",
+    "Health Psychology",
+    "Neuropsychology",
+    "Forensic Psychology",
+    "Educational Psychology",
+    "Occupational Psychology"
+  ],
+  "Medical Specialist": [
+    "Cardiology",
+    "Dermatology",
+    "Endocrinology",
+    "Gastroenterology",
+    "General Medicine",
+    "Geriatrics",
+    "Hematology",
+    "Infectious Disease",
+    "Nephrology",
+    "Neurology",
+    "Oncology",
+    "Orthopedics",
+    "Psychiatry",
+    "Pulmonology",
+    "Rheumatology",
+    "Urology"
+  ],
+  "Therapist": [
+    "Occupational Therapy",
+    "Speech Therapy",
+    "Art Therapy",
+    "Music Therapy",
+    "Behavioral Therapy",
+    "Cognitive Behavioral Therapy",
+    "Family Therapy",
+    "Group Therapy"
+  ],
+  "Nutritionist": [
+    "Clinical Nutrition",
+    "Sports Nutrition",
+    "Pediatric Nutrition",
+    "Geriatric Nutrition",
+    "Weight Management",
+    "Eating Disorders",
+    "Community Nutrition",
+    "Food Allergies & Intolerances"
+  ],
+  "Counsellor": [
+    "Marriage Counseling",
+    "Addiction Counseling",
+    "Grief Counseling",
+    "Career Counseling",
+    "Trauma Counseling",
+    "Youth Counseling",
+    "Family Counseling",
+    "Mental Health Counseling"
+  ]
+}
+
+const getRegistrationBodyInfo = (profession: string) => {
+  switch (profession) {
+    case "GP (General Practitioner)":
+    case "Medical Specialist":
+      return { label: "GMC Number", placeholder: "Enter your GMC number" }
+    case "Nurse":
+      return { label: "NMC Number", placeholder: "Enter your NMC number" }
+    case "Physiotherapist":
+    case "Psychologist":
+    case "Therapist":
+    case "Nutritionist":
+      return { label: "HCPC Registration Number", placeholder: "Enter your HCPC registration number" }
+    case "Counsellor":
+      return { label: "BACP/UKCP Registration Number", placeholder: "Enter your BACP/UKCP registration number" }
+    default:
+      return { label: "Professional Registration Number", placeholder: "Enter your registration number" }
+  }
+}
+
+// Convert old -> new availability (per‑day)
 const convertAvailabilityToNewFormat = (availableDays: string[], availableHours: any) => {
   const availability: Record<string, { enabled: boolean; startTime: string; endTime: string }> = {}
-  
-  // Check if availableHours contains individual day settings
   const hasIndividualDayTimes = typeof availableHours === 'object' && 
     availableHours !== null && 
     Object.keys(availableHours).some(key => DAYS_OF_WEEK.includes(key))
-  
   DAYS_OF_WEEK.forEach(day => {
     const isEnabled = availableDays.includes(day)
     let startTime = '09:00'
     let endTime = '17:00'
-    
-    if (hasIndividualDayTimes && availableHours[day]) {
-      // Use individual day times if available
-      startTime = availableHours[day].startTime || availableHours[day].start || '09:00'
-      endTime = availableHours[day].endTime || availableHours[day].end || '17:00'
-    } else if (typeof availableHours === 'object' && availableHours.start && availableHours.end) {
-      // Use global times as fallback
-      startTime = availableHours.start
-      endTime = availableHours.end
+    if (hasIndividualDayTimes && (availableHours as any)[day]) {
+      startTime = (availableHours as any)[day].startTime || (availableHours as any)[day].start || '09:00'
+      endTime = (availableHours as any)[day].endTime || (availableHours as any)[day].end || '17:00'
+    } else if (typeof availableHours === 'object' && (availableHours as any).start && (availableHours as any).end) {
+      startTime = (availableHours as any).start
+      endTime = (availableHours as any).end
     }
-    
-    availability[day] = {
-      enabled: isEnabled,
-      startTime,
-      endTime
-    }
+    availability[day] = { enabled: isEnabled, startTime, endTime }
   })
-  
   return availability
 }
 
-// Helper function to convert new format to old format - stores individual day times
+// Convert new -> old availability (array + global fallback)
 const convertAvailabilityToOldFormat = (availability: Record<string, { enabled: boolean; startTime: string; endTime: string }>) => {
   const enabledDays = Object.entries(availability)
     .filter(([_, config]) => config.enabled)
     .map(([day]) => day)
-  
-  // Store individual day times in the available_hours object
   const availableHours: any = {}
-  
-  // Add individual day configurations
   Object.entries(availability).forEach(([day, config]) => {
     if (config.enabled) {
-      availableHours[day] = {
-        startTime: config.startTime,
-        endTime: config.endTime
-      }
+      availableHours[day] = { startTime: config.startTime, endTime: config.endTime }
     }
   })
-  
-  // Also include global start/end for backward compatibility
   const firstEnabledDay = Object.values(availability).find(config => config.enabled)
   if (firstEnabledDay) {
     availableHours.start = firstEnabledDay.startTime
@@ -108,10 +212,12 @@ const convertAvailabilityToOldFormat = (availability: Record<string, { enabled: 
     availableHours.start = '09:00'
     availableHours.end = '17:00'
   }
-    
   return { availableDays: enabledDays, availableHours }
 }
 
+/*************************
+ * Component
+ *************************/
 export function DoctorProfileForm() {
   const { user } = useAuth()
   const { toast } = useToast()
@@ -120,22 +226,36 @@ export function DoctorProfileForm() {
   const [doctorProfile, setDoctorProfile] = useState<DoctorProfile | null>(null)
   const [newLanguage, setNewLanguage] = useState('')
 
+  // Document upload state
+  const [indemnityUrl, setIndemnityUrl] = useState<string>('')
+  const [dbsUrl, setDbsUrl] = useState<string>('')
+  const indemnityInputRef = useRef<HTMLInputElement | null>(null)
+  const dbsInputRef = useRef<HTMLInputElement | null>(null)
+
   const [formData, setFormData] = useState({
+    // Personal
     first_name: '',
     last_name: '',
-    specialty: '',
-    qualification: '',
-    license_number: '',
-    years_of_experience: '',
     phone: '',
+    // Profession & regs
+    profession: '', // NEW
+    specializations: [] as string[], // NEW
+    specialty: '', // existing medical specialty picker (optional when profession != Medical Specialist)
+    qualification: '',
+    license_number: '', // will hold GMC/NMC/HCPC/BACP etc.
+    years_of_experience: '',
+    // Pricing & bio
+    consultation_fee: '',
+    bio: '',
+    // Clinic + address
+    clinic_name: '',
+    clinic_address: '',
     address_line_1: '',
     address_line_2: '',
     city: '',
     postcode: '',
     country: 'United Kingdom',
-    clinic_name: '',
-    clinic_address: '',
-    consultation_fee: '',
+    // Availability
     availability: {
       monday: { enabled: false, startTime: '09:00', endTime: '17:00' },
       tuesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
@@ -145,58 +265,67 @@ export function DoctorProfileForm() {
       saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
       sunday: { enabled: false, startTime: '09:00', endTime: '17:00' },
     },
-    bio: '',
-    languages: ['English']
+    // Languages
+    languages: ['English'],
+    // Documents (URLs after upload)
+    indemnity_document_url: '',
+    dbs_pvg_document_url: '',
   })
+
+  const currentRegInfo = getRegistrationBodyInfo(formData.profession)
+
+  const getCurrentSpecializations = () => SPECIALIZATIONS_BY_PROFESSION[formData.profession] || []
 
   useEffect(() => {
     if (user?.id) {
       loadDoctorProfile()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id])
 
   const loadDoctorProfile = async () => {
     if (!user?.id) return
-
     try {
       setProfileLoading(true)
       const { data, error } = await doctorService.getDoctorProfile(user.id)
-      
-      if (error) {
-        console.error('Error loading doctor profile:', error)
-      }
+      if (error) console.error('Error loading doctor profile:', error)
 
       if (data) {
         setDoctorProfile(data)
-        
-        // Handle available_hours type conversion
-        const availableHours = data.available_hours as any
+        const availableHours = (data as any).available_hours as any
         const parsedHours = typeof availableHours === 'object' && availableHours !== null 
           ? availableHours 
           : { start: '09:00', end: '17:00' }
 
+        setIndemnityUrl((data as any).indemnity_document_url || '')
+        setDbsUrl((data as any).dbs_pvg_document_url || '')
+
         setFormData({
           first_name: data.first_name || '',
           last_name: data.last_name || '',
+          phone: data.phone || '',
+          profession: (data as any).profession || '',
+          specializations: (data as any).specializations || [],
           specialty: data.specialty || '',
           qualification: data.qualification || '',
-          license_number: data.license_number || '',
+          license_number: data.license_number || (data as any).registration_number || '',
           years_of_experience: data.years_of_experience?.toString() || '',
-          phone: data.phone || '',
+          consultation_fee: data.consultation_fee?.toString() || '',
+          bio: data.bio || '',
+          clinic_name: data.clinic_name || '',
+          clinic_address: data.clinic_address || '',
           address_line_1: data.address_line_1 || '',
           address_line_2: data.address_line_2 || '',
           city: data.city || '',
           postcode: data.postcode || '',
           country: data.country || 'United Kingdom',
-          clinic_name: data.clinic_name || '',
-          clinic_address: data.clinic_address || '',
-          consultation_fee: data.consultation_fee?.toString() || '',
-          availability: convertAvailabilityToNewFormat(data.available_days || [], parsedHours) as any,
-          bio: data.bio || '',
-          languages: data.languages || ['English']
+          availability: convertAvailabilityToNewFormat((data as any).available_days || [], parsedHours) as any,
+          languages: (data as any).languages || ['English'],
+          indemnity_document_url: (data as any).indemnity_document_url || '',
+          dbs_pvg_document_url: (data as any).dbs_pvg_document_url || '',
         })
       } else {
-        // No doctor profile exists, check if there's a specialists profile to migrate
+        // Attempt migration from specialists table if no doctor profile exists
         const { data: specialistData, error: specialistError } = await supabase
           .from('specialists')
           .select('*')
@@ -204,14 +333,15 @@ export function DoctorProfileForm() {
           .single()
 
         if (specialistData && !specialistError) {
-          // Migrate specialist data to doctor profile
-          const doctorProfileData = {
+          const doctorProfileData: any = {
             user_id: user.id,
             first_name: user.user_metadata?.full_name?.split(' ')[0] || '',
             last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+            profession: 'Medical Specialist',
+            specializations: (specialistData.specialty ? String(specialistData.specialty).split(',').map(s => s.trim()) : []),
             specialty: specialistData.specialty || '',
             qualification: '',
-            license_number: '',
+            license_number: specialistData.registration_number || '',
             years_of_experience: specialistData.experience_years || null,
             phone: '',
             address_line_1: '',
@@ -225,33 +355,37 @@ export function DoctorProfileForm() {
             available_hours: { start: '09:00', end: '17:00' },
             available_days: specialistData.available_days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
             bio: specialistData.bio || '',
-            languages: ['English']
+            languages: ['English'],
+            indemnity_document_url: '',
+            dbs_pvg_document_url: ''
           }
 
-          // Create doctor profile from specialist data
           const { data: newDoctorProfile, error: createError } = await doctorService.createDoctorProfile(doctorProfileData)
-          
           if (!createError && newDoctorProfile) {
             setDoctorProfile(newDoctorProfile)
             setFormData({
               first_name: doctorProfileData.first_name,
               last_name: doctorProfileData.last_name,
+              phone: '',
+              profession: doctorProfileData.profession,
+              specializations: doctorProfileData.specializations,
               specialty: doctorProfileData.specialty,
               qualification: doctorProfileData.qualification,
               license_number: doctorProfileData.license_number,
               years_of_experience: doctorProfileData.years_of_experience?.toString() || '',
-              phone: doctorProfileData.phone,
+              consultation_fee: String(doctorProfileData.consultation_fee ?? ''),
+              bio: doctorProfileData.bio,
+              clinic_name: doctorProfileData.clinic_name,
+              clinic_address: doctorProfileData.clinic_address,
               address_line_1: doctorProfileData.address_line_1,
               address_line_2: doctorProfileData.address_line_2,
               city: doctorProfileData.city,
               postcode: doctorProfileData.postcode,
               country: doctorProfileData.country,
-              clinic_name: doctorProfileData.clinic_name,
-              clinic_address: doctorProfileData.clinic_address,
-              consultation_fee: doctorProfileData.consultation_fee?.toString() || '',
               availability: convertAvailabilityToNewFormat(doctorProfileData.available_days, doctorProfileData.available_hours) as any,
-              bio: doctorProfileData.bio,
-              languages: doctorProfileData.languages
+              languages: doctorProfileData.languages,
+              indemnity_document_url: '',
+              dbs_pvg_document_url: ''
             })
           }
         }
@@ -264,9 +398,15 @@ export function DoctorProfileForm() {
   }
 
   const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleSpecializationToggle = (specialization: string) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      specializations: prev.specializations.includes(specialization)
+        ? prev.specializations.filter(s => s !== specialization)
+        : [...prev.specializations, specialization]
     }))
   }
 
@@ -275,69 +415,87 @@ export function DoctorProfileForm() {
       ...prev,
       availability: {
         ...prev.availability,
-        [day]: {
-          ...prev.availability[day],
-          [field]: value
-        }
+        [day]: { ...prev.availability[day as keyof typeof prev.availability], [field]: value }
       }
     }))
   }
 
   const addLanguage = () => {
     if (newLanguage.trim() && !formData.languages.includes(newLanguage.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        languages: [...prev.languages, newLanguage.trim()]
-      }))
+      setFormData(prev => ({ ...prev, languages: [...prev.languages, newLanguage.trim()] }))
       setNewLanguage('')
     }
   }
 
   const removeLanguage = (language: string) => {
-    setFormData(prev => ({
-      ...prev,
-      languages: prev.languages.filter(l => l !== language)
-    }))
+    setFormData(prev => ({ ...prev, languages: prev.languages.filter(l => l !== language) }))
+  }
+
+  // --- Upload helpers ---
+  const uploadToBucket = async (file: File, kind: 'indemnity' | 'dbs') => {
+    if (!user?.id) return null
+    const bucket = 'provider_documents'
+    const path = `${user.id}/${kind}-${Date.now()}-${file.name}`
+    const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: false })
+    if (error) {
+      toast({ title: 'Upload failed', description: error.message, variant: 'destructive' })
+      return null
+    }
+    const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path)
+    return pub?.publicUrl || null
+  }
+
+  const handleFilePick = async (e: React.ChangeEvent<HTMLInputElement>, kind: 'indemnity' | 'dbs') => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const url = await uploadToBucket(file, kind)
+    if (!url) return
+    if (kind === 'indemnity') {
+      setIndemnityUrl(url)
+      setFormData(prev => ({ ...prev, indemnity_document_url: url }))
+    } else {
+      setDbsUrl(url)
+      setFormData(prev => ({ ...prev, dbs_pvg_document_url: url }))
+    }
+    toast({ title: 'Document uploaded', description: `${kind === 'indemnity' ? 'Indemnity insurance' : 'DBS/PVG'} uploaded successfully.` })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
     if (!user?.id) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to update your profile.",
-        variant: "destructive",
-      })
+      toast({ title: 'Error', description: 'You must be logged in to update your profile.', variant: 'destructive' })
       return
     }
 
     try {
       setLoading(true)
+      const { availableDays, availableHours } = convertAvailabilityToOldFormat(formData.availability as any)
 
-      const { availableDays, availableHours } = convertAvailabilityToOldFormat(formData.availability)
-
-      const profileData = {
+      const profileData: any = {
         user_id: user.id,
         first_name: formData.first_name,
         last_name: formData.last_name,
+        phone: formData.phone,
+        profession: formData.profession,
+        specializations: formData.specializations,
         specialty: formData.specialty,
         qualification: formData.qualification,
         license_number: formData.license_number,
         years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : null,
-        phone: formData.phone,
+        consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : null,
+        bio: formData.bio,
+        clinic_name: formData.clinic_name,
+        clinic_address: formData.clinic_address,
         address_line_1: formData.address_line_1,
         address_line_2: formData.address_line_2,
         city: formData.city,
         postcode: formData.postcode,
         country: formData.country,
-        clinic_name: formData.clinic_name,
-        clinic_address: formData.clinic_address,
-        consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : null,
         available_hours: availableHours,
         available_days: availableDays,
-        bio: formData.bio,
-        languages: formData.languages
+        languages: formData.languages,
+        indemnity_document_url: formData.indemnity_document_url,
+        dbs_pvg_document_url: formData.dbs_pvg_document_url,
       }
 
       let result
@@ -347,24 +505,12 @@ export function DoctorProfileForm() {
         result = await doctorService.createDoctorProfile(profileData)
       }
 
-      if (result.error) {
-        throw result.error
-      }
-
+      if (result.error) throw result.error
       setDoctorProfile(result.data)
-      
-      toast({
-        title: "Success",
-        description: doctorProfile ? "Profile updated successfully!" : "Profile created successfully!",
-      })
-
+      toast({ title: 'Success', description: doctorProfile ? 'Profile updated successfully!' : 'Profile created successfully!' })
     } catch (error) {
       console.error('Error saving doctor profile:', error)
-      toast({
-        title: "Error",
-        description: "Failed to save profile. Please try again.",
-        variant: "destructive",
-      })
+      toast({ title: 'Error', description: 'Failed to save profile. Please try again.', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -384,7 +530,7 @@ export function DoctorProfileForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Doctor Profile</CardTitle>
+        <CardTitle>Doctor / Professional Profile</CardTitle>
         {!doctorProfile && (
           <CardDescription className="text-amber-600">
             Complete your professional profile to start offering consultations
@@ -392,105 +538,136 @@ export function DoctorProfileForm() {
         )}
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Personal Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Personal Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="first_name">First Name</Label>
-                <Input
-                  id="first_name"
-                  value={formData.first_name}
-                  onChange={(e) => handleInputChange('first_name', e.target.value)}
-                />
+                <Input id="first_name" value={formData.first_name} onChange={(e) => handleInputChange('first_name', e.target.value)} />
               </div>
               <div>
                 <Label htmlFor="last_name">Last Name</Label>
-                <Input
-                  id="last_name"
-                  value={formData.last_name}
-                  onChange={(e) => handleInputChange('last_name', e.target.value)}
-                />
+                <Input id="last_name" value={formData.last_name} onChange={(e) => handleInputChange('last_name', e.target.value)} />
               </div>
               <div>
                 <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                />
+                <Input id="phone" type="tel" value={formData.phone} onChange={(e) => handleInputChange('phone', e.target.value)} />
               </div>
             </div>
           </div>
 
           {/* Professional Information */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Professional Information</h3>
+            <h3 className="text-lg font-semibold flex items-center gap-2"><Shield className="h-5 w-5"/> Professional Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Profession */}
+              <div className="space-y-2">
+                <Label htmlFor="profession">Profession *</Label>
+                <Select value={formData.profession} onValueChange={(value) => handleInputChange('profession', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your profession" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROFESSIONS.map((p) => (
+                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Medical Specialty (optional; especially for Medical Specialist) */}
               <div>
-                <Label htmlFor="specialty">Specialty</Label>
+                <Label htmlFor="specialty">Medical Specialty</Label>
                 <Select value={formData.specialty} onValueChange={(value) => handleInputChange('specialty', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select specialty" />
                   </SelectTrigger>
                   <SelectContent>
-                    {SPECIALTIES.map((specialty) => (
-                      <SelectItem key={specialty} value={specialty}>
-                        {specialty}
-                      </SelectItem>
+                    {MEDICAL_SPECIALTIES.map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Qualification */}
               <div>
                 <Label htmlFor="qualification">Qualification</Label>
-                <Input
-                  id="qualification"
-                  value={formData.qualification}
-                  onChange={(e) => handleInputChange('qualification', e.target.value)}
-                  placeholder="e.g., MBBS, MD"
-                />
+                <Input id="qualification" value={formData.qualification} onChange={(e) => handleInputChange('qualification', e.target.value)} placeholder="e.g., MBBS, MD" />
               </div>
+
+              {/* Dynamic Registration Number */}
               <div>
-                <Label htmlFor="license_number">License Number</Label>
-                <Input
-                  id="license_number"
-                  value={formData.license_number}
-                  onChange={(e) => handleInputChange('license_number', e.target.value)}
-                />
+                <Label htmlFor="license_number">{currentRegInfo.label} *</Label>
+                <Input id="license_number" value={formData.license_number} onChange={(e) => handleInputChange('license_number', e.target.value)} placeholder={currentRegInfo.placeholder} />
               </div>
+
+              {/* Experience */}
               <div>
                 <Label htmlFor="years_of_experience">Years of Experience</Label>
-                <Input
-                  id="years_of_experience"
-                  type="number"
-                  value={formData.years_of_experience}
-                  onChange={(e) => handleInputChange('years_of_experience', e.target.value)}
-                />
+                <Input id="years_of_experience" type="number" value={formData.years_of_experience} onChange={(e) => handleInputChange('years_of_experience', e.target.value)} />
               </div>
+
+              {/* Price */}
               <div>
-                <Label htmlFor="consultation_fee">Consultation Fee (£)</Label>
-                <Input
-                  id="consultation_fee"
-                  type="number"
-                  step="0.01"
-                  value={formData.consultation_fee}
-                  onChange={(e) => handleInputChange('consultation_fee', e.target.value)}
-                />
+                <Label htmlFor="consultation_fee">Price of Service (£ per consultation) *</Label>
+                <Input id="consultation_fee" type="number" step="0.01" value={formData.consultation_fee} onChange={(e) => handleInputChange('consultation_fee', e.target.value)} placeholder="150" />
               </div>
             </div>
 
+            {/* Specializations grid (multi‑select) */}
+            {formData.profession && getCurrentSpecializations().length > 0 && (
+              <div className="space-y-3">
+                <Label>Specializations (Select multiple) *</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {getCurrentSpecializations().map((spec) => (
+                    <div key={spec} className="flex items-center space-x-2">
+                      <Checkbox id={spec} checked={formData.specializations.includes(spec)} onCheckedChange={() => handleSpecializationToggle(spec)} />
+                      <Label htmlFor={spec} className="text-sm">{spec}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Bio */}
             <div>
               <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={formData.bio}
-                onChange={(e) => handleInputChange('bio', e.target.value)}
-                placeholder="Tell patients about yourself..."
-                rows={4}
-              />
+              <Textarea id="bio" value={formData.bio} onChange={(e) => handleInputChange('bio', e.target.value)} placeholder="Tell patients about yourself..." rows={4} />
+            </div>
+          </div>
+
+          {/* Required Documents */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Required Documents</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Indemnity */}
+              <div className="space-y-2">
+                <Label>Indemnity Insurance *</Label>
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center cursor-pointer"
+                     onClick={() => indemnityInputRef.current?.click()}>
+                  <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                  <p className="text-xs text-muted-foreground mt-1">PDF, JPG, PNG (max 10MB)</p>
+                  {indemnityUrl && <p className="text-xs mt-2 break-all">Uploaded: {indemnityUrl}</p>}
+                </div>
+                <input ref={indemnityInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => handleFilePick(e, 'indemnity')} />
+              </div>
+
+              {/* DBS / PVG */}
+              <div className="space-y-2">
+                <Label>DBS / PVG Check *</Label>
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center cursor-pointer"
+                     onClick={() => dbsInputRef.current?.click()}>
+                  <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                  <p className="text-xs text-muted-foreground mt-1">PDF, JPG, PNG (max 10MB)</p>
+                  {dbsUrl && <p className="text-xs mt-2 break-all">Uploaded: {dbsUrl}</p>}
+                </div>
+                <input ref={dbsInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => handleFilePick(e, 'dbs')} />
+              </div>
             </div>
           </div>
 
@@ -500,68 +677,39 @@ export function DoctorProfileForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="clinic_name">Clinic Name</Label>
-                <Input
-                  id="clinic_name"
-                  value={formData.clinic_name}
-                  onChange={(e) => handleInputChange('clinic_name', e.target.value)}
-                />
+                <Input id="clinic_name" value={formData.clinic_name} onChange={(e) => handleInputChange('clinic_name', e.target.value)} />
               </div>
             </div>
             <div>
-              <Label htmlFor="clinic_address">Clinic Address</Label>
-              <Textarea
-                id="clinic_address"
-                value={formData.clinic_address}
-                onChange={(e) => handleInputChange('clinic_address', e.target.value)}
-                rows={2}
-              />
+              <Label htmlFor="clinic_address">Clinic Address (Optional)</Label>
+              <Textarea id="clinic_address" value={formData.clinic_address} onChange={(e) => handleInputChange('clinic_address', e.target.value)} rows={2} />
             </div>
           </div>
 
-          {/* Address */}
+          {/* Personal Address */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Personal Address</h3>
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <Label htmlFor="address_line_1">Address Line 1</Label>
-                <Input
-                  id="address_line_1"
-                  value={formData.address_line_1}
-                  onChange={(e) => handleInputChange('address_line_1', e.target.value)}
-                />
+                <Input id="address_line_1" value={formData.address_line_1} onChange={(e) => handleInputChange('address_line_1', e.target.value)} />
               </div>
               <div>
                 <Label htmlFor="address_line_2">Address Line 2 (Optional)</Label>
-                <Input
-                  id="address_line_2"
-                  value={formData.address_line_2}
-                  onChange={(e) => handleInputChange('address_line_2', e.target.value)}
-                />
+                <Input id="address_line_2" value={formData.address_line_2} onChange={(e) => handleInputChange('address_line_2', e.target.value)} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => handleInputChange('city', e.target.value)}
-                  />
+                  <Input id="city" value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)} />
                 </div>
                 <div>
                   <Label htmlFor="postcode">Postcode</Label>
-                  <Input
-                    id="postcode"
-                    value={formData.postcode}
-                    onChange={(e) => handleInputChange('postcode', e.target.value)}
-                  />
+                  <Input id="postcode" value={formData.postcode} onChange={(e) => handleInputChange('postcode', e.target.value)} />
                 </div>
                 <div>
                   <Label htmlFor="country">Country</Label>
-                  <Input
-                    id="country"
-                    value={formData.country}
-                    onChange={(e) => handleInputChange('country', e.target.value)}
-                  />
+                  <Input id="country" value={formData.country} onChange={(e) => handleInputChange('country', e.target.value)} />
                 </div>
               </div>
             </div>
@@ -573,35 +721,13 @@ export function DoctorProfileForm() {
             <div className="space-y-3">
               {days.map(({ key, label }) => (
                 <div key={key} className="flex items-center space-x-4 p-3 border rounded-lg">
-                  <Checkbox 
-                    id={key}
-                    checked={formData.availability[key].enabled}
-                    onCheckedChange={(checked) => 
-                      handleAvailabilityChange(key, "enabled", checked)
-                    }
-                  />
-                  <Label htmlFor={key} className="w-20">
-                    {label}
-                  </Label>
-                  {formData.availability[key].enabled && (
+                  <Checkbox id={key} checked={(formData.availability as any)[key].enabled} onCheckedChange={(checked) => handleAvailabilityChange(key, 'enabled', checked)} />
+                  <Label htmlFor={key} className="w-20">{label}</Label>
+                  {(formData.availability as any)[key].enabled && (
                     <div className="flex items-center space-x-2">
-                      <Input
-                        type="time"
-                        value={formData.availability[key].startTime}
-                        onChange={(e) => 
-                          handleAvailabilityChange(key, "startTime", e.target.value)
-                        }
-                        className="w-24"
-                      />
+                      <Input type="time" value={(formData.availability as any)[key].startTime} onChange={(e) => handleAvailabilityChange(key, 'startTime', e.target.value)} className="w-24" />
                       <span className="text-sm text-muted-foreground">to</span>
-                      <Input
-                        type="time"
-                        value={formData.availability[key].endTime}
-                        onChange={(e) => 
-                          handleAvailabilityChange(key, "endTime", e.target.value)
-                        }
-                        className="w-24"
-                      />
+                      <Input type="time" value={(formData.availability as any)[key].endTime} onChange={(e) => handleAvailabilityChange(key, 'endTime', e.target.value)} className="w-24" />
                     </div>
                   )}
                 </div>
@@ -617,11 +743,7 @@ export function DoctorProfileForm() {
                 <div key={language} className="flex items-center gap-2 bg-muted rounded-md px-3 py-1">
                   <span>{language}</span>
                   {formData.languages.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeLanguage(language)}
-                      className="text-muted-foreground hover:text-destructive"
-                    >
+                    <button type="button" onClick={() => removeLanguage(language)} className="text-muted-foreground hover:text-destructive">
                       <X className="h-3 w-3" />
                     </button>
                   )}
@@ -635,9 +757,7 @@ export function DoctorProfileForm() {
                 </SelectTrigger>
                 <SelectContent>
                   {LANGUAGES.filter(lang => !formData.languages.includes(lang)).map((language) => (
-                    <SelectItem key={language} value={language}>
-                      {language}
-                    </SelectItem>
+                    <SelectItem key={language} value={language}>{language}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -647,15 +767,25 @@ export function DoctorProfileForm() {
             </div>
           </div>
 
-          <Button type="submit" disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              doctorProfile ? 'Update Profile' : 'Create Profile'
-            )}
+          {/* Payment Setup Notice */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Payment Setup</h3>
+            <div className="p-4 bg-muted/50 rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                Payment processing will be set up via Stripe Connect after your application is approved. You'll receive a secure link to complete your payment details.
+              </p>
+            </div>
+          </div>
+
+          {/* Terms */}
+          <div className="p-4 bg-muted/50 rounded-lg">
+            <p className="text-sm text-muted-foreground">
+              By saving this profile, you agree to our Terms of Service and Privacy Policy. Your documents may be reviewed before activation.
+            </p>
+          </div>
+
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>) : (doctorProfile ? 'Update Profile' : 'Create Profile')}
           </Button>
         </form>
       </CardContent>

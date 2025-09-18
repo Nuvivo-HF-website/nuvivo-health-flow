@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2, Plus, X, Upload, Shield, Check, User as UserIcon } from "lucide-react"
+import { Loader2, Plus, X, Upload, Shield, Check, User as UserIcon, Trash2 } from "lucide-react"
 
 /*************************
  * Constants & Helpers
@@ -443,7 +443,12 @@ export function DoctorProfileForm() {
   }
   */
 
-  // --- Upload helpers ---
+  const handleAvatarRemove = () => {
+    setAvatarUrl('')
+    setFormData(prev => ({ ...prev, avatar_url: '' }))
+    toast({ title: 'Profile photo removed', description: 'Your avatar has been removed.' })
+  }
+
   const uploadToBucket = async (file: File, kind: 'indemnity' | 'dbs' | 'avatar') => {
     if (!user?.id) return null
     const bucket = 'provider_documents'
@@ -572,6 +577,18 @@ export function DoctorProfileForm() {
                 <UserIcon className="h-8 w-8 text-muted-foreground" />
               )}
             </div>
+            {avatarUrl && (
+              <Button
+                type="button"
+                size="sm"
+                variant="destructive"
+                className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full shadow"
+                onClick={handleAvatarRemove}
+                title="Remove profile photo"
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            )}
             <Button
               type="button"
               size="icon"

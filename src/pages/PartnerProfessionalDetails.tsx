@@ -345,8 +345,9 @@ export default function PartnerProfessionalDetails() {
               user_id: user.id,
               first_name: basicData.firstName || fullName.split(' ')[0] || '',
               last_name: basicData.lastName || fullName.split(' ').slice(1).join(' ') || '',
-              profession: professionalData.profession,
-              specializations: professionalData.specializations,
+              specialty: professionalData.specializations.length > 0 
+                ? professionalData.specializations.join(', ') 
+                : professionalData.profession,
               qualification: '', // Will be filled in profile later
               license_number: professionalData.gmcNumber,
               years_of_experience: null, // Will be filled in profile later
@@ -363,8 +364,6 @@ export default function PartnerProfessionalDetails() {
               available_days: availableDays,
               bio: professionalData.bio || '',
               languages: ['English'],
-              indemnity_document_url: '',
-              dbs_pvg_document_url: '',
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
             });

@@ -307,14 +307,20 @@ export function DoctorProfileForm() {
         setDbsUrl((data as any).dbs_pvg_document_url || '')
         setAvatarUrl((data as any).avatar_url || '')
 
+        const specialtiesArray = data.specialty ? data.specialty.split(',').map(s => s.trim()) : [];
+        const detectedProfession = PROFESSIONS.find(profession => 
+          specialtiesArray.some(spec => 
+            SPECIALIZATIONS_BY_PROFESSION[profession]?.includes(spec)
+          )
+        ) || 'Medical Specialist';
+
         setFormData({
           first_name: data.first_name || '',
           last_name: data.last_name || '',
           phone: data.phone || '',
           avatar_url: (data as any).avatar_url || '',
-          profession: (data as any).profession || '',
-          specializations: (data as any).specializations || [],
-          // specialty: data.specialty || '', // removed
+          profession: detectedProfession, // Detect profession from specializations
+          specializations: specialtiesArray, // Parse specialty into array
           qualification: data.qualification || '',
           license_number: data.license_number || (data as any).registration_number || '',
           years_of_experience: data.years_of_experience?.toString() || '',
@@ -345,9 +351,7 @@ export function DoctorProfileForm() {
             user_id: user.id,
             first_name: user.user_metadata?.full_name?.split(' ')[0] || '',
             last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-            profession: 'Medical Specialist',
-            specializations: (specialistData.specialty ? String(specialistData.specialty).split(',').map(s => s.trim()) : []),
-            // specialty: specialistData.specialty || '', // removed
+            specialty: 'Medical Specialist', // Map to specialty field
             qualification: '',
             license_number: specialistData.registration_number || '',
             years_of_experience: specialistData.experience_years || null,
@@ -363,10 +367,7 @@ export function DoctorProfileForm() {
             available_hours: { start: '09:00', end: '17:00' },
             available_days: specialistData.available_days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
             bio: specialistData.bio || '',
-            languages: ['English'],
-            indemnity_document_url: '',
-            dbs_pvg_document_url: '',
-            avatar_url: ''
+            languages: ['English']
           }
 
           const { data: newDoctorProfile, error: createError } = await doctorService.createDoctorProfile(doctorProfileData)
@@ -377,9 +378,8 @@ export function DoctorProfileForm() {
               last_name: doctorProfileData.last_name,
               phone: '',
               avatar_url: '',
-              profession: doctorProfileData.profession,
-              specializations: doctorProfileData.specializations,
-              // specialty: doctorProfileData.specialty,
+              profession: doctorProfileData.specialty, // Map specialty back to profession for form
+              specializations: [],
               qualification: doctorProfileData.qualification,
               license_number: doctorProfileData.license_number,
               years_of_experience: doctorProfileData.years_of_experience?.toString() || '',
@@ -500,10 +500,9 @@ export function DoctorProfileForm() {
         first_name: formData.first_name,
         last_name: formData.last_name,
         phone: formData.phone,
-        avatar_url: formData.avatar_url,
-        profession: formData.profession,
-        specializations: formData.specializations,
-        // specialty: formData.specialty, // removed
+        specialty: formData.specializations.length > 0 
+          ? formData.specializations.join(', ') 
+          : formData.profession, // Join specializations into specialty field
         qualification: formData.qualification,
         license_number: formData.license_number,
         years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : null,
@@ -524,9 +523,6 @@ export function DoctorProfileForm() {
 
         // Languages kept (not editable in UI currently)
         languages: formData.languages,
-
-        indemnity_document_url: formData.indemnity_document_url,
-        dbs_pvg_document_url: formData.dbs_pvg_document_url,
       }
 
       let result

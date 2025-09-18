@@ -225,7 +225,11 @@ export function DoctorProfileForm() {
   const dbsInputRef = useRef<HTMLInputElement | null>(null)
 
   // Slightly more visible fields (Input/Select/Textarea)
-  const fieldClass = "bg-white border border-muted-foreground/40 focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:border-primary/60 placeholder:text-muted-foreground/60"
+  
+  const fieldClass =
+  "bg-white border border-muted-foreground/40 focus:border-primary/60 " +
+  "outline-none focus:outline-none ring-0 focus:ring-0 focus-visible:ring-0";
+
   const dashedBoxClass = "border-2 border-dashed border-muted-foreground/40 hover:border-muted-foreground rounded-lg p-6 text-center cursor-pointer transition"
 
   const [formData, setFormData] = useState({

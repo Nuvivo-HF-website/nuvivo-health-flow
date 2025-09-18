@@ -357,6 +357,92 @@ export type Database = {
         }
         Relationships: []
       }
+      clinics: {
+        Row: {
+          address: string
+          certifications: string[] | null
+          city: string | null
+          clinic_name: string
+          clinic_type: string
+          created_at: string
+          description: string | null
+          facilities: string[] | null
+          id: string
+          is_active: boolean | null
+          is_verified: boolean | null
+          latitude: number | null
+          longitude: number | null
+          nhs_number: string | null
+          operating_hours: string | null
+          phone: string
+          rating: number | null
+          region: string
+          registration_number: string | null
+          services_offered: string[] | null
+          staff_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address: string
+          certifications?: string[] | null
+          city?: string | null
+          clinic_name: string
+          clinic_type: string
+          created_at?: string
+          description?: string | null
+          facilities?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          nhs_number?: string | null
+          operating_hours?: string | null
+          phone: string
+          rating?: number | null
+          region: string
+          registration_number?: string | null
+          services_offered?: string[] | null
+          staff_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          certifications?: string[] | null
+          city?: string | null
+          clinic_name?: string
+          clinic_type?: string
+          created_at?: string
+          description?: string | null
+          facilities?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          nhs_number?: string | null
+          operating_hours?: string | null
+          phone?: string
+          rating?: number | null
+          region?: string
+          registration_number?: string | null
+          services_offered?: string[] | null
+          staff_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       consultations: {
         Row: {
           appointment_date: string
@@ -1413,52 +1499,70 @@ export type Database = {
       }
       specialists: {
         Row: {
+          address: string | null
           available_days: string[] | null
           available_hours: Json | null
           bio: string | null
           booking_advance_days: number | null
+          clinic_name: string | null
           consultation_duration: number | null
           consultation_fee: number | null
           created_at: string
           experience_years: number | null
           id: string
           is_active: boolean | null
+          phone: string | null
           qualifications: string[] | null
+          rating: number | null
+          registration_number: string | null
           specialty: string
           updated_at: string
           user_id: string
+          verified: boolean | null
         }
         Insert: {
+          address?: string | null
           available_days?: string[] | null
           available_hours?: Json | null
           bio?: string | null
           booking_advance_days?: number | null
+          clinic_name?: string | null
           consultation_duration?: number | null
           consultation_fee?: number | null
           created_at?: string
           experience_years?: number | null
           id?: string
           is_active?: boolean | null
+          phone?: string | null
           qualifications?: string[] | null
+          rating?: number | null
+          registration_number?: string | null
           specialty: string
           updated_at?: string
           user_id: string
+          verified?: boolean | null
         }
         Update: {
+          address?: string | null
           available_days?: string[] | null
           available_hours?: Json | null
           bio?: string | null
           booking_advance_days?: number | null
+          clinic_name?: string | null
           consultation_duration?: number | null
           consultation_fee?: number | null
           created_at?: string
           experience_years?: number | null
           id?: string
           is_active?: boolean | null
+          phone?: string | null
           qualifications?: string[] | null
+          rating?: number | null
+          registration_number?: string | null
           specialty?: string
           updated_at?: string
           user_id?: string
+          verified?: boolean | null
         }
         Relationships: []
       }

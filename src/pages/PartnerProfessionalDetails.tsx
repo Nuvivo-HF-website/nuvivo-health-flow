@@ -14,6 +14,8 @@ import { useAuth } from "@/contexts/EnhancedAuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 interface FormData {
+  firstName: string;
+  lastName: string;
   fullName: string;
   clinicName: string;
   email: string;
@@ -253,8 +255,9 @@ export default function PartnerProfessionalDetails() {
 
       // Create user account
       const userType = basicData.accountType === 'clinic' ? 'clinic_staff' : 'doctor';
+      const fullName = `${basicData.firstName || ''} ${basicData.lastName || ''}`.trim() || basicData.fullName || basicData.email;
       const { error: signUpError } = await signUp(basicData.email, basicData.password, {
-        full_name: basicData.fullName,
+        full_name: fullName,
         user_type: userType
       });
 
@@ -297,12 +300,83 @@ export default function PartnerProfessionalDetails() {
           console.error('Role assignment error:', roleError);
         }
 
-        // Create specialist profile if individual account
+        // Create doctor profile if individual account - this will pre-fill the Profile page
         if (basicData.accountType === 'individual') {
           const availableDays = Object.entries(professionalData.availability)
             .filter(([_, config]) => config.enabled)
             .map(([day]) => day);
 
+          // Build available hours object with per-day times
+          const availableHours: any = {};
+          Object.entries(professionalData.availability).forEach(([day, config]) => {
+            if (config.enabled) {
+              availableHours[day] = { 
+                startTime: config.startTime, 
+                endTime: config.endTime 
+              };
+            }
+          });
+          
+          // Add global fallback
+          const firstEnabledDay = Object.values(professionalData.availability).find(config => config.enabled);
+          if (firstEnabledDay) {
+            availableHours.start = firstEnabledDay.startTime;
+            availableHours.end = firstEnabledDay.endTime;
+          } else {
+            availableHours.start = '09:00';
+            availableHours.end = '17:00';
+          }
+
+          // Parse clinic address if provided
+          let addressParts = { line1: '', line2: '', city: '', postcode: '' };
+          if (professionalData.clinicAddress) {
+            const parts = professionalData.clinicAddress.split(',').map(p => p.trim());
+            addressParts.line1 = parts[0] || '';
+            addressParts.line2 = parts[1] || '';
+            addressParts.city = parts[parts.length - 2] || '';
+            addressParts.postcode = parts[parts.length - 1] || '';
+          }
+
+          // Create doctor_profiles record with all registration data
+          const fullName = basicData.fullName || `${basicData.firstName || ''} ${basicData.lastName || ''}`.trim() || basicData.email;
+          const { error: doctorProfileError } = await supabase
+            .from('doctor_profiles')
+            .insert({
+              user_id: user.id,
+              first_name: basicData.firstName || fullName.split(' ')[0] || '',
+              last_name: basicData.lastName || fullName.split(' ').slice(1).join(' ') || '',
+              profession: professionalData.profession,
+              specializations: professionalData.specializations,
+              qualification: '', // Will be filled in profile later
+              license_number: professionalData.gmcNumber,
+              years_of_experience: null, // Will be filled in profile later
+              phone: basicData.mobile,
+              address_line_1: addressParts.line1,
+              address_line_2: addressParts.line2,
+              city: addressParts.city,
+              postcode: addressParts.postcode,
+              country: 'United Kingdom',
+              clinic_name: basicData.clinicName || '',
+              clinic_address: professionalData.clinicAddress || '',
+              consultation_fee: parseFloat(professionalData.servicePrice),
+              available_hours: availableHours,
+              available_days: availableDays,
+              bio: professionalData.bio || '',
+              languages: ['English'],
+              indemnity_document_url: '',
+              dbs_pvg_document_url: '',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+
+          if (doctorProfileError) {
+            console.error('Doctor profile creation error:', doctorProfileError);
+            // Don't fail registration if this fails - user can complete profile later
+          } else {
+            console.log('Doctor profile created successfully');
+          }
+
+          // Also create specialists record for backward compatibility
           const { error: specialistError } = await supabase
             .from('specialists')
             .insert({
@@ -313,11 +387,13 @@ export default function PartnerProfessionalDetails() {
               consultation_fee: parseFloat(professionalData.servicePrice),
               available_days: availableDays,
               registration_number: professionalData.gmcNumber,
-              is_active: true // Activate immediately for demo purposes
+              is_active: true
             });
 
           if (specialistError) {
             console.error('Specialist profile error:', specialistError);
+          } else {
+            console.log('Specialist profile created successfully');
           }
         }
       }

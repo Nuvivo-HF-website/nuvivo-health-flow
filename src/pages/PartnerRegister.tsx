@@ -66,6 +66,7 @@ export default function PartnerRegister() {
     // Store form data in sessionStorage and navigate to next step
     sessionStorage.setItem('partnerRegisterData', JSON.stringify({
       ...formData,
+      fullName: `${formData.firstName} ${formData.lastName}`.trim(),
       accountType
     }));
 

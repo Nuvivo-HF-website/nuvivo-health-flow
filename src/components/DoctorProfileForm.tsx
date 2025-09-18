@@ -15,7 +15,7 @@ import { Loader2, Plus, X, Upload, Shield, Check, User as UserIcon } from "lucid
 /*************************
  * Constants & Helpers
  *************************/
-// Removed MEDICAL_SPECIALTIES (not needed for this screen)
+
 
 const DAYS_OF_WEEK = [
   'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'

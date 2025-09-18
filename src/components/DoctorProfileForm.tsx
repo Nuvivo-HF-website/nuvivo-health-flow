@@ -607,11 +607,11 @@ export function DoctorProfileForm() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Personal Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="w-full">
                 <Label htmlFor="first_name">First Name</Label>
                 <Input id="first_name" className={fieldClass} value={formData.first_name} onChange={(e) => handleInputChange('first_name', e.target.value)} />
               </div>
-              <div>
+              <div className="w-full">
                 <Label htmlFor="last_name">Last Name</Label>
                 <Input id="last_name" className={fieldClass} value={formData.last_name} onChange={(e) => handleInputChange('last_name', e.target.value)} />
               </div>

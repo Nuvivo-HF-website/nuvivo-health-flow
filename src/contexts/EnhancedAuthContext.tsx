@@ -146,13 +146,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Create profile if user is created
       if (data.user && userData) {
+        const userType = userData.user_type || 'patient';
+        
         const { error: profileError } = await supabase
           .from('profiles')
           .insert({
             user_id: data.user.id,
             email: email,
             full_name: userData.full_name || email,
-            user_type: 'patient'
+            user_type: userType
           });
 
         if (profileError) {

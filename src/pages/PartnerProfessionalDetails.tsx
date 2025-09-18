@@ -284,126 +284,40 @@ export default function PartnerProfessionalDetails() {
           console.error('Profile update error:', profileError);
         }
 
-        // Add appropriate role (check if it already exists first)
+        // Add appropriate role
         const role = basicData.accountType === 'clinic' ? 'clinic_staff' : 'doctor';
-        const { data: existingRole } = await supabase
+        const { error: roleError } = await supabase
           .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .eq('role', role)
-          .maybeSingle();
+          .insert({
+            user_id: user.id,
+            role: role
+          });
 
-        if (!existingRole) {
-          const { error: roleError } = await supabase
-            .from('user_roles')
-            .insert({
-              user_id: user.id,
-              role: role
-            });
-
-          if (roleError) {
-            console.error('Role assignment error:', roleError);
-          } else {
-            console.log(`${role} role assigned successfully`);
-          }
-        } else {
-          console.log(`${role} role already exists for user`);
+        if (roleError) {
+          console.error('Role assignment error:', roleError);
         }
 
-        // Create specialist profile if individual account (check for existing first)
+        // Create specialist profile if individual account
         if (basicData.accountType === 'individual') {
           const availableDays = Object.entries(professionalData.availability)
             .filter(([_, config]) => config.enabled)
             .map(([day]) => day);
 
-          // Check if specialist profile already exists
-          const { data: existingSpecialist } = await supabase
+          const { error: specialistError } = await supabase
             .from('specialists')
-            .select('id')
-            .eq('user_id', user.id)
-            .maybeSingle();
+            .insert({
+              user_id: user.id,
+              specialty: professionalData.specializations.join(', '),
+              experience_years: 0,
+              bio: professionalData.bio || `${professionalData.profession} specializing in ${professionalData.specializations.join(', ')}`,
+              consultation_fee: parseFloat(professionalData.servicePrice),
+              available_days: availableDays,
+              registration_number: professionalData.gmcNumber,
+              is_active: true // Activate immediately for demo purposes
+            });
 
-          if (!existingSpecialist) {
-            const { error: specialistError } = await supabase
-              .from('specialists')
-              .insert({
-                user_id: user.id,
-                specialty: professionalData.specializations.join(', '),
-                experience_years: 0,
-                bio: professionalData.bio || `${professionalData.profession} specializing in ${professionalData.specializations.join(', ')}`,
-                consultation_fee: parseFloat(professionalData.servicePrice) || 0,
-                available_days: availableDays,
-                registration_number: professionalData.gmcNumber,
-                is_active: true // Activate immediately for demo purposes
-              });
-
-            if (specialistError) {
-              console.error('Specialist profile error:', specialistError);
-            } else {
-              console.log('Specialist profile created successfully');
-            }
-          } else {
-            console.log('Specialist profile already exists, skipping creation');
-          }
-
-          // Also create doctor_profiles record so "My Profile" page is pre-filled
-          const availableHours = Object.entries(professionalData.availability)
-            .filter(([_, config]) => config.enabled)
-            .reduce((acc, [day, config]) => {
-              acc[day] = { start: config.startTime, end: config.endTime };
-              return acc;
-            }, {} as Record<string, { start: string; end: string }>);
-
-          const [firstName, ...lastNameParts] = basicData.fullName.split(' ');
-          const lastName = lastNameParts.join(' ');
-
-          // Parse clinic address for individual address fields if possible (with null check)
-          const clinicAddress = professionalData.clinicAddress || '';
-          const addressParts = clinicAddress ? clinicAddress.split(',').map(part => part.trim()) : [];
-          const address_line_1 = addressParts[0] || '';
-          const address_line_2 = addressParts[1] || '';
-          const city = addressParts.length >= 3 ? addressParts[addressParts.length - 2] : '';
-          const postcode = addressParts.length >= 2 ? addressParts[addressParts.length - 1] : '';
-
-          // Check if doctor profile already exists
-          const { data: existingDoctorProfile } = await supabase
-            .from('doctor_profiles')
-            .select('id')
-            .eq('user_id', user.id)
-            .maybeSingle();
-
-          if (!existingDoctorProfile) {
-            const { error: doctorProfileError } = await supabase
-              .from('doctor_profiles')
-              .insert({
-                user_id: user.id,
-                first_name: firstName,
-                last_name: lastName,
-                profession: professionalData.profession, // Correct field for profession
-                specializations: professionalData.specializations, // Store as array
-                specialty: professionalData.profession, // Keep for backward compatibility
-                qualification: professionalData.specializations.join(', '), // Keep for backward compatibility
-                license_number: professionalData.gmcNumber,
-                bio: professionalData.bio || `${professionalData.profession} specializing in ${professionalData.specializations.join(', ')}`,
-                consultation_fee: parseFloat(professionalData.servicePrice) || 0,
-                available_days: availableDays,
-                available_hours: Object.keys(availableHours).length > 0 ? availableHours : { start: "09:00", end: "17:00" },
-                clinic_name: basicData.clinicName || '',
-                clinic_address: clinicAddress,
-                address_line_1: address_line_1,
-                address_line_2: address_line_2,
-                city: city,
-                postcode: postcode,
-                phone: basicData.mobile || ''
-              });
-
-            if (doctorProfileError) {
-              console.error('Doctor profile error:', doctorProfileError);
-            } else {
-              console.log('Doctor profile created successfully');
-            }
-          } else {
-            console.log('Doctor profile already exists, skipping creation');
+          if (specialistError) {
+            console.error('Specialist profile error:', specialistError);
           }
         }
       }

@@ -148,39 +148,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.user && userData) {
         const userType = userData.user_type || 'patient';
         
-        // Check if profile already exists first
-        const { data: existingProfile } = await supabase
+        const { error: profileError } = await supabase
           .from('profiles')
-          .select('id')
-          .eq('user_id', data.user.id)
-          .maybeSingle();
+          .insert({
+            user_id: data.user.id,
+            email: email,
+            full_name: userData.full_name || email,
+            user_type: userType
+          });
 
-        if (!existingProfile) {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert({
-              user_id: data.user.id,
-              email: email,
-              full_name: userData.full_name || email,
-              user_type: userType
-            });
-
-          if (profileError) {
-            console.error('Error creating profile:', profileError);
-          } else {
-            console.log('Profile created successfully');
-          }
-        } else {
-          console.log('Profile already exists, updating user_type if needed');
-          // Update the existing profile's user_type if different
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({ user_type: userType })
-            .eq('user_id', data.user.id);
-          
-          if (updateError) {
-            console.error('Error updating profile:', updateError);
-          }
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
         }
       }
 

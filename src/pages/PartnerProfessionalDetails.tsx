@@ -331,20 +331,34 @@ export default function PartnerProfessionalDetails() {
           const [firstName, ...lastNameParts] = basicData.fullName.split(' ');
           const lastName = lastNameParts.join(' ');
 
+          // Parse clinic address for individual address fields if possible
+          const addressParts = professionalData.clinicAddress.split(',').map(part => part.trim());
+          const address_line_1 = addressParts[0] || '';
+          const address_line_2 = addressParts[1] || '';
+          const city = addressParts[addressParts.length - 2] || '';
+          const postcode = addressParts[addressParts.length - 1] || '';
+
           const { error: doctorProfileError } = await supabase
             .from('doctor_profiles')
             .insert({
               user_id: user.id,
               first_name: firstName,
               last_name: lastName,
-              specialty: professionalData.profession,
-              qualification: professionalData.specializations.join(', '),
+              profession: professionalData.profession, // Correct field for profession
+              specializations: professionalData.specializations, // Store as array
+              specialty: professionalData.profession, // Keep for backward compatibility
+              qualification: professionalData.specializations.join(', '), // Keep for backward compatibility
               license_number: professionalData.gmcNumber,
               bio: professionalData.bio || `${professionalData.profession} specializing in ${professionalData.specializations.join(', ')}`,
               consultation_fee: parseFloat(professionalData.servicePrice),
               available_days: availableDays,
-              available_hours: { start: "09:00", end: "17:00" }, // Default hours
+              available_hours: Object.keys(availableHours).length > 0 ? availableHours : { start: "09:00", end: "17:00" },
+              clinic_name: basicData.clinicName,
               clinic_address: professionalData.clinicAddress,
+              address_line_1: address_line_1,
+              address_line_2: address_line_2,
+              city: city,
+              postcode: postcode,
               phone: basicData.mobile
             });
 

@@ -641,9 +641,7 @@ export function DoctorProfileForm() {
                 </Select>
               </div>
 
-              {/* Removed Medical Specialty field */}
-
-              {/* Qualification */}
+             {/* Qualification */}
               <div>
                 <Label htmlFor="qualification">Qualification</Label>
                 <Input id="qualification" className={fieldClass} value={formData.qualification} onChange={(e) => handleInputChange('qualification', e.target.value)} placeholder="e.g., MBBS, MD" />

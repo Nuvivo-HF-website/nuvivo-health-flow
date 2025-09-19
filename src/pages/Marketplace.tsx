@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, MapPin, Calendar, Heart, MessageCircle, Search, Filter, Clock, Verified } from "lucide-react";
+import { Star, MapPin, Search, Filter, Clock } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 
 interface Doctor {
   id: string;
+  userId: string; // <-- added so we can message the right user
   name: string;
   specialty: string;
   location: string;
@@ -25,8 +26,8 @@ interface Doctor {
   price: string;
   nextAvailable: string;
   tags: string[];
-  followers: number;
-  posts: number;
+  // followers: number;   // commented out
+  // posts: number;       // commented out
   bio: string;
   hospital: string;
   gmcNumber?: string;
@@ -42,40 +43,61 @@ export default function Marketplace() {
 
   const specialties = [
     "All Specialties",
-    "Cardiology", 
+    "Cardiology",
     "Dermatology",
     "Endocrinology",
     "Neurology",
-    "Psychiatry", 
+    "Psychiatry",
     "Orthopedics",
     "Gastroenterology",
     "Pulmonology",
     "Ophthalmology",
     "Urology",
-    "Rheumatology"
+    "Rheumatology",
   ];
 
   useEffect(() => {
     fetchDoctors();
   }, []);
 
+  const getSignedAvatarUrl = async (maybePath?: string) => {
+    if (!maybePath) return "/placeholder.svg";
+    // If it’s already a full URL, just use it.
+    if (/^https?:\/\//i.test(maybePath)) return maybePath;
+
+    // Otherwise, treat it as a storage path in the private "avatars" bucket.
+    // Adjust the bucket name if yours is different (e.g., "profile-avatars").
+    try {
+      const { data, error } = await supabase
+        .storage
+        .from("avatars")
+        .createSignedUrl(maybePath, 60 * 60); // 1 hour
+
+      if (error || !data?.signedUrl) return "/placeholder.svg";
+      return data.signedUrl;
+    } catch {
+      return "/placeholder.svg";
+    }
+  };
+
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      
-      // Fetch specialists and then get their profile data separately
+
+      // 1) Specialists
       const { data: specialists, error: specialistsError } = await supabase
-        .from('specialists')
-        .select('*')
-        .eq('is_active', true);
+        .from("specialists")
+        .select("*")
+        .eq("is_active", true);
 
       if (specialistsError) {
-        console.error('Error fetching specialists:', specialistsError);
+        console.error("Error fetching specialists:", specialistsError);
         toast({
           title: "Error",
           description: "Failed to load doctors. Please try again later.",
-          variant: "destructive"
+          variant: "destructive",
         });
+        setDoctors([]);
         return;
       }
 
@@ -84,85 +106,101 @@ export default function Marketplace() {
         return;
       }
 
-      // Get user IDs to fetch profiles
-      const userIds = specialists.map(s => s.user_id);
-      
+      // 2) Profiles (include avatar fields!)
+      const userIds = specialists.map((s: any) => s.user_id);
       const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('user_id, full_name, email')
-        .in('user_id', userIds);
+        .from("profiles")
+        .select("user_id, full_name, email, avatar_url") // <-- avatar_url expected here
+        .in("user_id", userIds);
 
       if (profilesError) {
-        console.error('Error fetching profiles:', profilesError);
+        console.error("Error fetching profiles:", profilesError);
         toast({
           title: "Error",
           description: "Failed to load doctor profiles. Please try again later.",
-          variant: "destructive"
+          variant: "destructive",
         });
         return;
       }
 
-      // Create a map for quick profile lookup
-      const profileMap = new Map();
-      profiles?.forEach(profile => {
-        profileMap.set(profile.user_id, profile);
-      });
+      const profileMap = new Map<string, any>();
+      profiles?.forEach((p: any) => profileMap.set(p.user_id, p));
 
-      // Transform the data to match the expected Doctor interface
-      const transformedDoctors: Doctor[] = specialists.map((specialist: any, index) => {
-        const profile = profileMap.get(specialist.user_id);
-        return {
-          id: specialist.id,
-          name: profile?.full_name || `Dr. ${profile?.email?.split('@')[0] || 'Unknown'}`,
-          specialty: specialist.specialty || 'General Practice',
-          location: specialist.address || 'UK',
-          rating: specialist.rating || 4.5,
-          reviews: Math.floor(Math.random() * 200) + 50, // Random reviews for now
-          experience: `${specialist.experience_years || 0}+ years`,
-          avatar: "/placeholder.svg",
-          isVerified: specialist.verified || false,
-          isOnline: Math.random() > 0.5, // Random online status
-          price: `£${specialist.consultation_fee || 100}/consultation`,
-          nextAvailable: index % 3 === 0 ? "Today 3:00 PM" : index % 3 === 1 ? "Tomorrow 10:00 AM" : "Wed 2:00 PM",
-          tags: specialist.specialty ? specialist.specialty.split(', ').slice(0, 3) : [],
-          followers: Math.floor(Math.random() * 2000) + 100,
-          posts: Math.floor(Math.random() * 200) + 50,
-          bio: specialist.bio || `Specialist in ${specialist.specialty}`,
-          hospital: specialist.clinic_name || 'Private Practice',
-          gmcNumber: specialist.registration_number
-        };
-      });
+      // 3) Build doctors with signed avatar URLs
+      const transformedDoctors: Doctor[] = await Promise.all(
+        specialists.map(async (specialist: any, index: number) => {
+          const profile = profileMap.get(specialist.user_id);
+          const displayName =
+            profile?.full_name ||
+            `Dr. ${profile?.email?.split("@")[0] || "Unknown"}`;
+
+          const avatar = await getSignedAvatarUrl(profile?.avatar_url);
+
+          return {
+            id: specialist.id,
+            userId: specialist.user_id,
+            name: displayName,
+            specialty: specialist.specialty || "General Practice",
+            location: specialist.address || "UK",
+            rating: specialist.rating || 4.5,
+            reviews: Math.floor(Math.random() * 200) + 50,
+            experience: `${specialist.experience_years || 0}+ years`,
+            avatar,
+            isVerified: specialist.verified || false,
+            isOnline: Math.random() > 0.5,
+            price: `£${specialist.consultation_fee || 100}/consultation`,
+            nextAvailable:
+              index % 3 === 0
+                ? "Today 3:00 PM"
+                : index % 3 === 1
+                ? "Tomorrow 10:00 AM"
+                : "Wed 2:00 PM",
+            tags: specialist.specialty
+              ? String(specialist.specialty).split(", ").slice(0, 3)
+              : [],
+            // followers: Math.floor(Math.random() * 2000) + 100, // commented out
+            // posts: Math.floor(Math.random() * 200) + 50,       // commented out
+            bio: specialist.bio || `Specialist in ${specialist.specialty}`,
+            hospital: specialist.clinic_name || "Private Practice",
+            gmcNumber: specialist.registration_number,
+          };
+        })
+      );
 
       setDoctors(transformedDoctors);
     } catch (error) {
-      console.error('Error fetching doctors:', error);
+      console.error("Error fetching doctors:", error);
       toast({
         title: "Error",
         description: "Failed to load doctors. Please try again later.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredDoctors = doctors.filter(doctor => {
-    const matchesSearch = searchTerm === "" || 
+  const filteredDoctors = doctors.filter((doctor) => {
+    const matchesSearch =
+      searchTerm === "" ||
       doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doctor.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesSpecialty = selectedSpecialty === "" || 
-      selectedSpecialty === "All Specialties" || 
+      doctor.tags.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+    const matchesSpecialty =
+      selectedSpecialty === "" ||
+      selectedSpecialty === "All Specialties" ||
       doctor.specialty === selectedSpecialty;
-    
+
     return matchesSearch && matchesSpecialty;
   });
 
   const toggleLike = (doctorId: string) => {
-    setLikedDoctors(prev => 
-      prev.includes(doctorId) 
-        ? prev.filter(id => id !== doctorId)
+    setLikedDoctors((prev) =>
+      prev.includes(doctorId)
+        ? prev.filter((id) => id !== doctorId)
         : [...prev, doctorId]
     );
   };
@@ -170,7 +208,7 @@ export default function Marketplace() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
@@ -199,8 +237,11 @@ export default function Marketplace() {
                 onChange={(e) => setSelectedSpecialty(e.target.value)}
                 className="px-3 py-2 border border-input bg-background rounded-md text-sm"
               >
-                {specialties.map(specialty => (
-                  <option key={specialty} value={specialty === "All Specialties" ? "" : specialty}>
+                {specialties.map((specialty) => (
+                  <option
+                    key={specialty}
+                    value={specialty === "All Specialties" ? "" : specialty}
+                  >
                     {specialty}
                   </option>
                 ))}
@@ -214,7 +255,10 @@ export default function Marketplace() {
             {searchTerm && (
               <Badge variant="secondary" className="gap-1">
                 Search: "{searchTerm}"
-                <button onClick={() => setSearchTerm("")} className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5">
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
                   ×
                 </button>
               </Badge>
@@ -222,7 +266,10 @@ export default function Marketplace() {
             {selectedSpecialty && (
               <Badge variant="secondary" className="gap-1">
                 {selectedSpecialty}
-                <button onClick={() => setSelectedSpecialty("")} className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5">
+                <button
+                  onClick={() => setSelectedSpecialty("")}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
                   ×
                 </button>
               </Badge>
@@ -270,11 +317,11 @@ export default function Marketplace() {
                         <Avatar className="h-12 w-12">
                           <AvatarImage src={doctor.avatar} alt={doctor.name} />
                           <AvatarFallback className="text-sm font-semibold">
-                            {doctor.name.split(' ').map(n => n[0]).join('')}
+                            {doctor.name.split(" ").map((n) => n[0]).join("")}
                           </AvatarFallback>
                         </Avatar>
                         {doctor.isOnline && (
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full"></div>
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full" />
                         )}
                       </div>
                       <div>
@@ -286,22 +333,22 @@ export default function Marketplace() {
                       onClick={() => toggleLike(doctor.id)}
                       className="p-1 hover:bg-muted rounded-full transition-colors"
                     >
-                      <Heart 
+                      <svg
                         className={`h-5 w-5 ${
-                          likedDoctors.includes(doctor.id) 
-                            ? 'fill-red-500 text-red-500' 
-                            : 'text-muted-foreground'
-                        }`} 
-                      />
+                          likedDoctors.includes(doctor.id)
+                            ? "fill-red-500 text-red-500"
+                            : "text-muted-foreground"
+                        }`}
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 21s-6.716-4.35-9.384-7.017C.948 12.315 1 9.5 3.343 7.157a4.8 4.8 0 0 1 6.788 0L12 9.025l1.869-1.868a4.8 4.8 0 0 1 6.788 6.788C18.716 16.65 12 21 12 21z" />
+                      </svg>
                     </button>
                   </div>
 
-                  {/* Bio with GMC number */}
+                  {/* Bio (without GMC here) */}
                   <div className="text-sm text-muted-foreground">
                     <p>{doctor.bio}</p>
-                    {doctor.gmcNumber && (
-                      <p className="mt-1">GMC Number: {doctor.gmcNumber}</p>
-                    )}
                   </div>
 
                   {/* Rating and Location */}
@@ -326,11 +373,10 @@ export default function Marketplace() {
                     ))}
                   </div>
 
-                  {/* Stats */}
+                  {/* Experience + GMC (followers/posts removed) */}
                   <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                    <span>{doctor.followers} followers</span>
-                    <span>{doctor.posts} posts</span>
                     <span>{doctor.experience}</span>
+                    {doctor.gmcNumber && <span>GMC: {doctor.gmcNumber}</span>}
                   </div>
 
                   {/* Availability */}
@@ -341,15 +387,20 @@ export default function Marketplace() {
 
                   {/* Action Buttons */}
                   <div className="flex gap-3 pt-2">
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       className="flex-1"
                       onClick={() => navigate(`/booking?doctor=${doctor.id}`)}
                     >
                       Book Consultation
                     </Button>
-                    <Button size="sm" variant="outline" className="flex-1">
-                      View Details
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => navigate(`/messages/new?to=${doctor.userId}`)}
+                    >
+                      Message
                     </Button>
                   </div>
                 </div>

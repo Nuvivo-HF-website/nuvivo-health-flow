@@ -847,7 +847,7 @@ export function DoctorProfileForm() {
           </div>
           */}
 
-          {/* Payment Setup Notice */}
+          {/* Payment Setup Notice 
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Payment Setup</h3>
             <div className="p-4 bg-muted/50 rounded-lg">
@@ -855,7 +855,7 @@ export function DoctorProfileForm() {
                 Payment processing will be set up via Stripe Connect after your application is approved. You'll receive a secure link to complete your payment details.
               </p>
             </div>
-          </div>
+          </div> */}
 
           {/* Terms */}
           <div className="p-4 bg-muted/50 rounded-lg">

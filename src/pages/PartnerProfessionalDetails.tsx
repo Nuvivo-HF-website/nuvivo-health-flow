@@ -330,11 +330,27 @@ export default function PartnerProfessionalDetails() {
           // Parse clinic address if provided
           let addressParts = { line1: '', line2: '', city: '', postcode: '' };
           if (professionalData.clinicAddress) {
-            const parts = professionalData.clinicAddress.split(',').map(p => p.trim());
-            addressParts.line1 = parts[0] || '';
-            addressParts.line2 = parts[1] || '';
-            addressParts.city = parts[parts.length - 2] || '';
-            addressParts.postcode = parts[parts.length - 1] || '';
+            const parts = professionalData.clinicAddress.split(',').map(p => p.trim()).filter(p => p);
+            if (parts.length >= 1) addressParts.line1 = parts[0];
+            if (parts.length >= 2) {
+              // If we have 3+ parts, second part is address line 2, third is city
+              // If we have exactly 2 parts, second part is likely city/postcode combined
+              if (parts.length >= 3) {
+                addressParts.line2 = parts[1];
+                addressParts.city = parts[2];
+                if (parts.length >= 4) addressParts.postcode = parts[3];
+              } else {
+                // Try to detect if second part contains postcode pattern
+                const secondPart = parts[1];
+                const postcodeMatch = secondPart.match(/([A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})$/i);
+                if (postcodeMatch) {
+                  addressParts.city = secondPart.replace(postcodeMatch[0], '').trim();
+                  addressParts.postcode = postcodeMatch[0].trim();
+                } else {
+                  addressParts.city = secondPart;
+                }
+              }
+            }
           }
 
           // Create doctor_profiles record with all registration data

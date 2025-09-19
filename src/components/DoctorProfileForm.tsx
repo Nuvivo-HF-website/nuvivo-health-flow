@@ -307,20 +307,35 @@ export function DoctorProfileForm() {
         setDbsUrl((data as any).dbs_pvg_document_url || '')
         setAvatarUrl((data as any).avatar_url || '')
 
-        const specialtiesArray = data.specialty ? data.specialty.split(',').map(s => s.trim()) : [];
-        const detectedProfession = PROFESSIONS.find(profession => 
-          specialtiesArray.some(spec => 
-            SPECIALIZATIONS_BY_PROFESSION[profession]?.includes(spec)
-          )
-        ) || 'Medical Specialist';
+        // Handle specialty field - it might contain profession name or comma-separated specializations
+        let specialtiesArray: string[] = [];
+        let detectedProfession = 'Medical Specialist';
+        
+        if (data.specialty) {
+          const specialtyValue = data.specialty.trim();
+          // Check if specialty field contains a profession name
+          if (PROFESSIONS.includes(specialtyValue)) {
+            detectedProfession = specialtyValue;
+            specialtiesArray = [];
+          } else {
+            // It's a comma-separated list of specializations
+            specialtiesArray = specialtyValue.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            // Try to detect profession from specializations
+            detectedProfession = PROFESSIONS.find(profession => 
+              specialtiesArray.some(spec => 
+                SPECIALIZATIONS_BY_PROFESSION[profession]?.includes(spec)
+              )
+            ) || 'Medical Specialist';
+          }
+        }
 
         setFormData({
           first_name: data.first_name || '',
           last_name: data.last_name || '',
           phone: data.phone || '',
           avatar_url: (data as any).avatar_url || '',
-          profession: detectedProfession, // Detect profession from specializations
-          specializations: specialtiesArray, // Parse specialty into array
+          profession: detectedProfession, // Use the properly detected profession
+          specializations: specialtiesArray, // Use the properly parsed specializations
           qualification: data.qualification || '',
           license_number: data.license_number || (data as any).registration_number || '',
           years_of_experience: data.years_of_experience?.toString() || '',

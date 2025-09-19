@@ -12,20 +12,24 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2, Plus, X, Upload, Shield, Check, User as UserIcon, Trash2 } from "lucide-react"
 
+/**
+ * NOTE (backend flags used below):
+ * - doctor_profiles.is_marketplace_ready (boolean)
+ * - doctor_profiles.verification_status ('incomplete' | 'pending_review' | 'approved' | 'rejected')
+ * - doctor_profiles.is_active (boolean)
+ * Ensure marketplace queries filter to only show approved/active providers:
+ *   where is_marketplace_ready = true and verification_status = 'approved' and is_active = true
+ */
+
 /*************************
  * Constants & Helpers
  *************************/
 
+const STORAGE_BUCKET = 'provider_documents' // keep your existing bucket name
 
 const DAYS_OF_WEEK = [
   'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
 ]
-
-/** Commented out languages for now
-const LANGUAGES = [
-  'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 'Arabic', 'Hindi', 'Mandarin', 'Other'
-]
-*/
 
 const days = [
   { key: "monday", label: "Monday" },
@@ -212,7 +216,6 @@ export function DoctorProfileForm() {
   const [loading, setLoading] = useState(false)
   const [profileLoading, setProfileLoading] = useState(true)
   const [doctorProfile, setDoctorProfile] = useState<DoctorProfile | null>(null)
-  // const [newLanguage, setNewLanguage] = useState('') // commented: Languages off for now
 
   // Avatar upload state
   const [avatarUrl, setAvatarUrl] = useState<string>('')
@@ -224,8 +227,13 @@ export function DoctorProfileForm() {
   const indemnityInputRef = useRef<HTMLInputElement | null>(null)
   const dbsInputRef = useRef<HTMLInputElement | null>(null)
 
+  // Upload single-flight guard
+  const [uploadingKind, setUploadingKind] = useState<null | 'indemnity' | 'dbs' | 'avatar'>(null)
+
+  // Missing requirements (for banner + gating)
+  const [missing, setMissing] = useState<string[]>([])
+
   // Slightly more visible fields (Input/Select/Textarea)
-  
   const fieldClass =
   "bg-white border border-muted-foreground/40 focus:border-primary/60 " +
   "outline-none focus:outline-none ring-0 focus:ring-0 focus-visible:ring-0";
@@ -237,12 +245,11 @@ export function DoctorProfileForm() {
     first_name: '',
     last_name: '',
     phone: '',
-    avatar_url: '',
+    avatar_url: '', // store storage object path (preferred) or public URL
 
     // Profession & regs
     profession: '',
     specializations: [] as string[],
-    // specialty: '',  // removed from UI
     qualification: '',
     license_number: '', // GMC/NMC/HCPC/BACP etc.
     years_of_experience: '',
@@ -258,7 +265,7 @@ export function DoctorProfileForm() {
     address_line_2: '',
     city: '',
     postcode: '',
-    country: 'United Kingdom', // kept in data, UI commented out for now
+    country: 'United Kingdom',
 
     // Availability
     availability: {
@@ -271,13 +278,38 @@ export function DoctorProfileForm() {
       sunday: { enabled: false, startTime: '09:00', endTime: '17:00' },
     },
 
-    // Languages (commented UI)
+    // Languages (not editable in UI currently)
     languages: ['English'],
 
-    // Documents (URLs after upload)
+    // Documents (store STORAGE OBJECT PATH, not public URL)
     indemnity_document_url: '',
     dbs_pvg_document_url: '',
   })
+
+  // Compute missing requirements (called on form changes)
+  const computeMissing = (fd: typeof formData) => {
+    const out: string[] = []
+
+    if (!fd.first_name?.trim()) out.push('First name')
+    if (!fd.last_name?.trim()) out.push('Last name')
+
+    if (!fd.profession) out.push('Profession')
+    if (!fd.license_number?.trim()) out.push(getRegistrationBodyInfo(fd.profession).label)
+    if (!fd.consultation_fee || Number(fd.consultation_fee) <= 0) out.push('Consultation fee')
+
+    const specs = SPECIALIZATIONS_BY_PROFESSION[fd.profession] || []
+    if (specs.length > 0 && fd.specializations.length === 0) {
+      out.push('At least one specialization')
+    }
+
+    const hasAnyDay = Object.values(fd.availability).some(d => d.enabled)
+    if (!hasAnyDay) out.push('Availability (enable at least one day)')
+
+    if (!fd.indemnity_document_url) out.push('Indemnity Insurance document')
+    if (!fd.dbs_pvg_document_url) out.push('DBS/PVG document')
+
+    return out
+  }
 
   const currentRegInfo = getRegistrationBodyInfo(formData.profession)
   const getCurrentSpecializations = () => SPECIALIZATIONS_BY_PROFESSION[formData.profession] || []
@@ -288,6 +320,19 @@ export function DoctorProfileForm() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id])
+
+  useEffect(() => {
+    setMissing(computeMissing(formData))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(formData)])
+
+  // Helper: sign a storage object path for temporary display
+  const signIfPath = async (maybePath: string | undefined | null) => {
+    if (!maybePath) return ''
+    if (/^https?:\/\//i.test(maybePath)) return maybePath
+    const { data } = await supabase.storage.from(STORAGE_BUCKET).createSignedUrl(maybePath, 60 * 60 * 24 * 7) // 7 days
+    return data?.signedUrl || ''
+  }
 
   const loadDoctorProfile = async () => {
     if (!user?.id) return
@@ -303,9 +348,10 @@ export function DoctorProfileForm() {
           ? availableHours 
           : { start: '09:00', end: '17:00' }
 
-        setIndemnityUrl((data as any).indemnity_document_url || '')
-        setDbsUrl((data as any).dbs_pvg_document_url || '')
-        setAvatarUrl((data as any).avatar_url || '')
+        // Signed display URLs from stored paths/urls
+        setIndemnityUrl(await signIfPath((data as any).indemnity_document_url || ''))
+        setDbsUrl(await signIfPath((data as any).dbs_pvg_document_url || ''))
+        setAvatarUrl(await signIfPath((data as any).avatar_url || ''))
 
         // Handle specialty field - it might contain profession name or comma-separated specializations
         let specialtiesArray: string[] = [];
@@ -313,14 +359,11 @@ export function DoctorProfileForm() {
         
         if (data.specialty) {
           const specialtyValue = data.specialty.trim();
-          // Check if specialty field contains a profession name
           if (PROFESSIONS.includes(specialtyValue)) {
             detectedProfession = specialtyValue;
             specialtiesArray = [];
           } else {
-            // It's a comma-separated list of specializations
             specialtiesArray = specialtyValue.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            // Try to detect profession from specializations
             detectedProfession = PROFESSIONS.find(profession => 
               specialtiesArray.some(spec => 
                 SPECIALIZATIONS_BY_PROFESSION[profession]?.includes(spec)
@@ -329,13 +372,14 @@ export function DoctorProfileForm() {
           }
         }
 
-        setFormData({
+        setFormData(prev => ({
+          ...prev,
           first_name: data.first_name || '',
           last_name: data.last_name || '',
           phone: data.phone || '',
-          avatar_url: (data as any).avatar_url || '',
-          profession: detectedProfession, // Use the properly detected profession
-          specializations: specialtiesArray, // Use the properly parsed specializations
+          avatar_url: (data as any).avatar_url || '', // keep path if stored
+          profession: detectedProfession,
+          specializations: specialtiesArray,
           qualification: data.qualification || '',
           license_number: data.license_number || (data as any).registration_number || '',
           years_of_experience: data.years_of_experience?.toString() || '',
@@ -352,7 +396,7 @@ export function DoctorProfileForm() {
           languages: (data as any).languages || ['English'],
           indemnity_document_url: (data as any).indemnity_document_url || '',
           dbs_pvg_document_url: (data as any).dbs_pvg_document_url || '',
-        })
+        }))
       } else {
         // Attempt migration from specialists table if no doctor profile exists
         const { data: specialistData, error: specialistError } = await supabase
@@ -366,7 +410,7 @@ export function DoctorProfileForm() {
             user_id: user.id,
             first_name: user.user_metadata?.full_name?.split(' ')[0] || '',
             last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-            specialty: 'Medical Specialist', // Map to specialty field
+            specialty: 'Medical Specialist',
             qualification: '',
             license_number: specialistData.registration_number || '',
             years_of_experience: specialistData.experience_years || null,
@@ -382,18 +426,22 @@ export function DoctorProfileForm() {
             available_hours: { start: '09:00', end: '17:00' },
             available_days: specialistData.available_days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
             bio: specialistData.bio || '',
-            languages: ['English']
+            languages: ['English'],
+            is_marketplace_ready: false,
+            verification_status: 'incomplete',
+            is_active: false
           }
 
           const { data: newDoctorProfile, error: createError } = await doctorService.createDoctorProfile(doctorProfileData)
           if (!createError && newDoctorProfile) {
             setDoctorProfile(newDoctorProfile)
-            setFormData({
+            setFormData(prev => ({
+              ...prev,
               first_name: doctorProfileData.first_name,
               last_name: doctorProfileData.last_name,
               phone: '',
               avatar_url: '',
-              profession: doctorProfileData.specialty, // Map specialty back to profession for form
+              profession: doctorProfileData.specialty,
               specializations: [],
               qualification: doctorProfileData.qualification,
               license_number: doctorProfileData.license_number,
@@ -411,7 +459,7 @@ export function DoctorProfileForm() {
               languages: doctorProfileData.languages,
               indemnity_document_url: '',
               dbs_pvg_document_url: ''
-            })
+            }))
           }
         }
       }
@@ -445,57 +493,80 @@ export function DoctorProfileForm() {
     }))
   }
 
-  /** Commented out languages for now
-  const addLanguage = () => {
-    if (newLanguage.trim() && !formData.languages.includes(newLanguage.trim())) {
-      setFormData(prev => ({ ...prev, languages: [...prev.languages, newLanguage.trim()] }))
-      setNewLanguage('')
-    }
-  }
-
-  const removeLanguage = (language: string) => {
-    setFormData(prev => ({ ...prev, languages: prev.languages.filter(l => l !== language) }))
-  }
-  */
-
-  const handleAvatarRemove = () => {
+  const handleAvatarRemove = async () => {
     setAvatarUrl('')
     setFormData(prev => ({ ...prev, avatar_url: '' }))
     toast({ title: 'Profile photo removed', description: 'Your avatar has been removed.' })
   }
 
+  // Secure upload with type/size checks, randomized safe name, single-flight guard, and signed display URL
   const uploadToBucket = async (file: File, kind: 'indemnity' | 'dbs' | 'avatar') => {
     if (!user?.id) return null
-    const bucket = 'provider_documents'
-    const prefix = kind === 'avatar' ? 'avatar' : kind
-    const path = `${user.id}/${prefix}-${Date.now()}-${file.name}`
-    const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: false })
-    if (error) {
-      toast({ title: 'Upload failed', description: error.message, variant: 'destructive' })
+
+    const MAX_BYTES = 10 * 1024 * 1024 // 10MB
+    const ALLOW_MIME = kind === 'avatar'
+      ? ['image/jpeg', 'image/png']
+      : ['application/pdf', 'image/jpeg', 'image/png']
+
+    if (!ALLOW_MIME.includes(file.type)) {
+      toast({ title: 'Upload blocked', description: 'Unsupported file type.', variant: 'destructive' })
       return null
     }
-    const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path)
-    return pub?.publicUrl || null
+    if (file.size > MAX_BYTES) {
+      toast({ title: 'File too large', description: 'Max size is 10MB.', variant: 'destructive' })
+      return null
+    }
+
+    const ext = file.name.includes('.') ? file.name.substring(file.name.lastIndexOf('.')) : ''
+    const uuid = (globalThis as any)?.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`
+    const safeName = `${uuid}${ext.replace(/[^.\w-]/g, '')}`
+
+    const prefix = kind === 'avatar' ? 'avatar' : kind
+    const objectPath = `${user.id}/${prefix}-${safeName}`
+
+    try {
+      const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(objectPath, file, {
+        upsert: false,
+        contentType: file.type,
+        cacheControl: '3600',
+      })
+      if (error) {
+        toast({ title: 'Upload failed', description: error.message, variant: 'destructive' })
+        return null
+      }
+      return objectPath // store the path in DB; we will sign for display
+    } catch (e: any) {
+      toast({ title: 'Upload error', description: e?.message || 'Unexpected error', variant: 'destructive' })
+      return null
+    }
   }
 
   const handleFilePick = async (e: React.ChangeEvent<HTMLInputElement>, kind: 'indemnity' | 'dbs' | 'avatar') => {
+    if (uploadingKind) return
     const file = e.target.files?.[0]
     if (!file) return
-    const url = await uploadToBucket(file, kind)
-    if (!url) return
+    try {
+      setUploadingKind(kind)
+      const path = await uploadToBucket(file, kind)
+      if (!path) return
+      const signed = await signIfPath(path)
 
-    if (kind === 'indemnity') {
-      setIndemnityUrl(url)
-      setFormData(prev => ({ ...prev, indemnity_document_url: url }))
-      toast({ title: 'Document uploaded', description: 'Indemnity insurance uploaded successfully.' })
-    } else if (kind === 'dbs') {
-      setDbsUrl(url)
-      setFormData(prev => ({ ...prev, dbs_pvg_document_url: url }))
-      toast({ title: 'Document uploaded', description: 'DBS/PVG uploaded successfully.' })
-    } else {
-      setAvatarUrl(url)
-      setFormData(prev => ({ ...prev, avatar_url: url }))
-      toast({ title: 'Profile photo updated', description: 'Your avatar has been uploaded.' })
+      if (kind === 'indemnity') {
+        setIndemnityUrl(signed)
+        setFormData(prev => ({ ...prev, indemnity_document_url: path }))
+        toast({ title: 'Document uploaded', description: 'Indemnity insurance uploaded successfully.' })
+      } else if (kind === 'dbs') {
+        setDbsUrl(signed)
+        setFormData(prev => ({ ...prev, dbs_pvg_document_url: path }))
+        toast({ title: 'Document uploaded', description: 'DBS/PVG uploaded successfully.' })
+      } else {
+        setAvatarUrl(signed)
+        setFormData(prev => ({ ...prev, avatar_url: path }))
+        toast({ title: 'Profile photo updated', description: 'Your avatar has been uploaded.' })
+      }
+    } finally {
+      setUploadingKind(null)
+      e.target.value = '' // allow re-uploading same file
     }
   }
 
@@ -510,6 +581,8 @@ export function DoctorProfileForm() {
       setLoading(true)
       const { availableDays, availableHours } = convertAvailabilityToOldFormat(formData.availability as any)
 
+      const marketplaceReady = computeMissing(formData).length === 0
+
       const profileData: any = {
         user_id: user.id,
         first_name: formData.first_name,
@@ -517,7 +590,7 @@ export function DoctorProfileForm() {
         phone: formData.phone,
         specialty: formData.specializations.length > 0 
           ? formData.specializations.join(', ') 
-          : formData.profession, // Join specializations into specialty field
+          : formData.profession,
         qualification: formData.qualification,
         license_number: formData.license_number,
         years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : null,
@@ -530,14 +603,22 @@ export function DoctorProfileForm() {
         city: formData.city,
         postcode: formData.postcode,
 
-        // Country kept in payload but UI is hidden for now:
+        // Country kept in payload (UI hidden)
         country: formData.country,
 
         available_hours: availableHours,
         available_days: availableDays,
 
-        // Languages kept (not editable in UI currently)
         languages: formData.languages,
+
+        // Document paths (stored securely as storage object paths)
+        indemnity_document_url: formData.indemnity_document_url || null,
+        dbs_pvg_document_url: formData.dbs_pvg_document_url || null,
+
+        // NEW – marketplace gating flags
+        is_marketplace_ready: marketplaceReady,
+        verification_status: marketplaceReady ? 'pending_review' : 'incomplete',
+        is_active: false, // only admin/backoffice sets true when approved
       }
 
       let result
@@ -606,6 +687,7 @@ export function DoctorProfileForm() {
               variant="secondary"
               className="absolute -bottom-2 -right-2 rounded-full shadow"
               onClick={() => avatarInputRef.current?.click()}
+              disabled={!!uploadingKind}
             >
               <Upload className="h-4 w-4" />
             </Button>
@@ -615,6 +697,7 @@ export function DoctorProfileForm() {
               accept=".jpg,.jpeg,.png"
               className="hidden"
               onChange={(e) => handleFilePick(e, 'avatar')}
+              disabled={!!uploadingKind}
             />
           </div>
 
@@ -627,6 +710,24 @@ export function DoctorProfileForm() {
             )}
           </div>
         </div>
+
+        {/* Incomplete/Ready banner */}
+        {missing.length > 0 ? (
+          <div className="mt-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-amber-900">
+            <p className="font-medium">Your profile is incomplete.</p>
+            <p className="text-sm mt-1">
+              The account won’t be activated or shown in the marketplace until you provide the required items:
+            </p>
+            <ul className="mt-2 list-disc list-inside text-sm">
+              {missing.map(item => (<li key={item}>{item}</li>))}
+            </ul>
+          </div>
+        ) : (
+          <div className="mt-4 rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-emerald-900">
+            <p className="font-medium">Profile ready for review.</p>
+            <p className="text-sm mt-1">We’ll verify your documents before activating and listing your profile.</p>
+          </div>
+        )}
       </CardHeader>
 
       <CardContent>
@@ -669,7 +770,7 @@ export function DoctorProfileForm() {
                 </Select>
               </div>
 
-             {/* Qualification */}
+              {/* Qualification */}
               <div className="space-y-2">
                 <Label htmlFor="qualification">Qualification</Label>
                 <Input id="qualification" className={fieldClass} value={formData.qualification} onChange={(e) => handleInputChange('qualification', e.target.value)} placeholder="e.g., MBBS, MD" />
@@ -723,27 +824,43 @@ export function DoctorProfileForm() {
               {/* Indemnity */}
               <div className="space-y-2">
                 <Label>Indemnity Insurance *</Label>
-                <div className={dashedBoxClass}
-                     onClick={() => indemnityInputRef.current?.click()}>
+                <div
+                  className={dashedBoxClass}
+                  onClick={() => !uploadingKind && indemnityInputRef.current?.click()}>
                   <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                  <p className="text-sm text-muted-foreground">{uploadingKind === 'indemnity' ? 'Uploading...' : 'Click to upload or drag and drop'}</p>
                   <p className="text-xs text-muted-foreground mt-1">PDF, JPG, PNG (max 10MB)</p>
-                  {indemnityUrl && <p className="text-xs mt-2 break-all">Uploaded: {indemnityUrl}</p>}
+                  {indemnityUrl && <p className="text-xs mt-2 break-all">Uploaded (preview): {indemnityUrl}</p>}
                 </div>
-                <input ref={indemnityInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => handleFilePick(e, 'indemnity')} />
+                <input
+                  ref={indemnityInputRef}
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  onChange={(e) => handleFilePick(e, 'indemnity')}
+                  disabled={!!uploadingKind}
+                />
               </div>
 
               {/* DBS / PVG */}
               <div className="space-y-2">
                 <Label>DBS / PVG Check *</Label>
-                <div className={dashedBoxClass}
-                     onClick={() => dbsInputRef.current?.click()}>
+                <div
+                  className={dashedBoxClass}
+                  onClick={() => !uploadingKind && dbsInputRef.current?.click()}>
                   <Upload className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                  <p className="text-sm text-muted-foreground">{uploadingKind === 'dbs' ? 'Uploading...' : 'Click to upload or drag and drop'}</p>
                   <p className="text-xs text-muted-foreground mt-1">PDF, JPG, PNG (max 10MB)</p>
-                  {dbsUrl && <p className="text-xs mt-2 break-all">Uploaded: {dbsUrl}</p>}
+                  {dbsUrl && <p className="text-xs mt-2 break-all">Uploaded (preview): {dbsUrl}</p>}
                 </div>
-                <input ref={dbsInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => handleFilePick(e, 'dbs')} />
+                <input
+                  ref={dbsInputRef}
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  onChange={(e) => handleFilePick(e, 'dbs')}
+                  disabled={!!uploadingKind}
+                />
               </div>
             </div>
           </div>
@@ -784,11 +901,6 @@ export function DoctorProfileForm() {
                   <Label htmlFor="postcode">Postcode</Label>
                   <Input id="postcode" className={fieldClass} value={formData.postcode} onChange={(e) => handleInputChange('postcode', e.target.value)} />
                 </div>
-                {/* Country – commented out from UI per request */}
-                {/* <div>
-                  <Label htmlFor="country">Country</Label>
-                  <Input id="country" className={fieldClass} value={formData.country} onChange={(e) => handleInputChange('country', e.target.value)} />
-                </div> */}
               </div>
             </div>
           </div>
@@ -812,50 +924,6 @@ export function DoctorProfileForm() {
               ))}
             </div>
           </div>
-
-          {/* Languages – whole section commented out for now */}
-          {/*
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Languages</h3>
-            <div className="flex flex-wrap gap-2">
-              {formData.languages.map((language) => (
-                <div key={language} className="flex items-center gap-2 bg-muted rounded-md px-3 py-1">
-                  <span>{language}</span>
-                  {formData.languages.length > 1 && (
-                    <button type="button" onClick={() => removeLanguage(language)} className="text-muted-foreground hover:text-destructive">
-                      <X className="h-3 w-3" />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Select value={newLanguage} onValueChange={setNewLanguage}>
-                <SelectTrigger className={`w-48 ${fieldClass}`}>
-                  <SelectValue placeholder="Add language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LANGUAGES.filter(lang => !formData.languages.includes(lang)).map((language) => (
-                    <SelectItem key={language} value={language}>{language}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button type="button" onClick={addLanguage} disabled={!newLanguage}>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          */}
-
-          {/* Payment Setup Notice 
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Payment Setup</h3>
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                Payment processing will be set up via Stripe Connect after your application is approved. You'll receive a secure link to complete your payment details.
-              </p>
-            </div>
-          </div> */}
 
           {/* Terms */}
           <div className="p-4 bg-muted/50 rounded-lg">

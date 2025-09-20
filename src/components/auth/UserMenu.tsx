@@ -14,7 +14,12 @@ import { toast } from '@/hooks/use-toast'
 import { User, Settings, LogOut, FileText, Calendar, CreditCard, AlertTriangle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-// Unified (no section headers, minimal separators)
+type MenuItem = {
+  to: string
+  label: string
+  icon: React.ReactNode
+}
+
 export function UserMenu() {
   const { user, userProfile, signOut, hasRole } = useAuth()
   const navigate = useNavigate()
@@ -42,48 +47,63 @@ export function UserMenu() {
     ? userProfile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
     : user.email?.[0].toUpperCase() || 'U'
 
+  // Normalize account types / roles
   const userType = userProfile?.user_type // 'patient' | 'healthcare_professional' | 'doctor' | 'admin' | etc.
   const isPatient = userType === 'patient'
   const isHCP = userType === 'healthcare_professional'
   const isDoctor = userType === 'doctor' || hasRole('doctor')
   const isAdmin  = userType === 'admin' || hasRole('admin')
 
-  // Build one flat list of menu items (no headings), deduped by route
-  const menuItems: Array<{ to: string; label: string; icon: React.ReactNode }> = [
-    { to: '/profile', label: 'My Profile', icon: <User className="mr-2 h-4 w-4" /> },
-  ]
+  // Define distinct menu sections per account type.
+  // If a section already exists in your original app, we reproduce it verbatim (per your “ignore if already created” note).
+  const patientItems: MenuItem[] = isPatient ? [
+    { to: '/my-bookings',        label: 'My Appointments', icon: <Calendar className="mr-2 h-4 w-4" /> },
+    { to: '/results',            label: 'Test Results',    icon: <FileText className="mr-2 h-4 w-4" /> },
+    { to: '/my-files',           label: 'My Documents',    icon: <FileText className="mr-2 h-4 w-4" /> },
+    { to: '/payment-dashboard',  label: 'Payments',        icon: <CreditCard className="mr-2 h-4 w-4" /> },
+  ] : []
 
-  if (isPatient) {
-    menuItems.push(
-      { to: '/my-bookings',       label: 'My Appointments', icon: <Calendar className="mr-2 h-4 w-4" /> },
-      { to: '/results',           label: 'Test Results',    icon: <FileText className="mr-2 h-4 w-4" /> },
-      { to: '/my-files',          label: 'My Documents',    icon: <FileText className="mr-2 h-4 w-4" /> },
-      { to: '/payment-dashboard', label: 'Payments',        icon: <CreditCard className="mr-2 h-4 w-4" /> },
+  const hcpItems: MenuItem[] = isHCP ? [
+    { to: '/clinic-dashboard',   label: 'Appointments',       icon: <Settings className="mr-2 h-4 w-4" /> },
+    { to: '/testing',            label: 'System Testing',  icon: <Settings className="mr-2 h-4 w-4" /> },
+    { to: '/manage-staff',  label: 'Manage Staff',        icon: <CreditCard className="mr-2 h-4 w-4" /> },
+    { to: '/payment-dashboard',  label: 'Payments',        icon: <CreditCard className="mr-2 h-4 w-4" /> },
+  ] : []
+
+  // Doctor-specific section (if you already have doctor routes, add them here).
+  // For now, this uses the shared Staff Dashboard you already surface for doctors.
+  const doctorItems: MenuItem[] = isDoctor ? [
+    { to: '/staff-dashboard',    label: 'Appointments', icon: <AlertTriangle className="mr-2 h-4 w-4" /> },
+    { to: '/payment-dashboard',  label: 'Payments',        icon: <CreditCard className="mr-2 h-4 w-4" /> },
+  ] : []
+
+  // Admin-specific section (keeps your existing Staff Dashboard entry).
+  const adminItems: MenuItem[] = isAdmin ? [
+    { to: '/staff-dashboard',    label: 'Staff Dashboard', icon: <AlertTriangle className="mr-2 h-4 w-4" /> },
+  ] : []
+
+  // Helper to render a section with optional heading and de-duplicate by route
+  const renderedRoutes = new Set<string>()
+  const renderSection = (title: string, items: MenuItem[]) => {
+    const filtered = items.filter(it => {
+      if (renderedRoutes.has(it.to)) return false
+      renderedRoutes.add(it.to)
+      return true
+    })
+    if (filtered.length === 0) return null
+    return (
+      <>
+        <DropdownMenuLabel className="text-xs text-muted-foreground">{title}</DropdownMenuLabel>
+        {filtered.map((it) => (
+          <DropdownMenuItem key={`${title}-${it.to}`} onClick={() => navigate(it.to)}>
+            {it.icon}
+            <span>{it.label}</span>
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
+      </>
     )
   }
-
-  if (isHCP) {
-    menuItems.push(
-      { to: '/clinic-dashboard',  label: 'Dashboard',       icon: <Settings className="mr-2 h-4 w-4" /> },
-      { to: '/testing',           label: 'System Testing',  icon: <Settings className="mr-2 h-4 w-4" /> },
-    )
-  }
-
-  if (isDoctor) {
-    menuItems.push(
-      { to: '/staff-dashboard',   label: 'Staff Dashboard', icon: <AlertTriangle className="mr-2 h-4 w-4" /> },
-    )
-  }
-
-  if (isAdmin) {
-    menuItems.push(
-      { to: '/staff-dashboard',   label: 'Staff Dashboard', icon: <AlertTriangle className="mr-2 h-4 w-4" /> },
-    )
-  }
-
-  // Deduplicate by route while preserving order
-  const seen = new Set<string>()
-  const flatItems = menuItems.filter(i => (seen.has(i.to) ? false : (seen.add(i.to), true)))
 
   return (
     <DropdownMenu>
@@ -96,7 +116,7 @@ export function UserMenu() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-56" align="end" forceMount>
-        {/* Compact header (kept), no role label below */}
+        {/* Header */}
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
@@ -105,20 +125,29 @@ export function UserMenu() {
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
+            {userProfile?.user_type && (
+              <p className="text-xs leading-none text-muted-foreground capitalize">
+                {userProfile.user_type.replace('_', ' ')}
+              </p>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        {/* Unified list */}
-        {flatItems.map(item => (
-          <DropdownMenuItem key={item.to} onClick={() => navigate(item.to)}>
-            {item.icon}
-            <span>{item.label}</span>
-          </DropdownMenuItem>
-        ))}
-
-        {/* Single separator before sign out */}
+        {/* Common */}
+        <DropdownMenuItem onClick={() => navigate('/profile')}>
+          <User className="mr-2 h-4 w-4" />
+          <span>My Profile</span>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
+
+        {/* Segmented sections */}
+        {renderSection('Patient', patientItems)}
+        {renderSection('Doctor', doctorItems)}
+        {renderSection('Admin', adminItems)}
+        {renderSection('Healthcare professional', hcpItems)}
+
+        {/* Sign out */}
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign out</span>

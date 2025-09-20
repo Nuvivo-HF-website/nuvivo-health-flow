@@ -64,14 +64,17 @@ export function UserMenu() {
 
   if (isHCP) {
     menuItems.push(
-      { to: '/clinic-dashboard',  label: 'Dashboard',       icon: <Settings className="mr-2 h-4 w-4" /> },
-      { to: '/testing',           label: 'System Testing',  icon: <Settings className="mr-2 h-4 w-4" /> },
+      { to: '/clinic-dashboard',  label: 'Appointments',       icon: <Settings className="mr-2 h-4 w-4" /> },
+      { to: '/manage-staff',           label: 'Manage Staff',  icon: <Settings className="mr-2 h-4 w-4" /> },
+      { to: '/testing',           label: 'System Testing',  icon: <Settings className="mr-2 h-4 w-4" /> },      
+      { to: '/payment-dashboard', label: 'Payments',        icon: <CreditCard className="mr-2 h-4 w-4" /> },
     )
   }
 
   if (isDoctor) {
     menuItems.push(
-      { to: '/staff-dashboard',   label: 'Staff Dashboard', icon: <AlertTriangle className="mr-2 h-4 w-4" /> },
+      { to: '/staff-dashboard',   label: 'Appointments', icon: <AlertTriangle className="mr-2 h-4 w-4" /> },
+      { to: '/payment-dashboard', label: 'Payments',        icon: <CreditCard className="mr-2 h-4 w-4" /> },
     )
   }
 

@@ -458,7 +458,7 @@ const Header = () => {
                 <NavigationMenuLink asChild>
                   <NavigationLink
                     to="/clinic-finder"
-                    className="whitespace-nowrap text-muted-foreground hover:text-primary transition-colors px-3 py-2"
+                    className="whitespace-nowrap text-muted-foreground hover:text-primary transition-colors"
                   >
                     Find Clinic
                   </NavigationLink>
@@ -486,7 +486,7 @@ const Header = () => {
                   className="flex items-center space-x-2"
                   onClick={() => {
                     if (user) {
-                      navigate("/profile");
+                      navigate("/portal");
                     } else {
                       navigate("/sign-in");
                     }

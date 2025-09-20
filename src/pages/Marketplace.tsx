@@ -83,11 +83,11 @@ export default function Marketplace() {
         return;
       }
 
-      // 2) Fetch related profiles (including profession)
+      // 2) Fetch related profiles 
       const userIds = specialists.map((s: any) => s.user_id);
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
-        .select("user_id, full_name, email, profession, avatar_url, address")
+        .select("user_id, full_name, email, avatar_url")
         .in("user_id", userIds);
 
       if (profilesError) {

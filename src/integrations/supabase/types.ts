@@ -527,6 +527,8 @@ export type Database = {
           created_at: string
           first_name: string | null
           id: string
+          is_active: boolean | null
+          is_marketplace_ready: boolean | null
           languages: string[] | null
           last_name: string | null
           license_number: string | null
@@ -536,6 +538,9 @@ export type Database = {
           specialty: string | null
           updated_at: string
           user_id: string
+          verification_status:
+            | Database["public"]["Enums"]["verification_status"]
+            | null
           years_of_experience: number | null
         }
         Insert: {
@@ -552,6 +557,8 @@ export type Database = {
           created_at?: string
           first_name?: string | null
           id?: string
+          is_active?: boolean | null
+          is_marketplace_ready?: boolean | null
           languages?: string[] | null
           last_name?: string | null
           license_number?: string | null
@@ -561,6 +568,9 @@ export type Database = {
           specialty?: string | null
           updated_at?: string
           user_id: string
+          verification_status?:
+            | Database["public"]["Enums"]["verification_status"]
+            | null
           years_of_experience?: number | null
         }
         Update: {
@@ -577,6 +587,8 @@ export type Database = {
           created_at?: string
           first_name?: string | null
           id?: string
+          is_active?: boolean | null
+          is_marketplace_ready?: boolean | null
           languages?: string[] | null
           last_name?: string | null
           license_number?: string | null
@@ -586,6 +598,9 @@ export type Database = {
           specialty?: string | null
           updated_at?: string
           user_id?: string
+          verification_status?:
+            | Database["public"]["Enums"]["verification_status"]
+            | null
           years_of_experience?: number | null
         }
         Relationships: []
@@ -1324,6 +1339,42 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_document_audit: {
+        Row: {
+          bucket_id: string
+          created_at: string | null
+          details: string | null
+          id: number
+          kind: string
+          object_name: string
+          scanned_at: string | null
+          status: Database["public"]["Enums"]["scan_status"]
+          user_id: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string | null
+          details?: string | null
+          id?: number
+          kind: string
+          object_name: string
+          scanned_at?: string | null
+          status?: Database["public"]["Enums"]["scan_status"]
+          user_id: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string | null
+          details?: string | null
+          id?: number
+          kind?: string
+          object_name?: string
+          scanned_at?: string | null
+          status?: Database["public"]["Enums"]["scan_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       results: {
         Row: {
           ai_flags: Json | null
@@ -1922,6 +1973,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: {
+        Args: { p_user: string }
+        Returns: boolean
+      }
+      is_mime_allowed: {
+        Args: { kind: string; mime: string }
+        Returns: boolean
+      }
       log_gdpr_action: {
         Args: {
           _action: string
@@ -1953,6 +2012,12 @@ export type Database = {
     }
     Enums: {
       app_role: "patient" | "doctor" | "admin" | "clinic_staff"
+      scan_status: "pending" | "clean" | "infected" | "error"
+      verification_status:
+        | "incomplete"
+        | "pending_review"
+        | "approved"
+        | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2081,6 +2146,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["patient", "doctor", "admin", "clinic_staff"],
+      scan_status: ["pending", "clean", "infected", "error"],
+      verification_status: [
+        "incomplete",
+        "pending_review",
+        "approved",
+        "rejected",
+      ],
     },
   },
 } as const

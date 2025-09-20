@@ -486,7 +486,7 @@ const Header = () => {
                   className="flex items-center space-x-2"
                   onClick={() => {
                     if (user) {
-                      navigate("/portal");
+                      navigate("/profile");
                     } else {
                       navigate("/sign-in");
                     }

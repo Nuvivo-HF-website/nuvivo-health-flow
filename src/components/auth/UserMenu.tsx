@@ -14,6 +14,12 @@ import { toast } from '@/hooks/use-toast'
 import { User, Settings, LogOut, FileText, Calendar, CreditCard, AlertTriangle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
+type MenuItem = {
+  to: string
+  label: string
+  icon: React.ReactNode
+}
+
 export function UserMenu() {
   const { user, userProfile, signOut, hasRole } = useAuth()
   const navigate = useNavigate()
@@ -41,6 +47,61 @@ export function UserMenu() {
     ? userProfile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
     : user.email?.[0].toUpperCase() || 'U'
 
+  // Normalize account types / roles
+  const userType = userProfile?.user_type // 'patient' | 'healthcare_professional' | 'doctor' | 'admin' | etc.
+  const isPatient = userType === 'patient'
+  const isHCP = userType === 'healthcare_professional'
+  const isDoctor = userType === 'doctor' || hasRole('doctor')
+  const isAdmin  = userType === 'admin' || hasRole('admin')
+
+  // Define distinct menu sections per account type.
+  // If a section already exists in your original app, we reproduce it verbatim (per your “ignore if already created” note).
+  const patientItems: MenuItem[] = isPatient ? [
+    { to: '/my-bookings',        label: 'My Appointments', icon: <Calendar className="mr-2 h-4 w-4" /> },
+    { to: '/results',            label: 'Test Results',    icon: <FileText className="mr-2 h-4 w-4" /> },
+    { to: '/my-files',           label: 'My Documents',    icon: <FileText className="mr-2 h-4 w-4" /> },
+    { to: '/payment-dashboard',  label: 'Payments',        icon: <CreditCard className="mr-2 h-4 w-4" /> },
+  ] : []
+
+  const hcpItems: MenuItem[] = isHCP ? [
+    { to: '/clinic-dashboard',   label: 'Dashboard',       icon: <Settings className="mr-2 h-4 w-4" /> },
+    { to: '/testing',            label: 'System Testing',  icon: <Settings className="mr-2 h-4 w-4" /> },
+  ] : []
+
+  // Doctor-specific section (if you already have doctor routes, add them here).
+  // For now, this uses the shared Staff Dashboard you already surface for doctors.
+  const doctorItems: MenuItem[] = isDoctor ? [
+    { to: '/staff-dashboard',    label: 'Staff Dashboard', icon: <AlertTriangle className="mr-2 h-4 w-4" /> },
+  ] : []
+
+  // Admin-specific section (keeps your existing Staff Dashboard entry).
+  const adminItems: MenuItem[] = isAdmin ? [
+    { to: '/staff-dashboard',    label: 'Staff Dashboard', icon: <AlertTriangle className="mr-2 h-4 w-4" /> },
+  ] : []
+
+  // Helper to render a section with optional heading and de-duplicate by route
+  const renderedRoutes = new Set<string>()
+  const renderSection = (title: string, items: MenuItem[]) => {
+    const filtered = items.filter(it => {
+      if (renderedRoutes.has(it.to)) return false
+      renderedRoutes.add(it.to)
+      return true
+    })
+    if (filtered.length === 0) return null
+    return (
+      <>
+        <DropdownMenuLabel className="text-xs text-muted-foreground">{title}</DropdownMenuLabel>
+        {filtered.map((it) => (
+          <DropdownMenuItem key={`${title}-${it.to}`} onClick={() => navigate(it.to)}>
+            {it.icon}
+            <span>{it.label}</span>
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
+      </>
+    )
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -50,7 +111,9 @@ export function UserMenu() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent className="w-56" align="end" forceMount>
+        {/* Header */}
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
@@ -67,57 +130,21 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
+
+        {/* Common */}
         <DropdownMenuItem onClick={() => navigate('/profile')}>
           <User className="mr-2 h-4 w-4" />
           <span>My Profile</span>
         </DropdownMenuItem>
-        
-        {userProfile?.user_type === 'patient' && (
-          <>
-            <DropdownMenuItem onClick={() => navigate('/my-bookings')}>
-              <Calendar className="mr-2 h-4 w-4" />
-              <span>My Appointments</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/results')}>
-              <FileText className="mr-2 h-4 w-4" />
-              <span>Test Results</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/my-files')}>
-              <FileText className="mr-2 h-4 w-4" />
-              <span>My Documents</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/payment-dashboard')}>
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>Payments</span>
-            </DropdownMenuItem>
-          </>
-        )}
-        
-        {userProfile?.user_type === 'healthcare_professional' && (
-          <>
-            <DropdownMenuItem onClick={() => navigate('/clinic-dashboard')}>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Dashboard</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/testing')}>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>System Testing</span>
-            </DropdownMenuItem>
-          </>
-        )}
-        
-        {(hasRole('admin') || hasRole('doctor')) && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate('/staff-dashboard')}>
-              <AlertTriangle className="mr-2 h-4 w-4" />
-              <span>Staff Dashboard</span>
-            </DropdownMenuItem>
-          </>
-        )}
-        
         <DropdownMenuSeparator />
+
+        {/* Segmented sections */}
+        {renderSection('Patient', patientItems)}
+        {renderSection('Doctor', doctorItems)}
+        {renderSection('Admin', adminItems)}
+        {renderSection('Healthcare professional', hcpItems)}
+
+        {/* Sign out */}
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign out</span>

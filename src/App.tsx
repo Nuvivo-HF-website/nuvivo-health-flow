@@ -61,6 +61,7 @@ import AIReportGenerator from "./pages/AIReportGenerator";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import StaffDashboard from "./pages/StaffDashboard";
+import ManageStaff from "./pages/ManageStaff";
 
 import Testing from "./pages/Testing";
 import ScrollToTop from "./components/ScrollToTop";
@@ -123,6 +124,7 @@ const App = () => (
           <Route path="/admin-referrals" element={<AdminReferrals />} />
           <Route path="/ai-report-generator" element={<AIReportGenerator />} />
           <Route path="/staff-dashboard" element={<StaffDashboard />} />
+          <Route path="/manage-staff" element={<ManageStaff />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/patient-dashboard" element={<Navigate to="/portal" replace />} />
           <Route path="/portal" element={<Portal />} />

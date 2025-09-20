@@ -63,14 +63,17 @@ export default function Marketplace() {
     try {
       setLoading(true);
       
-      // Fetch specialists and then get their profile data separately
-      const { data: specialists, error: specialistsError } = await supabase
+      // Fetch specialists with profile data in a single joined query
+      const { data: doctorsData, error } = await supabase
         .from('specialists')
-        .select('*')
+        .select(`
+          *,
+          profiles!inner(full_name, email)
+        `)
         .eq('is_active', true);
 
-      if (specialistsError) {
-        console.error('Error fetching specialists:', specialistsError);
+      if (error) {
+        console.error('Error fetching doctors:', error);
         toast({
           title: "Error",
           description: "Failed to load doctors. Please try again later.",
@@ -79,38 +82,14 @@ export default function Marketplace() {
         return;
       }
 
-      if (!specialists || specialists.length === 0) {
+      if (!doctorsData || doctorsData.length === 0) {
         setDoctors([]);
         return;
       }
 
-      // Get user IDs to fetch profiles
-      const userIds = specialists.map(s => s.user_id);
-      
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('user_id, full_name, email')
-        .in('user_id', userIds);
-
-      if (profilesError) {
-        console.error('Error fetching profiles:', profilesError);
-        toast({
-          title: "Error",
-          description: "Failed to load doctor profiles. Please try again later.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Create a map for quick profile lookup
-      const profileMap = new Map();
-      profiles?.forEach(profile => {
-        profileMap.set(profile.user_id, profile);
-      });
-
       // Transform the data to match the expected Doctor interface
-      const transformedDoctors: Doctor[] = specialists.map((specialist: any, index) => {
-        const profile = profileMap.get(specialist.user_id);
+      const transformedDoctors: Doctor[] = doctorsData.map((specialist: any, index) => {
+        const profile = specialist.profiles;
         return {
           id: specialist.id,
           name: profile?.full_name || `Dr. ${profile?.email?.split('@')[0] || 'Unknown'}`,

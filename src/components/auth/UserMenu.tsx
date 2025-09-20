@@ -46,7 +46,19 @@ export function UserMenu() {
   const isPatient = userType === 'patient'
   const isHCP = userType === 'healthcare_professional'
   const isDoctor = userType === 'doctor' || hasRole('doctor')
+  const isClinicStaff = hasRole('clinic_staff')
   const isAdmin  = userType === 'admin' || hasRole('admin')
+
+  // Debug logging to help troubleshoot
+  console.log('UserMenu Debug:', {
+    userType,
+    isPatient,
+    isHCP,
+    isDoctor,
+    isClinicStaff,
+    isAdmin,
+    userRoles: user ? 'logged in' : 'not logged in'
+  })
 
   // Build one flat list of menu items (no headings), deduped by route
   const menuItems: Array<{ to: string; label: string; icon: React.ReactNode }> = [
@@ -62,12 +74,12 @@ export function UserMenu() {
     )
   }
 
-  if (isHCP) {
+  if (isHCP || isClinicStaff) {
     menuItems.push(
       { to: '/clinic-dashboard',  label: 'Appointments',       icon: <Settings className="mr-2 h-4 w-4" /> },
-      { to: '/manage-staff',           label: 'Manage Staff',  icon: <Settings className="mr-2 h-4 w-4" /> },
-      { to: '/testing',           label: 'System Testing',  icon: <Settings className="mr-2 h-4 w-4" /> },      
-      { to: '/payment-dashboard', label: 'Payments',        icon: <CreditCard className="mr-2 h-4 w-4" /> },
+      { to: '/manage-staff',      label: 'Manage Staff',       icon: <Settings className="mr-2 h-4 w-4" /> },
+      { to: '/testing',           label: 'System Testing',     icon: <Settings className="mr-2 h-4 w-4" /> },      
+      { to: '/payment-dashboard', label: 'Payments',           icon: <CreditCard className="mr-2 h-4 w-4" /> },
     )
   }
 

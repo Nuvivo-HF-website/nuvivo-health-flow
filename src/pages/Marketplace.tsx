@@ -57,39 +57,6 @@ export default function Marketplace() {
     fetchDoctors();
   }, []);
 
-  const formatSlot = (iso: string) => {
-    try {
-      const d = new Date(iso);
-      const day = d.toLocaleDateString(undefined, { weekday: "short" });
-      const time = d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-      const today = new Date();
-      const isToday = d.toDateString() === today.toDateString();
-      const tomorrow = new Date();
-      tomorrow.setDate(today.getDate() + 1);
-      const isTomorrow = d.toDateString() === tomorrow.toDateString();
-      return isToday ? `Today ${time}` : isTomorrow ? `Tomorrow ${time}` : `${day} ${time}`;
-    } catch {
-      return null;
-    }
-  };
-
-  const fetchNextAvailable = async (specialistId: string): Promise<string | null> => {
-    // Adjust table/column names to your schema if needed.
-    const { data, error } = await supabase
-      .from("availability_slots")
-      .select("start_time")
-      .eq("specialist_id", specialistId)
-      .gte("start_time", new Date().toISOString())
-      .order("start_time", { ascending: true })
-      .limit(1);
-
-    if (error) {
-      console.error("Error fetching availability:", error);
-      return null;
-    }
-    if (!data || data.length === 0) return null;
-    return formatSlot(data[0].start_time);
-  };
 
   const fetchDoctors = async () => {
     try {
@@ -152,8 +119,8 @@ export default function Marketplace() {
             ? specialist.specialty.split(",").map((s: string) => s.trim())
             : [];
 
-          // availability
-          const nextAvailable = await fetchNextAvailable(specialist.id);
+          // availability - temporarily disabled
+          const nextAvailable = null;
 
           return {
             id: specialist.id,

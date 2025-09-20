@@ -74,7 +74,7 @@ export function UserMenu() {
 
   if (isClinicStaff) {
     menuItems.push(
-      { to: '/clinic-dashboard',  label: 'Appointments',       icon: <Settings className="mr-2 h-4 w-4" /> },
+      { to: '/clinic-dashboard',  label: 'Appointments',       icon: <FileText className="mr-2 h-4 w-4" /> },
       { to: '/manage-staff',      label: 'Manage Staff',       icon: <Settings className="mr-2 h-4 w-4" /> },     
       { to: '/payment-dashboard', label: 'Payments',           icon: <CreditCard className="mr-2 h-4 w-4" /> },
     )

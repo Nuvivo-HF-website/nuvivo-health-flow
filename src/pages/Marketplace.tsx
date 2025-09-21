@@ -111,181 +111,349 @@ function computeNextAvailable(
         }
       }
 
-      const timeStr = start === end ? start : `${start}-${end}`;
-      const isToday = i === 0;
-      const isPast = isToday && new Date().getHours() >= parseInt(end.split(':')[0]);
-      
-      if (!isPast) {
-        return i === 0 ? `Today ${timeStr}` : 
-               i === 1 ? `Tomorrow ${timeStr}` : 
-               `${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} ${timeStr}`;
-      }
+      const dayStr = d.toLocaleDateString(undefined, {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+      });
+      const nextText = `${dayStr}, ${start}–${end}`;
+      return { date: d, start, end, nextText };
     }
-    return "Schedule appointment";
-  } catch (error) {
-    console.error("Error computing next available:", error);
-    return "Schedule appointment";
-  }
+  } catch {}
+  return { date: null, start: null, end: null, nextText: "No slots available" };
 }
 
 export default function Marketplace() {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("");
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedTags, setExpandedTags] = useState<Record<string, boolean>>({});
 
-  const fetchDoctors = async () => {
+  const baseSpecialties = useMemo(
+    () => [
+      "All Specialties",
+      "GP (General Practitioner)",
+      "Nurse",
+      "Physiotherapist",
+      "Psychologist",
+      "Medical Specialist",
+      "Therapist",
+      "Nutritionist",
+      "Counsellor",
+      "Cardiology",
+      "Dermatology",
+      "Endocrinology",
+      "Neurology",
+      "Psychiatry",
+      "Orthopedics",
+      "Gastroenterology",
+      "Pulmonology",
+      "Ophthalmology",
+      "Urology",
+      "Rheumatology",
+    ],
+    []
+  );
+  const [specialties, setSpecialties] = useState<string[]>(baseSpecialties);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      // 1) Try the view
+      const ok = await tryLoadFromView();
+      if (!ok) {
+        // 2) Fallback to tables
+        await tryLoadFromTables();
+      }
+      setLoading(false);
+    })();
+  }, []);
+
+  const tryLoadFromView = async (): Promise<boolean> => {
     try {
-      console.log("Fetching doctors...");
-      
-      // Query doctor_profiles directly
-      const { data: doctorProfiles, error: doctorError } = await supabase
-        .from('doctor_profiles')
-        .select('*')
-        .eq('is_marketplace_ready', true)
-        .eq('is_active', true);
-
-      if (doctorError) {
-        console.error("Error fetching doctor profiles:", doctorError);
-        return;
+      const { data, error } = await supabase.from("marketplace_providers").select("*");
+      if (error) {
+        // 42P01 = relation does not exist (view missing)
+        console.warn("marketplace_providers error:", error);
+        return false;
+      }
+      if (!data || data.length === 0) {
+        // View exists but returns nothing (likely not approved/active yet)
+        console.info("marketplace_providers returned 0 rows; falling back to tables.");
+        return false;
       }
 
-      console.log("Doctor profiles:", doctorProfiles?.length || 0);
+      const transformed = (data as ViewRow[]).map((r) => {
+        const name = r.full_name || "Unknown";
+        const profession = r.profession || r.dp_profession || "General Practice";
+        const specs = Array.isArray(r.specializations) ? r.specializations : [];
+        const location = r.location || [r.city, r.country].filter(Boolean).join(", ") || "UK";
+        const { nextText } = computeNextAvailable(r.available_days || [], r.available_hours || { start: "09:00", end: "17:00" });
 
-      // Query profiles separately
-      const { data: profiles, error: profileError } = await supabase
-        .from('profiles')
-        .select('*');
-
-      if (profileError) {
-        console.error("Error fetching profiles:", profileError);
-        return;
-      }
-
-      console.log("Profiles:", profiles?.length || 0);
-
-      // Create a map for easy profile lookup
-      const profileMap = new Map();
-      profiles?.forEach(profile => {
-        profileMap.set(profile.user_id, profile);
-      });
-
-      // Transform the data
-      const transformedDoctors: Doctor[] = (doctorProfiles || []).map((dp: SpecialistRow) => {
-        const profile = profileMap.get(dp.user_id) as ProfileRow;
-        
-        const location = profile?.city && profile?.country 
-          ? `${profile.city}, ${profile.country}`
-          : profile?.address || "Location not specified";
-
-        const name = profile?.full_name || "Dr. Unknown";
-        const profession = dp.specialty || profile?.profession || "General Practitioner";
-        
-        // Parse specializations
-        let specializations: string[] = [];
-        if (dp.specializations && Array.isArray(dp.specializations)) {
-          specializations = dp.specializations;
-        } else if (typeof dp.specialty === 'string' && dp.specialty.includes(',')) {
-          specializations = dp.specialty.split(',').map(s => s.trim());
-        } else if (dp.specialty) {
-          specializations = [dp.specialty];
-        }
-
-        const nextAvailable = computeNextAvailable(
-          dp.available_days || [],
-          dp.available_hours || { start: "09:00", end: "17:00" }
-        );
-
-        return {
-          id: dp.id,
-          userId: dp.user_id,
+        return makeDoctor({
+          id: r.id,
+          userId: r.user_id,
           name,
           profession,
           location,
-          rating: dp.rating || 4.5,
-          reviews: Math.floor(Math.random() * 100) + 10,
-          experience: dp.experience_years ? `${dp.experience_years} years` : "5+ years",
-          avatar: profile?.avatar_url || "",
-          isVerified: dp.verified || false,
-          isOnline: Math.random() > 0.5,
-          price: dp.consultation_fee ? `$${dp.consultation_fee}` : "$75",
-          nextAvailable,
-          specializations,
-          bio: dp.bio || "Experienced medical professional",
-          hospital: dp.clinic_name || "Private Practice"
-        };
+          years: r.years_of_experience ?? 0,
+          avatar: r.avatar_url || "/placeholder.svg",
+          verified: true,
+          price: r.consultation_fee ?? null,
+          nextText,
+          specs,
+          bio: r.bio || (profession ? `Specialist in ${profession}` : ""),
+          clinic: r.clinic_name || "Private Practice",
+          rating: 4.8,
+          reviews: 120,
+        });
       });
 
-      console.log("Transformed doctors:", transformedDoctors.length);
-      console.log("Sample doctor:", transformedDoctors[0]);
-      
-      setDoctors(transformedDoctors);
-    } catch (error) {
-      console.error("Error in fetchDoctors:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load doctors. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+      finalizeDoctors(transformed);
+      return true;
+    } catch (e) {
+      console.error("tryLoadFromView failed:", e);
+      return false;
     }
   };
 
-  useEffect(() => {
-    fetchDoctors();
-  }, []);
+  const tryLoadFromTables = async () => {
+    try {
+      // specialists: only active (and if you keep flags, also ready + approved)
+      const { data: specialists, error: sErr } = await supabase
+        .from("specialists")
+        .select("*")
+        .eq("is_active", true);
+
+      if (sErr) throw sErr;
+      if (!specialists || specialists.length === 0) {
+        setDoctors([]);
+        return;
+      }
+
+      const userIds = (specialists as SpecialistRow[]).map((s) => s.user_id);
+      const { data: profiles, error: pErr } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, email, avatar_url, profession, address, city, country")
+        .in("user_id", userIds);
+
+      if (pErr) throw pErr;
+
+      const pMap = new Map<string, ProfileRow>();
+      (profiles as ProfileRow[]).forEach((p) => pMap.set(p.user_id, p));
+
+      const transformed: Doctor[] = (specialists as SpecialistRow[]).map((s) => {
+        const profile = pMap.get(s.user_id) || {};
+        const name =
+          profile.full_name ||
+          (profile.email ? `Dr. ${profile.email.split("@")[0]}` : "Unknown");
+        const profession =
+          profile.profession ||
+          (s.specialty && !Array.isArray(s.specializations) ? s.specialty : "General Practice");
+
+        const specs = Array.isArray(s.specializations)
+          ? s.specializations
+          : typeof s.specialty === "string"
+            ? s.specialty.split(",").map((t) => t.trim()).filter(Boolean)
+            : [];
+
+        const location =
+          profile.address ||
+          [profile.city, profile.country].filter(Boolean).join(", ") ||
+          s.address ||
+          "UK";
+
+        const { nextText } = computeNextAvailable(s.available_days || [], s.available_hours || { start: "09:00", end: "17:00" });
+
+        return makeDoctor({
+          id: s.id,
+          userId: s.user_id,
+          name,
+          profession,
+          location,
+          years: s.experience_years ?? 0,
+          avatar: profile.avatar_url || "/placeholder.svg",
+          verified: !!s.verified,
+          price: s.consultation_fee ?? null,
+          nextText,
+          specs,
+          bio: s.bio || (profession ? `Specialist in ${profession}` : ""),
+          clinic: s.clinic_name || "Private Practice",
+          rating: s.rating ?? 4.6,
+          reviews: 100 + Math.floor(Math.random() * 150),
+        });
+      });
+
+      finalizeDoctors(transformed);
+    } catch (e: any) {
+      console.error("tryLoadFromTables failed:", e);
+      toast({
+        title: "Error",
+        description: "Failed to load doctors. Please try again later.",
+        variant: "destructive",
+      });
+      setDoctors([]);
+    }
+  };
+
+  function makeDoctor(args: {
+    id: string;
+    userId: string;
+    name: string;
+    profession: string;
+    location: string;
+    years: number;
+    avatar: string;
+    verified: boolean;
+    price: number | null;
+    nextText: string | null | undefined;
+    specs: string[];
+    bio: string;
+    clinic: string;
+    rating: number;
+    reviews: number;
+  }): Doctor {
+    return {
+      id: args.id,
+      userId: args.userId,
+      name: args.name,
+      profession: args.profession,
+      location: args.location,
+      rating: args.rating,
+      reviews: args.reviews,
+      experience: `${args.years}+ years`,
+      avatar: args.avatar,
+      isVerified: args.verified,
+      isOnline: Math.random() > 0.5,
+      price: args.price != null ? `£${args.price}/consultation` : undefined,
+      nextAvailable: args.nextText || "No slots available",
+      specializations: args.specs,
+      bio: args.bio,
+      hospital: args.clinic,
+    };
+  }
+
+  function finalizeDoctors(list: Doctor[]) {
+    setDoctors(list);
+    // Build dynamic filter list based on loaded data
+    const dynamic = new Set(baseSpecialties);
+    list.forEach((d) => {
+      if (d.profession) dynamic.add(d.profession);
+      d.specializations?.forEach((s) => s && dynamic.add(s));
+    });
+    setSpecialties(Array.from(dynamic));
+  }
 
   const filteredDoctors = useMemo(() => {
-    if (!searchTerm.trim()) return doctors;
-    
-    const term = searchTerm.toLowerCase();
-    return doctors.filter(doctor => 
-      doctor.name.toLowerCase().includes(term) ||
-      doctor.profession.toLowerCase().includes(term) ||
-      doctor.location.toLowerCase().includes(term) ||
-      doctor.specializations.some(spec => spec.toLowerCase().includes(term))
-    );
-  }, [doctors, searchTerm]);
+    const term = searchTerm.trim().toLowerCase();
+    return doctors.filter((doctor) => {
+      const matchesSearch =
+        term === "" ||
+        doctor.name.toLowerCase().includes(term) ||
+        doctor.profession.toLowerCase().includes(term) ||
+        doctor.specializations.some((tag) => tag.toLowerCase().includes(term));
 
-  const handleBookConsultation = (doctorId: string) => {
-    navigate(`/consultations?doctorId=${doctorId}`);
+      const matchesSpecialty =
+        selectedSpecialty === "" ||
+        selectedSpecialty === "All Specialties" ||
+        doctor.profession === selectedSpecialty ||
+        doctor.specializations.includes(selectedSpecialty);
+
+      return matchesSearch && matchesSpecialty;
+    });
+  }, [doctors, searchTerm, selectedSpecialty]);
+
+  const toggleExpandedTags = (doctorId: string) => {
+    setExpandedTags((prev) => ({ ...prev, [doctorId]: !prev[doctorId] }));
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Find Healthcare Professionals
-          </h1>
-          <p className="text-lg text-muted-foreground mb-6">
-            Connect with verified doctors and specialists for online consultations
+        {/* Hero */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Find Your Healthcare Professional</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Connect with verified healthcare specialists and book consultations at your convenience
           </p>
-          
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              placeholder="Search by name, specialty, or location..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+        </div>
+
+        {/* Search & Filters */}
+        <div className="mb-8 space-y-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search by name, specialty, or tags..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <select
+                value={selectedSpecialty}
+                onChange={(e) => setSelectedSpecialty(e.target.value)}
+                className="px-3 py-2 border border-input bg-background rounded-md text-sm"
+              >
+                {specialties.map((s) => (
+                  <option key={s} value={s === "All Specialties" ? "" : s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Active Filters */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm text-muted-foreground">Filters:</span>
+            {searchTerm && (
+              <Badge variant="secondary" className="gap-1">
+                Search: "{searchTerm}"
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {selectedSpecialty && (
+              <Badge variant="secondary" className="gap-1">
+                {selectedSpecialty}
+                <button
+                  onClick={() => setSelectedSpecialty("")}
+                  className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+          </div>
+
+          {/* Results Count */}
+          <div className="text-sm text-muted-foreground">
+            {loading ? "Loading..." : `${filteredDoctors.length} healthcare professionals found`}
           </div>
         </div>
 
+        {/* Results */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i} className="p-6 animate-pulse">
-                <div className="flex items-start space-x-4">
-                  <div className="w-16 h-16 bg-muted rounded-full"></div>
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="animate-pulse p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-muted rounded-full" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                    <div className="h-3 bg-muted rounded w-2/3"></div>
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                    <div className="h-3 bg-muted rounded w-1/2" />
+                    <div className="h-3 bg-muted rounded w-2/3" />
                   </div>
                 </div>
               </Card>
@@ -293,99 +461,136 @@ export default function Marketplace() {
           </div>
         ) : filteredDoctors.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground text-lg">
-              {searchTerm ? "No doctors found matching your search." : "No doctors available at the moment."}
-            </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Total doctors in database: {doctors.length}
+            <h3 className="text-lg font-semibold mb-2">No doctors found</h3>
+            <p className="text-muted-foreground">
+              Try adjusting your search criteria or check back later for new specialists.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredDoctors.map((doctor) => (
-              <Card key={doctor.id} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start space-x-4 mb-4">
-                  <div className="relative">
-                    <Avatar className="w-16 h-16">
-                      <AvatarImage src={doctor.avatar} alt={doctor.name} />
-                      <AvatarFallback>
-                        {doctor.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    {doctor.isOnline && (
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full"></div>
-                    )}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-semibold text-lg truncate">{doctor.name}</h3>
-                      {doctor.isVerified && (
-                        <Badge variant="secondary" className="text-xs">Verified</Badge>
-                      )}
+            {filteredDoctors.map((doctor) => {
+              const isExpanded = expandedTags[doctor.id] || false;
+              const shown = isExpanded ? doctor.specializations : doctor.specializations.slice(0, 2);
+              const remaining = Math.max(doctor.specializations.length - shown.length, 0);
+              const initials = doctor.name
+                .split(" ")
+                .filter(Boolean)
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase();
+
+              return (
+                <Card key={doctor.id} className="hover:shadow-lg transition-shadow duration-300 p-6">
+                  <div className="space-y-4">
+                    {/* Header */}
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <Avatar className="h-12 w-12">
+                            <AvatarImage src={doctor.avatar} alt={doctor.name} />
+                            <AvatarFallback className="text-sm font-semibold">{initials}</AvatarFallback>
+                          </Avatar>
+                          {doctor.isOnline && (
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-background rounded-full" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg text-foreground">{doctor.name}</h3>
+                          <p className="text-muted-foreground">{doctor.profession}</p>
+                        </div>
+                      </div>
                     </div>
-                    
-                    <p className="text-primary font-medium text-sm mb-1">{doctor.profession}</p>
-                    
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-                      <MapPin className="w-3 h-3" />
-                      <span className="truncate">{doctor.location}</span>
+
+                    {/* Bio */}
+                    <div className="text-sm text-muted-foreground">
+                      <p>{doctor.bio}</p>
                     </div>
-                    
-                    <div className="flex items-center space-x-4 text-sm">
-                      <div className="flex items-center space-x-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">{doctor.rating}</span>
+
+                    {/* Rating & Location */}
+                    <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-medium">{doctor.rating.toFixed(1)}</span>
                         <span className="text-muted-foreground">({doctor.reviews})</span>
                       </div>
-                      <span className="text-muted-foreground">{doctor.experience}</span>
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <MapPin className="h-4 w-4" />
+                        <span>{doctor.location}</span>
+                      </div>
                     </div>
-                  </div>
-                </div>
 
-                {doctor.specializations.length > 0 && (
-                  <div className="mb-4">
-                    <div className="flex flex-wrap gap-1">
-                      {doctor.specializations.slice(0, 3).map((spec, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {spec}
+                    {/* Specializations */}
+                    <div className="flex flex-wrap gap-2">
+                      {shown.map((tag, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs px-3 py-1">
+                          {tag}
                         </Badge>
                       ))}
-                      {doctor.specializations.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{doctor.specializations.length - 3}
-                        </Badge>
+                      {remaining > 0 && !isExpanded && (
+                        <button
+                          onClick={() => toggleExpandedTags(doctor.id)}
+                          className="text-xs px-3 py-1 rounded-full bg-muted text-muted-foreground hover:bg-muted/80"
+                        >
+                          + more
+                        </button>
+                      )}
+                      {isExpanded && doctor.specializations.length > 2 && (
+                        <button
+                          onClick={() => toggleExpandedTags(doctor.id)}
+                          className="text-xs px-3 py-1 rounded-full bg-muted text-muted-foreground hover:bg-muted/80"
+                        >
+                          show less
+                        </button>
                       )}
                     </div>
-                  </div>
-                )}
 
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Starting from</span>
-                    <span className="font-semibold text-lg">{doctor.price}</span>
-                  </div>
-                  
-                  {doctor.nextAvailable && (
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                      <Clock className="w-3 h-3" />
-                      <span>{doctor.nextAvailable}</span>
+                    {/* Experience */}
+                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                      <span>{doctor.experience}</span>
                     </div>
-                  )}
-                  
-                  <Button 
-                    className="w-full" 
-                    onClick={() => handleBookConsultation(doctor.id)}
-                  >
-                    Book Consultation
-                  </Button>
-                </div>
-              </Card>
-            ))}
+
+                    {/* Availability */}
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>{doctor.nextAvailable || "No slots available"}</span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-2">
+                      <Button size="sm" className="flex-1" onClick={() => navigate(`/booking?doctor=${doctor.id}`)}>
+                        Book Consultation
+                      </Button>
+                      <Button size="sm" variant="outline" className="flex-1" onClick={() => navigate(`/doctor/${doctor.id}`)}>
+                        View Details
+                      </Button>
+                    </div>
+
+                    {/* Message button
+                       If your route expects ?doctor=<userId>, switch to doctor.userId below. */}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full mt-3"
+                      onClick={() => navigate(`/messages?doctor=${doctor.userId}`)}
+                    >
+                      Message the doctor
+                    </Button>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Load More (placeholder) */}
+        {!loading && filteredDoctors.length > 0 && (
+          <div className="text-center mt-12">
+            <Button variant="outline" size="lg">Load More Doctors</Button>
           </div>
         )}
       </main>
-      
+
       <Footer />
     </div>
   );

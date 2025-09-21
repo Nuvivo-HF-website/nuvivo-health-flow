@@ -245,7 +245,17 @@ export default function Marketplace() {
       (profiles as ProfileRow[]).forEach((p) => pMap.set(p.user_id, p));
 
       const transformed: Doctor[] = (specialists as SpecialistRow[]).map((s) => {
-        const profile = pMap.get(s.user_id) || {};
+        const profile: ProfileRow = pMap.get(s.user_id) || {
+          user_id: s.user_id,
+          full_name: null,
+          email: null,
+          avatar_url: null,
+          profession: null,
+          address: null,
+          city: null,
+          country: null
+        };
+        
         const name =
           profile.full_name ||
           (profile.email ? `Dr. ${profile.email.split("@")[0]}` : "Unknown");

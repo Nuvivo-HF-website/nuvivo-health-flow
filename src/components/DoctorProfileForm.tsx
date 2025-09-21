@@ -407,7 +407,13 @@ export function DoctorProfileForm() {
   }
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData(prev => {
+      // If profession is changing, clear specializations
+      if (field === 'profession' && prev.profession !== value) {
+        return { ...prev, [field]: value, specializations: [] }
+      }
+      return { ...prev, [field]: value }
+    })
   }
 
   const handleSpecializationToggle = (specialization: string) => {

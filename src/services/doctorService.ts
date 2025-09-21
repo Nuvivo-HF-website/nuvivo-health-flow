@@ -34,9 +34,7 @@ export interface DoctorProfile {
   bio?: string | null
   languages?: string[] | null
 
-  // doc paths stored in doctor_profiles
-  indemnity_document_url?: string | null
-  dbs_pvg_document_url?: string | null
+  avatar_url?: string | null
 
   // flags
   is_marketplace_ready?: boolean | null
@@ -71,8 +69,7 @@ const ALLOWED_COLS = new Set([
   'available_hours',
   'available_days',
   'languages',
-  'indemnity_document_url',
-  'dbs_pvg_document_url',
+  'avatar_url',
   'is_marketplace_ready',
   'verification_status',
   'is_active',

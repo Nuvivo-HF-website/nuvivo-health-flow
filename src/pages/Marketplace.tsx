@@ -125,8 +125,8 @@ export default function Marketplace() {
     try {
       setLoading(true);
       
-      // Query doctor_profiles and join with profiles directly since TypeScript types haven't updated for the view
-      const { data, error } = await supabase
+      // Query doctor_profiles first
+      const { data: doctorData, error: doctorError } = await supabase
         .from("doctor_profiles")
         .select(`
           id,
@@ -138,26 +138,42 @@ export default function Marketplace() {
           bio,
           clinic_name,
           available_days,
-          available_hours,
-          profiles!inner(
-            full_name,
-            avatar_url,
-            city,
-            country,
-            address
-          )
+          available_hours
         `)
         .eq("is_marketplace_ready", true)
         .eq("verification_status", "approved")
         .eq("is_active", true);
 
-      if (error) throw error;
+      if (doctorError) throw doctorError;
 
-      const transformed: Doctor[] = (data || []).map((r: any) => {
-        const name = r.profiles?.full_name || "Unknown";
+      if (!doctorData || doctorData.length === 0) {
+        setDoctors([]);
+        return;
+      }
+
+      // Get user IDs for profile lookup
+      const userIds = doctorData.map(d => d.user_id);
+      
+      // Query profiles separately
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, avatar_url, city, country, address")
+        .in("user_id", userIds);
+
+      if (profileError) throw profileError;
+
+      // Create a map of profiles by user_id for easy lookup
+      const profileMap = new Map();
+      (profileData || []).forEach(profile => {
+        profileMap.set(profile.user_id, profile);
+      });
+
+      const transformed: Doctor[] = doctorData.map((r: any) => {
+        const profile = profileMap.get(r.user_id);
+        const name = profile?.full_name || "Unknown";
         const profession = r.profession || "General Practice";
         const specs = Array.isArray(r.specializations) ? r.specializations : [];
-        const location = r.profiles?.address || [r.profiles?.city, r.profiles?.country].filter(Boolean).join(", ") || "UK";
+        const location = profile?.address || [profile?.city, profile?.country].filter(Boolean).join(", ") || "UK";
         const { nextText } = computeNextAvailable(r.available_days || [], r.available_hours || { start: "09:00", end: "17:00" });
 
         return {
@@ -169,7 +185,7 @@ export default function Marketplace() {
           rating: 4.8, // plug into real ratings later
           reviews: 120, // ditto
           experience: `${r.years_of_experience ?? 0}+ years`,
-          avatar: r.profiles?.avatar_url || "/placeholder.svg",
+          avatar: profile?.avatar_url || "/placeholder.svg",
           isVerified: true, // already filtered by the query
           isOnline: Math.random() > 0.5, // placeholder presence
           price: r.consultation_fee ? `£${r.consultation_fee}/consultation` : undefined,

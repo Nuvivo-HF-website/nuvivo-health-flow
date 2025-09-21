@@ -525,8 +525,8 @@ export function DoctorProfileForm() {
   last_name: formData.last_name,
   phone: formData.phone,
 
-  profession: formData.profession,
-  specialty: formData.profession,                 // 👈 legacy shim so old readers see it
+  profession: formData.profession || null,
+  specialty: formData.profession || null,                 // 👈 legacy shim so old readers see it
   specializations: [...formData.specializations], // ensure array, not string
 
   qualification: formData.qualification,

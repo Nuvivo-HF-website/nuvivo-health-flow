@@ -81,7 +81,7 @@ export const doctorService = {
       created_at: now,
       updated_at: now,
     })
-    console.debug('[doctorService.createDoctorProfile] payload →', payload)
+    
     const { data, error } = await supabase
       .from('doctor_profiles')
       .insert(payload)
@@ -110,7 +110,7 @@ export const doctorService = {
       languages: updates.languages ?? undefined,
       updated_at: new Date().toISOString(),
     })
-    console.debug('[doctorService.updateDoctorProfile] payload →', payload)
+  
     const { data, error } = await supabase
       .from('doctor_profiles')
       .update(payload)

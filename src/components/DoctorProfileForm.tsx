@@ -13,23 +13,17 @@ import { useToast } from "@/hooks/use-toast"
 import { Loader2, Plus, X, Upload, Shield, Check, User as UserIcon, Trash2 } from "lucide-react"
 
 /**
- * NOTE (backend flags used below):
+ * BACKEND FLAGS (RLS-friendly)
  * - doctor_profiles.is_marketplace_ready (boolean)
  * - doctor_profiles.verification_status ('incomplete' | 'pending_review' | 'approved' | 'rejected')
  * - doctor_profiles.is_active (boolean)
- * Ensure marketplace queries filter to only show approved/active providers:
- *   where is_marketplace_ready = true and verification_status = 'approved' and is_active = true
  */
 
-/*************************
- * Constants & Helpers
- *************************/
-
-const STORAGE_BUCKET = 'provider_documents' // keep your existing bucket name
+const STORAGE_BUCKET = 'provider_documents'
 
 const DAYS_OF_WEEK = [
   'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
-]
+] as const
 
 const days = [
   { key: "monday", label: "Monday" },
@@ -39,7 +33,7 @@ const days = [
   { key: "friday", label: "Friday" },  
   { key: "saturday", label: "Saturday" },
   { key: "sunday", label: "Sunday" }
-]
+] as const
 
 // Profession -> Specializations mapping (from your registration flow)
 const PROFESSIONS = [
@@ -51,96 +45,41 @@ const PROFESSIONS = [
   "Therapist",
   "Nutritionist",
   "Counsellor"
-]
+] as const
 
 const SPECIALIZATIONS_BY_PROFESSION: Record<string, string[]> = {
   "GP (General Practitioner)": [
-    "Family Medicine",
-    "Preventive Care",
-    "Chronic Disease Management",
-    "Minor Surgery",
-    "Women's Health",
-    "Men's Health",
-    "Elderly Care",
-    "Travel Medicine"
+    "Family Medicine","Preventive Care","Chronic Disease Management","Minor Surgery",
+    "Women's Health","Men's Health","Elderly Care","Travel Medicine"
   ],
   "Nurse": [
-    "Critical Care",
-    "Pediatric Nursing", 
-    "Geriatric Nursing",
-    "Mental Health Nursing",
-    "Community Nursing",
-    "Surgical Nursing",
-    "Emergency Nursing",
-    "Oncology Nursing"
+    "Critical Care","Pediatric Nursing","Geriatric Nursing","Mental Health Nursing",
+    "Community Nursing","Surgical Nursing","Emergency Nursing","Oncology Nursing"
   ],
   "Physiotherapist": [
-    "Sports Therapy",
-    "Neurological Physiotherapy",
-    "Orthopedic Physiotherapy",
-    "Pediatric Physiotherapy",
-    "Geriatric Physiotherapy",
-    "Respiratory Physiotherapy",
-    "Women's Health Physiotherapy",
-    "Manual Therapy"
+    "Sports Therapy","Neurological Physiotherapy","Orthopedic Physiotherapy","Pediatric Physiotherapy",
+    "Geriatric Physiotherapy","Respiratory Physiotherapy","Women's Health Physiotherapy","Manual Therapy"
   ],
   "Psychologist": [
-    "Clinical Psychology",
-    "Counseling Psychology",
-    "Child Psychology",
-    "Health Psychology",
-    "Neuropsychology",
-    "Forensic Psychology",
-    "Educational Psychology",
-    "Occupational Psychology"
+    "Clinical Psychology","Counseling Psychology","Child Psychology","Health Psychology",
+    "Neuropsychology","Forensic Psychology","Educational Psychology","Occupational Psychology"
   ],
   "Medical Specialist": [
-    "Cardiology",
-    "Dermatology",
-    "Endocrinology",
-    "Gastroenterology",
-    "General Medicine",
-    "Geriatrics",
-    "Hematology",
-    "Infectious Disease",
-    "Nephrology",
-    "Neurology",
-    "Oncology",
-    "Orthopedics",
-    "Psychiatry",
-    "Pulmonology",
-    "Rheumatology",
-    "Urology"
+    "Cardiology","Dermatology","Endocrinology","Gastroenterology","General Medicine","Geriatrics","Hematology",
+    "Infectious Disease","Nephrology","Neurology","Oncology","Orthopedics","Psychiatry","Pulmonology",
+    "Rheumatology","Urology"
   ],
   "Therapist": [
-    "Occupational Therapy",
-    "Speech Therapy",
-    "Art Therapy",
-    "Music Therapy",
-    "Behavioral Therapy",
-    "Cognitive Behavioral Therapy",
-    "Family Therapy",
-    "Group Therapy"
+    "Occupational Therapy","Speech Therapy","Art Therapy","Music Therapy",
+    "Behavioral Therapy","Cognitive Behavioral Therapy","Family Therapy","Group Therapy"
   ],
   "Nutritionist": [
-    "Clinical Nutrition",
-    "Sports Nutrition",
-    "Pediatric Nutrition",
-    "Geriatric Nutrition",
-    "Weight Management",
-    "Eating Disorders",
-    "Community Nutrition",
-    "Food Allergies & Intolerances"
+    "Clinical Nutrition","Sports Nutrition","Pediatric Nutrition","Geriatric Nutrition",
+    "Weight Management","Eating Disorders","Community Nutrition","Food Allergies & Intolerances"
   ],
   "Counsellor": [
-    "Marriage Counseling",
-    "Addiction Counseling",
-    "Grief Counseling",
-    "Career Counseling",
-    "Trauma Counseling",
-    "Youth Counseling",
-    "Family Counseling",
-    "Mental Health Counseling"
+    "Marriage Counseling","Addiction Counseling","Grief Counseling","Career Counseling",
+    "Trauma Counseling","Youth Counseling","Family Counseling","Mental Health Counseling"
   ]
 }
 
@@ -164,38 +103,50 @@ const getRegistrationBodyInfo = (profession: string) => {
 }
 
 // Convert old -> new availability (per-day)
-const convertAvailabilityToNewFormat = (availableDays: string[], availableHours: any) => {
+const convertAvailabilityToNewFormat = (
+  availableDays: string[] = [],
+  availableHours: any = { start: '09:00', end: '17:00' }
+) => {
   const availability: Record<string, { enabled: boolean; startTime: string; endTime: string }> = {}
-  const hasIndividualDayTimes = typeof availableHours === 'object' && 
-    availableHours !== null && 
-    Object.keys(availableHours).some(key => DAYS_OF_WEEK.includes(key))
+  const hasIndividualDayTimes =
+    typeof availableHours === 'object' &&
+    availableHours !== null &&
+    Object.keys(availableHours).some(key => DAYS_OF_WEEK.includes(key as any))
+
   DAYS_OF_WEEK.forEach(day => {
     const isEnabled = availableDays.includes(day)
     let startTime = '09:00'
     let endTime = '17:00'
-    if (hasIndividualDayTimes && (availableHours as any)[day]) {
-      startTime = (availableHours as any)[day].startTime || (availableHours as any)[day].start || '09:00'
-      endTime = (availableHours as any)[day].endTime || (availableHours as any)[day].end || '17:00'
-    } else if (typeof availableHours === 'object' && (availableHours as any).start && (availableHours as any).end) {
-      startTime = (availableHours as any).start
-      endTime = (availableHours as any).end
+
+    if (hasIndividualDayTimes && availableHours[day]) {
+      startTime = availableHours[day].startTime || availableHours[day].start || '09:00'
+      endTime = availableHours[day].endTime || availableHours[day].end || '17:00'
+    } else if (typeof availableHours === 'object' && availableHours.start && availableHours.end) {
+      startTime = availableHours.start
+      endTime = availableHours.end
     }
+
     availability[day] = { enabled: isEnabled, startTime, endTime }
   })
+
   return availability
 }
 
 // Convert new -> old availability (array + global fallback)
-const convertAvailabilityToOldFormat = (availability: Record<string, { enabled: boolean; startTime: string; endTime: string }>) => {
+const convertAvailabilityToOldFormat = (
+  availability: Record<string, { enabled: boolean; startTime: string; endTime: string }>
+) => {
   const enabledDays = Object.entries(availability)
     .filter(([_, config]) => config.enabled)
     .map(([day]) => day)
+
   const availableHours: any = {}
   Object.entries(availability).forEach(([day, config]) => {
     if (config.enabled) {
       availableHours[day] = { startTime: config.startTime, endTime: config.endTime }
     }
   })
+
   const firstEnabledDay = Object.values(availability).find(config => config.enabled)
   if (firstEnabledDay) {
     availableHours.start = firstEnabledDay.startTime
@@ -204,6 +155,7 @@ const convertAvailabilityToOldFormat = (availability: Record<string, { enabled: 
     availableHours.start = '09:00'
     availableHours.end = '17:00'
   }
+
   return { availableDays: enabledDays, availableHours }
 }
 
@@ -226,29 +178,27 @@ export function DoctorProfileForm() {
   const [dbsUrl, setDbsUrl] = useState<string>('')
   const indemnityInputRef = useRef<HTMLInputElement | null>(null)
   const dbsInputRef = useRef<HTMLInputElement | null>(null)
-
-  // Upload single-flight guard
   const [uploadingKind, setUploadingKind] = useState<null | 'indemnity' | 'dbs' | 'avatar'>(null)
 
-  // Missing requirements (for banner + gating)
   const [missing, setMissing] = useState<string[]>([])
 
-  // Slightly more visible fields (Input/Select/Textarea)
   const fieldClass =
-  "bg-white border border-muted-foreground/40 focus:border-primary/60 " +
-  "outline-none focus:outline-none ring-0 focus:ring-0 focus-visible:ring-0";
+    "bg-white border border-muted-foreground/40 focus:border-primary/60 " +
+    "outline-none focus:outline-none ring-0 focus:ring-0 focus-visible:ring-0"
 
-  const dashedBoxClass = "border-2 border-dashed border-muted-foreground/40 hover:border-muted-foreground rounded-lg p-6 text-center cursor-pointer transition"
+  const dashedBoxClass =
+    "border-2 border-dashed border-muted-foreground/40 hover:border-muted-foreground " +
+    "rounded-lg p-6 text-center cursor-pointer transition"
 
   const [formData, setFormData] = useState({
     // Personal
     first_name: '',
     last_name: '',
     phone: '',
-    avatar_url: '', // store storage object path (preferred) or public URL
+    avatar_url: '',
 
     // Profession & regs
-    profession: '',
+    profession: '' as (typeof PROFESSIONS)[number] | '',
     specializations: [] as string[],
     qualification: '',
     license_number: '', // GMC/NMC/HCPC/BACP etc.
@@ -278,7 +228,6 @@ export function DoctorProfileForm() {
       sunday: { enabled: false, startTime: '09:00', endTime: '17:00' },
     },
 
-    // Languages (not editable in UI currently)
     languages: ['English'],
 
     // Documents (store STORAGE OBJECT PATH, not public URL)
@@ -286,10 +235,9 @@ export function DoctorProfileForm() {
     dbs_pvg_document_url: '',
   })
 
-  // Compute missing requirements (called on form changes)
+  // --- computed helpers
   const computeMissing = (fd: typeof formData) => {
     const out: string[] = []
-
     if (!fd.first_name?.trim()) out.push('First name')
     if (!fd.last_name?.trim()) out.push('Last name')
 
@@ -307,17 +255,15 @@ export function DoctorProfileForm() {
 
     if (!fd.indemnity_document_url) out.push('Indemnity Insurance document')
     if (!fd.dbs_pvg_document_url) out.push('DBS/PVG document')
-
     return out
   }
 
   const currentRegInfo = getRegistrationBodyInfo(formData.profession)
   const getCurrentSpecializations = () => SPECIALIZATIONS_BY_PROFESSION[formData.profession] || []
 
+  // --- lifecycle
   useEffect(() => {
-    if (user?.id) {
-      loadDoctorProfile()
-    }
+    if (user?.id) void loadDoctorProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id])
 
@@ -326,7 +272,7 @@ export function DoctorProfileForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(formData)])
 
-  // Helper: sign a storage object path for temporary display
+  // Signed URL helper for storage paths
   const signIfPath = async (maybePath: string | undefined | null) => {
     if (!maybePath) return ''
     if (/^https?:\/\//i.test(maybePath)) return maybePath
@@ -343,43 +289,23 @@ export function DoctorProfileForm() {
 
       if (data) {
         setDoctorProfile(data)
-        const availableHours = (data as any).available_hours as any
-        const parsedHours = typeof availableHours === 'object' && availableHours !== null 
-          ? availableHours 
-          : { start: '09:00', end: '17:00' }
 
-        // Signed display URLs from stored paths/urls
+        // signed previews
         setIndemnityUrl(await signIfPath((data as any).indemnity_document_url || ''))
         setDbsUrl(await signIfPath((data as any).dbs_pvg_document_url || ''))
         setAvatarUrl(await signIfPath((data as any).avatar_url || ''))
 
-        // Handle specialty field - it might contain profession name or comma-separated specializations
-        let specialtiesArray: string[] = [];
-        let detectedProfession = 'Medical Specialist';
-        
-        if (data.specialty) {
-          const specialtyValue = data.specialty.trim();
-          if (PROFESSIONS.includes(specialtyValue)) {
-            detectedProfession = specialtyValue;
-            specialtiesArray = [];
-          } else {
-            specialtiesArray = specialtyValue.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            detectedProfession = PROFESSIONS.find(profession => 
-              specialtiesArray.some(spec => 
-                SPECIALIZATIONS_BY_PROFESSION[profession]?.includes(spec)
-              )
-            ) || 'Medical Specialist';
-          }
-        }
+        const availableHours = (data as any).available_hours ?? { start: '09:00', end: '17:00' }
+        const availableDays = (data as any).available_days ?? []
 
         setFormData(prev => ({
           ...prev,
           first_name: data.first_name || '',
           last_name: data.last_name || '',
           phone: data.phone || '',
-          avatar_url: (data as any).avatar_url || '', // keep path if stored
-          profession: detectedProfession,
-          specializations: specialtiesArray,
+          avatar_url: (data as any).avatar_url || '',
+          profession: (data as any).profession || prev.profession || 'Medical Specialist',
+          specializations: Array.isArray((data as any).specializations) ? (data as any).specializations : [],
           qualification: data.qualification || '',
           license_number: data.license_number || (data as any).registration_number || '',
           years_of_experience: data.years_of_experience?.toString() || '',
@@ -392,75 +318,77 @@ export function DoctorProfileForm() {
           city: data.city || '',
           postcode: data.postcode || '',
           country: data.country || 'United Kingdom',
-          availability: convertAvailabilityToNewFormat((data as any).available_days || [], parsedHours) as any,
+          availability: convertAvailabilityToNewFormat(availableDays, availableHours) as any,
           languages: (data as any).languages || ['English'],
           indemnity_document_url: (data as any).indemnity_document_url || '',
           dbs_pvg_document_url: (data as any).dbs_pvg_document_url || '',
         }))
-      } else {
-        // Attempt migration from specialists table if no doctor profile exists
-        const { data: specialistData, error: specialistError } = await supabase
-          .from('specialists')
-          .select('*')
-          .eq('user_id', user.id)
-          .single()
+        return
+      }
 
-        if (specialistData && !specialistError) {
-          const doctorProfileData: any = {
-            user_id: user.id,
-            first_name: user.user_metadata?.full_name?.split(' ')[0] || '',
-            last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-            specialty: 'Medical Specialist',
-            qualification: '',
-            license_number: specialistData.registration_number || '',
-            years_of_experience: specialistData.experience_years || null,
+      // Fallback: attempt migration from specialists
+      const { data: specialistData, error: specialistError } = await supabase
+        .from('specialists')
+        .select('*')
+        .eq('user_id', user.id)
+        .single()
+
+      if (specialistData && !specialistError) {
+        const doctorProfileData: any = {
+          user_id: user.id,
+          first_name: user.user_metadata?.full_name?.split(' ')[0] || '',
+          last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+          profession: 'Medical Specialist',
+          specializations: [], // start empty
+          qualification: '',
+          license_number: specialistData.registration_number || '',
+          years_of_experience: specialistData.experience_years || null,
+          phone: '',
+          address_line_1: '',
+          address_line_2: '',
+          city: '',
+          postcode: '',
+          country: 'United Kingdom',
+          clinic_name: '',
+          clinic_address: '',
+          consultation_fee: specialistData.consultation_fee || 100,
+          available_hours: { start: '09:00', end: '17:00' },
+          available_days: specialistData.available_days || ['monday','tuesday','wednesday','thursday','friday'],
+          bio: specialistData.bio || '',
+          languages: ['English'],
+          is_marketplace_ready: false,
+          verification_status: 'incomplete',
+          is_active: false
+        }
+
+        const { data: newDoctorProfile, error: createError } = await doctorService.createDoctorProfile(doctorProfileData)
+        if (!createError && newDoctorProfile) {
+          setDoctorProfile(newDoctorProfile)
+          setFormData(prev => ({
+            ...prev,
+            first_name: doctorProfileData.first_name,
+            last_name: doctorProfileData.last_name,
             phone: '',
-            address_line_1: '',
-            address_line_2: '',
-            city: '',
-            postcode: '',
-            country: 'United Kingdom',
-            clinic_name: '',
-            clinic_address: '',
-            consultation_fee: specialistData.consultation_fee || 100,
-            available_hours: { start: '09:00', end: '17:00' },
-            available_days: specialistData.available_days || ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-            bio: specialistData.bio || '',
-            languages: ['English'],
-            is_marketplace_ready: false,
-            verification_status: 'incomplete',
-            is_active: false
-          }
-
-          const { data: newDoctorProfile, error: createError } = await doctorService.createDoctorProfile(doctorProfileData)
-          if (!createError && newDoctorProfile) {
-            setDoctorProfile(newDoctorProfile)
-            setFormData(prev => ({
-              ...prev,
-              first_name: doctorProfileData.first_name,
-              last_name: doctorProfileData.last_name,
-              phone: '',
-              avatar_url: '',
-              profession: doctorProfileData.specialty,
-              specializations: [],
-              qualification: doctorProfileData.qualification,
-              license_number: doctorProfileData.license_number,
-              years_of_experience: doctorProfileData.years_of_experience?.toString() || '',
-              consultation_fee: String(doctorProfileData.consultation_fee ?? ''),
-              bio: doctorProfileData.bio,
-              clinic_name: doctorProfileData.clinic_name,
-              clinic_address: doctorProfileData.clinic_address,
-              address_line_1: doctorProfileData.address_line_1,
-              address_line_2: doctorProfileData.address_line_2,
-              city: doctorProfileData.city,
-              postcode: doctorProfileData.postcode,
-              country: doctorProfileData.country,
-              availability: convertAvailabilityToNewFormat(doctorProfileData.available_days, doctorProfileData.available_hours) as any,
-              languages: doctorProfileData.languages,
-              indemnity_document_url: '',
-              dbs_pvg_document_url: ''
-            }))
-          }
+            avatar_url: '',
+            profession: doctorProfileData.profession,
+            specializations: [],
+            qualification: doctorProfileData.qualification,
+            license_number: doctorProfileData.license_number,
+            years_of_experience: doctorProfileData.years_of_experience?.toString() || '',
+            consultation_fee: String(doctorProfileData.consultation_fee ?? ''),
+            bio: doctorProfileData.bio,
+            clinic_name: doctorProfileData.clinic_name,
+            clinic_address: doctorProfileData.clinic_address,
+            address_line_1: doctorProfileData.address_line_1,
+            address_line_2: doctorProfileData.address_line_2,
+            city: doctorProfileData.city,
+            postcode: doctorProfileData.postcode,
+            country: doctorProfileData.country,
+            availability: convertAvailabilityToNewFormat(doctorProfileData.available_days, doctorProfileData.available_hours) as any,
+            languages: doctorProfileData.languages,
+            indemnity_document_url: '',
+            dbs_pvg_document_url: ''
+          }))
         }
       }
     } catch (error) {
@@ -534,7 +462,7 @@ export function DoctorProfileForm() {
         toast({ title: 'Upload failed', description: error.message, variant: 'destructive' })
         return null
       }
-      return objectPath // store the path in DB; we will sign for display
+      return objectPath // store the path in DB; signed for display
     } catch (e: any) {
       toast({ title: 'Upload error', description: e?.message || 'Unexpected error', variant: 'destructive' })
       return null
@@ -580,17 +508,16 @@ export function DoctorProfileForm() {
     try {
       setLoading(true)
       const { availableDays, availableHours } = convertAvailabilityToOldFormat(formData.availability as any)
-
       const marketplaceReady = computeMissing(formData).length === 0
 
+      // doctor_profiles payload — profession stored explicitly, specializations as text[]
       const profileData: any = {
         user_id: user.id,
         first_name: formData.first_name,
         last_name: formData.last_name,
         phone: formData.phone,
-        specialty: formData.specializations.length > 0 
-          ? formData.specializations.join(', ') 
-          : formData.profession,
+        profession: formData.profession,
+        specializations: formData.specializations,   // ARRAY, not comma string
         qualification: formData.qualification,
         license_number: formData.license_number,
         years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : null,
@@ -602,35 +529,52 @@ export function DoctorProfileForm() {
         address_line_2: formData.address_line_2,
         city: formData.city,
         postcode: formData.postcode,
-
-        // Country kept in payload (UI hidden)
         country: formData.country,
-
         available_hours: availableHours,
         available_days: availableDays,
-
         languages: formData.languages,
-
-        // Document paths (stored securely as storage object paths)
         indemnity_document_url: formData.indemnity_document_url || null,
         dbs_pvg_document_url: formData.dbs_pvg_document_url || null,
-
-        // NEW – marketplace gating flags
         is_marketplace_ready: marketplaceReady,
         verification_status: marketplaceReady ? 'pending_review' : 'incomplete',
-        is_active: false, // only admin/backoffice sets true when approved
+        is_active: false, // backoffice flips to true after approval
+        avatar_url: formData.avatar_url || null, // keep path for reference if you store it here
       }
 
+      // 1) Upsert into doctor_profiles
       let result
       if (doctorProfile) {
         result = await doctorService.updateDoctorProfile(doctorProfile.id, profileData)
       } else {
         result = await doctorService.createDoctorProfile(profileData)
       }
-
       if (result.error) throw result.error
+
       setDoctorProfile(result.data)
-      toast({ title: 'Success', description: doctorProfile ? 'Profile updated successfully!' : 'Profile created successfully!' })
+
+      // 2) Mirror key fields into profiles (used by marketplace cards)
+      const addressStr = formData.address_line_1
+        ? `${formData.address_line_1}${formData.address_line_2 ? ', ' + formData.address_line_2 : ''}, ${formData.city} ${formData.postcode}`
+        : null
+
+      const { error: profErr } = await supabase
+        .from('profiles')
+        .update({
+          profession: formData.profession || null,
+          avatar_url: formData.avatar_url || null,
+          address: addressStr,
+          city: formData.city || null,
+          country: formData.country || 'United Kingdom',
+          full_name: `${formData.first_name ?? ''} ${formData.last_name ?? ''}`.trim() || null,
+        })
+        .eq('user_id', user.id)
+
+      if (profErr) console.warn('profiles mirror update failed:', profErr)
+
+      toast({
+        title: 'Success',
+        description: doctorProfile ? 'Profile updated successfully!' : 'Profile created successfully!'
+      })
     } catch (error) {
       console.error('Error saving doctor profile:', error)
       toast({ title: 'Error', description: 'Failed to save profile. Please try again.', variant: 'destructive' })
@@ -911,13 +855,27 @@ export function DoctorProfileForm() {
             <div className="space-y-3">
               {days.map(({ key, label }) => (
                 <div key={key} className="flex items-center space-x-4 p-3 border rounded-lg">
-                  <Checkbox id={key} checked={(formData.availability as any)[key].enabled} onCheckedChange={(checked) => handleAvailabilityChange(key, 'enabled', checked)} />
+                  <Checkbox
+                    id={key}
+                    checked={(formData.availability as any)[key].enabled}
+                    onCheckedChange={(checked) => handleAvailabilityChange(key, 'enabled', checked)}
+                  />
                   <Label htmlFor={key} className="w-20">{label}</Label>
                   {(formData.availability as any)[key].enabled && (
                     <div className="flex items-center space-x-2">
-                      <Input type="time" value={(formData.availability as any)[key].startTime} onChange={(e) => handleAvailabilityChange(key, 'startTime', e.target.value)} className={`w-28 ${fieldClass}`} />
+                      <Input
+                        type="time"
+                        value={(formData.availability as any)[key].startTime}
+                        onChange={(e) => handleAvailabilityChange(key, 'startTime', e.target.value)}
+                        className={`w-28 ${fieldClass}`}
+                      />
                       <span className="text-sm text-muted-foreground">to</span>
-                      <Input type="time" value={(formData.availability as any)[key].endTime} onChange={(e) => handleAvailabilityChange(key, 'endTime', e.target.value)} className={`w-28 ${fieldClass}`} />
+                      <Input
+                        type="time"
+                        value={(formData.availability as any)[key].endTime}
+                        onChange={(e) => handleAvailabilityChange(key, 'endTime', e.target.value)}
+                        className={`w-28 ${fieldClass}`}
+                      />
                     </div>
                   )}
                 </div>
@@ -940,3 +898,5 @@ export function DoctorProfileForm() {
     </Card>
   )
 }
+
+export default DoctorProfileForm

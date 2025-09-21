@@ -197,6 +197,9 @@ export default function Marketplace() {
       });
 
       setDoctors(transformed);
+      
+      console.log("Fetched doctors:", transformed.length);
+      console.log("Sample doctor:", transformed[0]);
 
       // Build dynamic filter list (augment the base list with real values)
       const dynamic = new Set(baseSpecialties);
@@ -218,25 +221,29 @@ export default function Marketplace() {
     }
   };
 
-  const filteredDoctors = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
+  // Temporarily remove filters to debug display issues
+  // const filteredDoctors = useMemo(() => {
+  //   const term = searchTerm.trim().toLowerCase();
 
-    return doctors.filter((doctor) => {
-      const matchesSearch =
-        term === "" ||
-        doctor.name.toLowerCase().includes(term) ||
-        doctor.profession.toLowerCase().includes(term) ||
-        doctor.specializations.some((tag) => tag.toLowerCase().includes(term));
+  //   return doctors.filter((doctor) => {
+  //     const matchesSearch =
+  //       term === "" ||
+  //       doctor.name.toLowerCase().includes(term) ||
+  //       doctor.profession.toLowerCase().includes(term) ||
+  //       doctor.specializations.some((tag) => tag.toLowerCase().includes(term));
 
-      const matchesSpecialty =
-        selectedSpecialty === "" ||
-        selectedSpecialty === "All Specialties" ||
-        doctor.profession === selectedSpecialty ||
-        doctor.specializations.includes(selectedSpecialty);
+  //     const matchesSpecialty =
+  //       selectedSpecialty === "" ||
+  //       selectedSpecialty === "All Specialties" ||
+  //       doctor.profession === selectedSpecialty ||
+  //       doctor.specializations.includes(selectedSpecialty);
 
-      return matchesSearch && matchesSpecialty;
-    });
-  }, [doctors, searchTerm, selectedSpecialty]);
+  //     return matchesSearch && matchesSpecialty;
+  //   });
+  // }, [doctors, searchTerm, selectedSpecialty]);
+
+  // Show all doctors without filtering
+  const filteredDoctors = doctors;
 
   const toggleExpandedTags = (doctorId: string) => {
     setExpandedTags((prev) => ({ ...prev, [doctorId]: !prev[doctorId] }));

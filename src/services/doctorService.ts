@@ -88,7 +88,7 @@ function withLegacyShim<T extends Record<string, any>>(obj: T) {
   }
 }
 
-function pickAllowed(obj: Record<string, any>) {
+function pickAllowed(obj: Record<string, any>): Record<string, any> {
   const out: Record<string, any> = {}
   for (const [k, v] of Object.entries(obj)) {
     if (v === undefined) continue
@@ -100,7 +100,7 @@ function pickAllowed(obj: Record<string, any>) {
 export const doctorService = {
   async createDoctorProfile(profileData: Omit<DoctorProfile, 'id' | 'created_at' | 'updated_at'>) {
     const now = new Date().toISOString()
-    const base: any = withLegacyShim({
+    const base = withLegacyShim({
       ...profileData,
       specializations: profileData.specializations ?? [],
       available_days: profileData.available_days ?? [],
@@ -108,13 +108,13 @@ export const doctorService = {
       created_at: now,
       updated_at: now,
     })
-    const payload = pickAllowed(base)
+    const payload = pickAllowed(base) as any
 
     console.debug('doctor_profiles INSERT payload →', payload)
 
     const { data, error } = await supabase
       .from('doctor_profiles')
-      .insert(payload)
+      .insert(payload as any)
       .select()
       .single()
 
@@ -132,17 +132,17 @@ export const doctorService = {
   },
 
   async updateDoctorProfile(doctorId: string, updates: Partial<DoctorProfile>) {
-    const base: any = withLegacyShim({
+    const base = withLegacyShim({
       ...updates,
       updated_at: new Date().toISOString(),
     })
-    const payload = pickAllowed(base)
+    const payload = pickAllowed(base) as any
 
     console.debug('doctor_profiles UPDATE payload →', payload)
 
     const { data, error } = await supabase
       .from('doctor_profiles')
-      .update(payload)
+      .update(payload as any)
       .eq('id', doctorId)
       .select()
       .single()

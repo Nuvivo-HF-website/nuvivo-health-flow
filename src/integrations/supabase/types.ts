@@ -518,6 +518,7 @@ export type Database = {
           address_line_2: string | null
           available_days: string[] | null
           available_hours: Json | null
+          avatar_url: string | null
           bio: string | null
           city: string | null
           clinic_address: string | null
@@ -525,8 +526,10 @@ export type Database = {
           consultation_fee: number | null
           country: string | null
           created_at: string
+          dbs_pvg_document_url: string | null
           first_name: string | null
           id: string
+          indemnity_document_url: string | null
           is_active: boolean | null
           is_marketplace_ready: boolean | null
           languages: string[] | null
@@ -550,6 +553,7 @@ export type Database = {
           address_line_2?: string | null
           available_days?: string[] | null
           available_hours?: Json | null
+          avatar_url?: string | null
           bio?: string | null
           city?: string | null
           clinic_address?: string | null
@@ -557,8 +561,10 @@ export type Database = {
           consultation_fee?: number | null
           country?: string | null
           created_at?: string
+          dbs_pvg_document_url?: string | null
           first_name?: string | null
           id?: string
+          indemnity_document_url?: string | null
           is_active?: boolean | null
           is_marketplace_ready?: boolean | null
           languages?: string[] | null
@@ -582,6 +588,7 @@ export type Database = {
           address_line_2?: string | null
           available_days?: string[] | null
           available_hours?: Json | null
+          avatar_url?: string | null
           bio?: string | null
           city?: string | null
           clinic_address?: string | null
@@ -589,8 +596,10 @@ export type Database = {
           consultation_fee?: number | null
           country?: string | null
           created_at?: string
+          dbs_pvg_document_url?: string | null
           first_name?: string | null
           id?: string
+          indemnity_document_url?: string | null
           is_active?: boolean | null
           is_marketplace_ready?: boolean | null
           languages?: string[] | null
@@ -609,7 +618,15 @@ export type Database = {
             | null
           years_of_experience?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_profession_allowed"
+            columns: ["profession"]
+            isOneToOne: false
+            referencedRelation: "professions_allowed"
+            referencedColumns: ["profession"]
+          },
+        ]
       }
       document_categories: {
         Row: {
@@ -1291,6 +1308,18 @@ export type Database = {
         }
         Relationships: []
       }
+      professions_allowed: {
+        Row: {
+          profession: string
+        }
+        Insert: {
+          profession: string
+        }
+        Update: {
+          profession?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -1838,6 +1867,31 @@ export type Database = {
       }
     }
     Views: {
+      doctor_marketplace: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          consultation_fee: number | null
+          country: string | null
+          full_name: string | null
+          id: string | null
+          profession: string | null
+          specializations: string[] | null
+          user_id: string | null
+          years_of_experience: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_profession_allowed"
+            columns: ["profession"]
+            isOneToOne: false
+            referencedRelation: "professions_allowed"
+            referencedColumns: ["profession"]
+          },
+        ]
+      }
       marketplace_providers: {
         Row: {
           available_days: string[] | null
@@ -1857,7 +1911,15 @@ export type Database = {
           user_id: string | null
           years_of_experience: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_profession_allowed"
+            columns: ["dp_profession"]
+            isOneToOne: false
+            referencedRelation: "professions_allowed"
+            referencedColumns: ["profession"]
+          },
+        ]
       }
       messages_decrypted: {
         Row: {

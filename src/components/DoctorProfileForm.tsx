@@ -304,8 +304,16 @@ export function DoctorProfileForm() {
           last_name: data.last_name || '',
           phone: data.phone || '',
           avatar_url: (data as any).avatar_url || '',
-          profession: (data as any).profession || prev.profession || 'Medical Specialist',
-          specializations: Array.isArray((data as any).specializations) ? (data as any).specializations : [],
+          profession:
+          (data as any).profession ||
+          (data as any).specialty ||
+          prev.profession ||
+          'Medical Specialist',
+          specializations: Array.isArray((data as any).specializations)
+          ? (data as any).specializations
+          : ((data as any).specialty || (data as any).profession
+          ? [ (data as any).specialty || (data as any).profession ]
+          : []),
           qualification: data.qualification || '',
           license_number: data.license_number || (data as any).registration_number || '',
           years_of_experience: data.years_of_experience?.toString() || '',
@@ -512,34 +520,41 @@ export function DoctorProfileForm() {
 
       // doctor_profiles payload — profession stored explicitly, specializations as text[]
       const profileData: any = {
-        user_id: user.id,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        phone: formData.phone,
-        profession: formData.profession,
-        specializations: formData.specializations,   // ARRAY, not comma string
-        qualification: formData.qualification,
-        license_number: formData.license_number,
-        years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : null,
-        consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : null,
-        bio: formData.bio,
-        clinic_name: formData.clinic_name,
-        clinic_address: formData.clinic_address,
-        address_line_1: formData.address_line_1,
-        address_line_2: formData.address_line_2,
-        city: formData.city,
-        postcode: formData.postcode,
-        country: formData.country,
-        available_hours: availableHours,
-        available_days: availableDays,
-        languages: formData.languages,
-        indemnity_document_url: formData.indemnity_document_url || null,
-        dbs_pvg_document_url: formData.dbs_pvg_document_url || null,
-        is_marketplace_ready: marketplaceReady,
-        verification_status: marketplaceReady ? 'pending_review' : 'incomplete',
-        is_active: false, // backoffice flips to true after approval
-        avatar_url: formData.avatar_url || null, // keep path for reference if you store it here
-      }
+  user_id: user.id,
+  first_name: formData.first_name,
+  last_name: formData.last_name,
+  phone: formData.phone,
+
+  profession: formData.profession,
+  specialty: formData.profession,                 // 👈 legacy shim so old readers see it
+  specializations: [...formData.specializations], // ensure array, not string
+
+  qualification: formData.qualification,
+  license_number: formData.license_number,
+  years_of_experience: formData.years_of_experience ? parseInt(formData.years_of_experience) : null,
+  consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : null,
+  bio: formData.bio,
+  clinic_name: formData.clinic_name,
+  clinic_address: formData.clinic_address,
+  address_line_1: formData.address_line_1,
+  address_line_2: formData.address_line_2,
+  city: formData.city,
+  postcode: formData.postcode,
+  country: formData.country,
+  available_hours: availableHours,
+  available_days: availableDays,
+  languages: formData.languages,
+  indemnity_document_url: formData.indemnity_document_url || null,
+  dbs_pvg_document_url: formData.dbs_pvg_document_url || null,
+  is_marketplace_ready: marketplaceReady,
+  verification_status: marketplaceReady ? 'pending_review' : 'incomplete',
+  is_active: false,
+  avatar_url: formData.avatar_url || null,
+}
+
+// (optional but very useful)
+console.debug('doctor_profiles payload →', profileData)
+
 
       // 1) Upsert into doctor_profiles
       let result

@@ -534,7 +534,9 @@ export type Database = {
           license_number: string | null
           phone: string | null
           postcode: string | null
+          profession: string | null
           qualification: string | null
+          specializations: string[] | null
           specialty: string | null
           updated_at: string
           user_id: string
@@ -564,7 +566,9 @@ export type Database = {
           license_number?: string | null
           phone?: string | null
           postcode?: string | null
+          profession?: string | null
           qualification?: string | null
+          specializations?: string[] | null
           specialty?: string | null
           updated_at?: string
           user_id: string
@@ -594,7 +598,9 @@ export type Database = {
           license_number?: string | null
           phone?: string | null
           postcode?: string | null
+          profession?: string | null
           qualification?: string | null
+          specializations?: string[] | null
           specialty?: string | null
           updated_at?: string
           user_id?: string
@@ -1287,51 +1293,63 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           ai_consent: boolean | null
           avatar_url: string | null
+          city: string | null
           consent_ip_address: unknown | null
           consent_timestamp: string | null
           consent_version: string | null
+          country: string | null
           created_at: string
           data_retention_consent: boolean | null
           email: string | null
           full_name: string | null
           id: string
           marketing_consent: boolean | null
+          profession: string | null
           research_consent: boolean | null
           updated_at: string
           user_id: string
           user_type: string | null
         }
         Insert: {
+          address?: string | null
           ai_consent?: boolean | null
           avatar_url?: string | null
+          city?: string | null
           consent_ip_address?: unknown | null
           consent_timestamp?: string | null
           consent_version?: string | null
+          country?: string | null
           created_at?: string
           data_retention_consent?: boolean | null
           email?: string | null
           full_name?: string | null
           id?: string
           marketing_consent?: boolean | null
+          profession?: string | null
           research_consent?: boolean | null
           updated_at?: string
           user_id: string
           user_type?: string | null
         }
         Update: {
+          address?: string | null
           ai_consent?: boolean | null
           avatar_url?: string | null
+          city?: string | null
           consent_ip_address?: unknown | null
           consent_timestamp?: string | null
           consent_version?: string | null
+          country?: string | null
           created_at?: string
           data_retention_consent?: boolean | null
           email?: string | null
           full_name?: string | null
           id?: string
           marketing_consent?: boolean | null
+          profession?: string | null
           research_consent?: boolean | null
           updated_at?: string
           user_id?: string
@@ -1820,6 +1838,27 @@ export type Database = {
       }
     }
     Views: {
+      marketplace_providers: {
+        Row: {
+          available_days: string[] | null
+          available_hours: Json | null
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          clinic_name: string | null
+          consultation_fee: number | null
+          country: string | null
+          dp_profession: string | null
+          full_name: string | null
+          id: string | null
+          location: string | null
+          profession: string | null
+          specializations: string[] | null
+          user_id: string | null
+          years_of_experience: number | null
+        }
+        Relationships: []
+      }
       messages_decrypted: {
         Row: {
           content: string | null

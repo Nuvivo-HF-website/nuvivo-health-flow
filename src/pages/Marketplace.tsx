@@ -13,51 +13,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 /**
- * This version expects a Postgres view:
- *
- * create or replace view marketplace_providers as
- * select
- *   dp.id,
- *   dp.user_id,
- *   dp.profession              as dp_profession,
- *   dp.specializations,
- *   dp.consultation_fee,
- *   dp.years_of_experience,
- *   dp.bio,
- *   dp.clinic_name,
- *   dp.available_days,
- *   dp.available_hours,
- *   p.full_name,
- *   coalesce(p.profession, dp.profession) as profession,
- *   p.avatar_url,
- *   coalesce(nullif(p.address,''), dp.clinic_name, 'UK') as location,
- *   p.city,
- *   p.country
- * from doctor_profiles dp
- * join profiles p on p.user_id = dp.user_id
- * where dp.is_marketplace_ready = true
- *   and dp.verification_status = 'approved'
- *   and dp.is_active = true;
+ * This marketplace component queries doctor_profiles directly and joins with profiles
+ * to get verified healthcare providers available for consultation booking.
  */
-
-type Row = {
-  id: string;
-  user_id: string;
-  dp_profession: string | null;
-  profession: string | null;
-  specializations: string[] | null;
-  consultation_fee: number | null;
-  years_of_experience: number | null;
-  bio: string | null;
-  clinic_name: string | null;
-  available_days: string[] | null;
-  available_hours: any | null;
-  full_name: string | null;
-  avatar_url: string | null;
-  location: string | null;
-  city: string | null;
-  country: string | null;
-};
 
 interface Doctor {
   id: string;
@@ -166,14 +124,40 @@ export default function Marketplace() {
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from("marketplace_providers").select("*");
+      
+      // Query doctor_profiles and join with profiles directly since TypeScript types haven't updated for the view
+      const { data, error } = await supabase
+        .from("doctor_profiles")
+        .select(`
+          id,
+          user_id,
+          profession,
+          specializations,
+          consultation_fee,
+          years_of_experience,
+          bio,
+          clinic_name,
+          available_days,
+          available_hours,
+          profiles!inner(
+            full_name,
+            avatar_url,
+            city,
+            country,
+            address
+          )
+        `)
+        .eq("is_marketplace_ready", true)
+        .eq("verification_status", "approved")
+        .eq("is_active", true);
+
       if (error) throw error;
 
-      const transformed: Doctor[] = (data as Row[]).map((r) => {
-        const name = r.full_name || "Unknown";
-        const profession = r.profession || r.dp_profession || "General Practice";
+      const transformed: Doctor[] = (data || []).map((r: any) => {
+        const name = r.profiles?.full_name || "Unknown";
+        const profession = r.profession || "General Practice";
         const specs = Array.isArray(r.specializations) ? r.specializations : [];
-        const location = r.location || [r.city, r.country].filter(Boolean).join(", ") || "UK";
+        const location = r.profiles?.address || [r.profiles?.city, r.profiles?.country].filter(Boolean).join(", ") || "UK";
         const { nextText } = computeNextAvailable(r.available_days || [], r.available_hours || { start: "09:00", end: "17:00" });
 
         return {
@@ -185,8 +169,8 @@ export default function Marketplace() {
           rating: 4.8, // plug into real ratings later
           reviews: 120, // ditto
           experience: `${r.years_of_experience ?? 0}+ years`,
-          avatar: r.avatar_url || "/placeholder.svg",
-          isVerified: true, // already filtered by the view
+          avatar: r.profiles?.avatar_url || "/placeholder.svg",
+          isVerified: true, // already filtered by the query
           isOnline: Math.random() > 0.5, // placeholder presence
           price: r.consultation_fee ? `£${r.consultation_fee}/consultation` : undefined,
           nextAvailable: nextText,

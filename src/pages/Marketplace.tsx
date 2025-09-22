@@ -347,7 +347,7 @@ export default function Marketplace() {
           .in("user_id", userIds),
         supabase
           .from("doctor_profiles") 
-          .select("user_id, available_days, available_hours, bio, specializations, experience_years")
+          .select("user_id, available_days, available_hours")
           .in("user_id", userIds)
       ]);
 
@@ -392,11 +392,21 @@ export default function Marketplace() {
           profile.profession ||
           (s.specialty && !Array.isArray(s.specializations) ? s.specialty : "General Practice");
 
-        const specs = Array.isArray(s.specializations)
-          ? s.specializations
-          : typeof s.specialty === "string"
-          ? s.specialty.split(",").map((t) => t.trim()).filter(Boolean)
-          : [];
+        let specs: string[] = [];
+        if (Array.isArray(doctorProfile?.specializations)) {
+        specs = doctorProfile!.specializations as string[];
+        } else if (Array.isArray(s.specializations)) {
+        specs = s.specializations as string[];
+        } else if (typeof s.specialty === "string" && s.specialty.trim()) {
+        specs = s.specialty.split(",").map(t => t.trim()).filter(Boolean);
+        }
+
+const years = (doctorProfile?.experience_years ?? s.experience_years ?? 0) as number;
+
+const bio =
+  (doctorProfile?.bio && doctorProfile.bio.trim()) ||
+  (s.bio && s.bio.trim()) ||
+  (profession ? `Specialist in ${profession}` : "");
 
         const location =
           profile.address ||

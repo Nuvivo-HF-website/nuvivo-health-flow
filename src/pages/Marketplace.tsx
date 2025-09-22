@@ -186,7 +186,7 @@ export default function Marketplace() {
       }
 
       const transformed = (data as ViewRow[]).map((r) => {
-        const name = r.full_name || "Unknown";
+        const name = r.full_name || "Healthcare Professional";
         const profession = r.profession || r.dp_profession || "General Practice";
         const specs = Array.isArray(r.specializations) ? r.specializations : [];
         const location = r.location || [r.city, r.country].filter(Boolean).join(", ") || "UK";
@@ -258,7 +258,7 @@ export default function Marketplace() {
         
         const name =
           profile.full_name ||
-          (profile.email ? `Dr. ${profile.email.split("@")[0]}` : "Unknown");
+          (profile.email ? `Dr. ${profile.email.split("@")[0]}` : "Healthcare Professional");
         const profession =
           profile.profession ||
           (s.specialty && !Array.isArray(s.specializations) ? s.specialty : "General Practice");

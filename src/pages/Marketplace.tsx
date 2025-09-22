@@ -92,34 +92,55 @@ function computeNextAvailable(
     const now = new Date();
     const daysSet = new Set(availableDays.map((d) => d.toLowerCase()));
 
+    // If no available days specified, assume weekdays
+    if (daysSet.size === 0) {
+      ["monday", "tuesday", "wednesday", "thursday", "friday"].forEach(day => daysSet.add(day));
+    }
+
     for (let i = 0; i < 14; i++) {
       const d = new Date(now);
       d.setDate(now.getDate() + i);
       const dow = WEEK_ORDER[d.getDay()];
+      
       if (!daysSet.has(dow)) continue;
 
       let start = "09:00";
       let end = "17:00";
 
+      // Handle different formats of available hours
       if (availableHours && typeof availableHours === "object") {
+        // Check if it's day-specific hours
         if (availableHours[dow]) {
           start = availableHours[dow].startTime || availableHours[dow].start || start;
-          end = availableHours[dow].endTime   || availableHours[dow].end   || end;
-        } else if (availableHours.start && availableHours.end) {
-          start = availableHours.start;
-          end   = availableHours.end;
+          end = availableHours[dow].endTime || availableHours[dow].end || end;
+        } 
+        // Check if it's general hours
+        else if (availableHours.start || availableHours.end) {
+          start = availableHours.start || start;
+          end = availableHours.end || end;
         }
       }
 
-      const dayStr = d.toLocaleDateString(undefined, {
+      // Skip if it's today and past working hours
+      if (i === 0) {
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        const [endHour, endMin] = end.split(':').map(Number);
+        const endTime = endHour * 60 + endMin;
+        if (currentTime >= endTime) continue;
+      }
+
+      const dayStr = d.toLocaleDateString('en-GB', {
         weekday: "short",
-        day: "2-digit",
+        day: "numeric",
         month: "short",
       });
-      const nextText = `${dayStr}, ${start}–${end}`;
+      
+      const nextText = `Next: ${dayStr}, ${start}–${end}`;
       return { date: d, start, end, nextText };
     }
-  } catch {}
+  } catch (error) {
+    console.error("Error computing next available:", error);
+  }
   return { date: null, start: null, end: null, nextText: "No slots available" };
 }
 

@@ -401,7 +401,7 @@ export default function Marketplace() {
         specs = s.specialty.split(",").map(t => t.trim()).filter(Boolean);
         }
 
-const years = (doctorProfile?.experience_years ?? s.experience_years ?? 0) as number;
+const years = (doctorProfile?.years_of_experience ?? s.experience_years ?? 0) as number;
 
 const bio =
   (doctorProfile?.bio && doctorProfile.bio.trim()) ||
@@ -420,13 +420,13 @@ const bio =
           name,
           profession,
           location,
-          years: s.experience_years ?? 0,
+          years,
           avatar: profile.avatar_url || "/placeholder.svg",
           verified: !!s.verified,
           price: s.consultation_fee ?? null,
           nextText,
           specs,
-          bio: s.bio || (profession ? `Specialist in ${profession}` : ""),
+          bio,
           clinic: s.clinic_name || "Private Practice",
           rating: s.rating ?? 4.6,
           reviews: 100 + Math.floor(Math.random() * 150),

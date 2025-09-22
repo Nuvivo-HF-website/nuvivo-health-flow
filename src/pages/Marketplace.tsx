@@ -230,6 +230,23 @@ export default function Marketplace() {
   const [loading, setLoading] = useState(true);
   const [expandedTags, setExpandedTags] = useState<Record<string, boolean>>({});
 
+  // --- ADDED: Bio clamp state & helpers (only addition)
+  const [expandedBio, setExpandedBio] = useState<Record<string, boolean>>({});
+  const MAX_BIO_LINES = 3;
+  const APPROX_CHARS_PER_LINE = 90; // adjust if your card width changes
+  const SHOW_MORE_THRESHOLD = MAX_BIO_LINES * APPROX_CHARS_PER_LINE;
+  const clampStyles: React.CSSProperties = {
+    display: "-webkit-box",
+    WebkitLineClamp: MAX_BIO_LINES,
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+  };
+  const BIO_MIN_HEIGHT_EM = 3.75; // ~3 lines at text-sm / leading-5
+  const bioContainerMinHeight = `${BIO_MIN_HEIGHT_EM}em`;
+  const toggleBio = (doctorId: string) =>
+    setExpandedBio((prev) => ({ ...prev, [doctorId]: !prev[doctorId] }));
+  // --- END ADDED
+
   const baseSpecialties = useMemo(
     () => [
       "All Specialties",
@@ -648,10 +665,32 @@ const bio =
                       </div>
                     </div>
 
-                    {/* Bio */}
-                    <div className="text-sm text-muted-foreground">
-                      <p>{doctor.bio}</p>
-                    </div>
+                    {/* Bio (3-line clamp, equal height, + more) */}
+                    {(() => {
+                      const bioText = (doctor.bio || "").trim();
+                      const isBioExpanded = !!expandedBio[doctor.id];
+                      const shouldShowMore = !isBioExpanded && bioText.length > SHOW_MORE_THRESHOLD;
+
+                      return (
+                        <div
+                          className="text-sm text-muted-foreground leading-5"
+                          style={{ minHeight: bioContainerMinHeight }}
+                        >
+                          <p style={isBioExpanded ? undefined : clampStyles}>
+                            {bioText || "\u00A0"}
+                          </p>
+
+                          {(shouldShowMore || isBioExpanded) && (
+                            <button
+                              onClick={() => toggleBio(doctor.id)}
+                              className="mt-1 text-xs text-primary hover:underline"
+                            >
+                              {isBioExpanded ? "show less" : "+ more"}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
 
                     {/* Rating & Location */}
                     <div className="flex items-center gap-4 text-sm">

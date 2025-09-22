@@ -340,21 +340,35 @@ export default function Marketplace() {
       }
 
       const userIds = (specialists as SpecialistRow[]).map((s) => s.user_id);
-      const { data: profiles, error: pErr } = await supabase
-        .from("profiles")
-        .select("user_id, full_name, email, avatar_url, profession, address, city, country")
-        .in("user_id", userIds);
+      const [profilesResult, doctorProfilesResult] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("user_id, full_name, email, avatar_url, profession, address, city, country")
+          .in("user_id", userIds),
+        supabase
+          .from("doctor_profiles") 
+          .select("user_id, available_days, available_hours")
+          .in("user_id", userIds)
+      ]);
 
+      const { data: profiles, error: pErr } = profilesResult;
+      const { data: doctorProfiles, error: dpErr } = doctorProfilesResult;
+      
       if (pErr) throw pErr;
+      if (dpErr) throw dpErr;
 
       const pMap = new Map<string, ProfileRow>();
       (profiles as ProfileRow[]).forEach((p) => pMap.set(p.user_id, p));
+      
+      const dpMap = new Map<string, any>();
+      (doctorProfiles || []).forEach((dp: any) => dpMap.set(dp.user_id, dp));
 
       const transformed: Doctor[] = (specialists as SpecialistRow[]).map((s) => {
-        // --- normalise whichever shape is present on specialists
+        // Get detailed availability from doctor_profiles if available, fallback to specialists
+        const doctorProfile = dpMap.get(s.user_id);
         const { availableDays, availableHours } = normalizeAvailability({
-          available_days: s.available_days,
-          available_hours: s.available_hours,
+          available_days: doctorProfile?.available_days || s.available_days,
+          available_hours: doctorProfile?.available_hours || s.available_hours,
           availability: (s as any).availability,
         });
         const { nextText } = computeNextAvailable(availableDays, availableHours);

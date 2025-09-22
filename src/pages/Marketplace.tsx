@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
-// Types coming from the view
+// ---- Types coming from the view / tables (extended with `availability`)
 type ViewRow = {
   id: string;
   user_id: string;
@@ -25,6 +25,7 @@ type ViewRow = {
   clinic_name: string | null;
   available_days: string[] | null;
   available_hours: any | null;
+  availability?: any | null;            // NEW: per-day JSON possible
   full_name: string | null;
   avatar_url: string | null;
   location: string | null;
@@ -32,12 +33,11 @@ type ViewRow = {
   country: string | null;
 };
 
-// Fallback table shapes (loose)
 type SpecialistRow = {
   id: string;
   user_id: string;
-  specialty?: string | null;        // sometimes profession or CSV of specs
-  specializations?: string[] | null;// preferred array
+  specialty?: string | null;
+  specializations?: string[] | null;
   experience_years?: number | null;
   verified?: boolean | null;
   is_active?: boolean | null;
@@ -49,6 +49,7 @@ type SpecialistRow = {
   address?: string | null;
   available_days?: string[] | null;
   available_hours?: any | null;
+  availability?: any | null;            // NEW: per-day JSON possible (if you add it)
   rating?: number | null;
 };
 
@@ -84,6 +85,90 @@ interface Doctor {
 
 const WEEK_ORDER = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"] as const;
 
+// --- NEW: normalise any incoming availability shape into { days[], hoursMap }
+function normalizeAvailability(input: {
+  available_days?: string[] | null;
+  available_hours?: any | null;
+  availability?: any | null; // per-day JSON: { monday:{enabled,startTime,endTime}, ... }
+}) {
+  // 1) If we have explicit available_days, start from those
+  let days: string[] = Array.isArray(input.available_days) ? input.available_days.map(d => d.toLowerCase()) : [];
+
+  // 2) Try to build a day->hours map
+  const hoursMap: Record<string, { start: string; end: string }> = {};
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const fallbackStart = "09:00";
+  const fallbackEnd = "17:00";
+
+  // 2a) If we have per-day JSON (`availability`) with enabled flags
+  if (input.availability && typeof input.availability === "object") {
+    const keys = Object.keys(input.availability);
+    const knownDays = new Set([
+      "monday","tuesday","wednesday","thursday","friday","saturday","sunday",
+    ]);
+    const enabledDays: string[] = [];
+    keys.forEach((k) => {
+      const low = k.toLowerCase();
+      if (!knownDays.has(low)) return;
+      const cfg = input.availability[k] || input.availability[low] || {};
+      const enabled = !!cfg.enabled;
+      const start =
+        cfg.startTime || cfg.start || fallbackStart;
+      const end =
+        cfg.endTime || cfg.end || fallbackEnd;
+      if (enabled) {
+        enabledDays.push(low);
+        hoursMap[low] = { start, end };
+      }
+    });
+
+    // If days were empty, adopt enabledDays from the per-day JSON
+    if (days.length === 0 && enabledDays.length > 0) {
+      days = enabledDays;
+    }
+  }
+
+  // 2b) If we have legacy available_hours, merge it in (supports both global and per-day)
+  if (input.available_hours && typeof input.available_hours === "object") {
+    const ah = input.available_hours;
+    WEEK_ORDER.forEach((dow) => {
+      const cfg = ah[dow];
+      if (cfg && typeof cfg === "object") {
+        const start = cfg.startTime || cfg.start || fallbackStart;
+        const end = cfg.endTime || cfg.end || fallbackEnd;
+        hoursMap[dow] = { start, end };
+      }
+    });
+    // Global fallback
+    if (ah.start || ah.end) {
+      const start = ah.start || fallbackStart;
+      const end = ah.end || fallbackEnd;
+      // fill any missing day entries with the global range
+      WEEK_ORDER.forEach((dow) => {
+        if (!hoursMap[dow]) {
+          hoursMap[dow] = { start, end };
+        }
+      });
+    }
+  }
+
+  // If we still have no days, assume weekdays
+  if (days.length === 0) {
+    days = ["monday","tuesday","wednesday","thursday","friday"];
+  }
+
+  // Ensure hoursMap has entries for all working days
+  days.forEach((d) => {
+    if (!hoursMap[d]) {
+      hoursMap[d] = { start: fallbackStart, end: fallbackEnd };
+    }
+  });
+
+  return { availableDays: days, availableHours: hoursMap };
+}
+
+// unchanged signature, but now always call with the normalised pair
 function computeNextAvailable(
   availableDays: string[] = [],
   availableHours: any = { start: "09:00", end: "17:00" }
@@ -92,49 +177,42 @@ function computeNextAvailable(
     const now = new Date();
     const daysSet = new Set(availableDays.map((d) => d.toLowerCase()));
 
-    // If no available days specified, assume weekdays
     if (daysSet.size === 0) {
-      ["monday", "tuesday", "wednesday", "thursday", "friday"].forEach(day => daysSet.add(day));
+      ["monday","tuesday","wednesday","thursday","friday"].forEach((day) => daysSet.add(day));
     }
 
     for (let i = 0; i < 14; i++) {
       const d = new Date(now);
       d.setDate(now.getDate() + i);
       const dow = WEEK_ORDER[d.getDay()];
-      
       if (!daysSet.has(dow)) continue;
 
       let start = "09:00";
       let end = "17:00";
 
-      // Handle different formats of available hours
       if (availableHours && typeof availableHours === "object") {
-        // Check if it's day-specific hours
         if (availableHours[dow]) {
           start = availableHours[dow].startTime || availableHours[dow].start || start;
           end = availableHours[dow].endTime || availableHours[dow].end || end;
-        } 
-        // Check if it's general hours
-        else if (availableHours.start || availableHours.end) {
+        } else if (availableHours.start || availableHours.end) {
           start = availableHours.start || start;
           end = availableHours.end || end;
         }
       }
 
-      // Skip if it's today and past working hours
+      // If it's today and we've already passed the end, skip to next day
       if (i === 0) {
         const currentTime = now.getHours() * 60 + now.getMinutes();
-        const [endHour, endMin] = end.split(':').map(Number);
+        const [endHour, endMin] = end.split(":").map(Number);
         const endTime = endHour * 60 + endMin;
         if (currentTime >= endTime) continue;
       }
 
-      const dayStr = d.toLocaleDateString('en-GB', {
+      const dayStr = d.toLocaleDateString("en-GB", {
         weekday: "short",
         day: "numeric",
         month: "short",
       });
-      
       const nextText = `Next: ${dayStr}, ${start}–${end}`;
       return { date: d, start, end, nextText };
     }
@@ -182,10 +260,8 @@ export default function Marketplace() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      // 1) Try the view
       const ok = await tryLoadFromView();
       if (!ok) {
-        // 2) Fallback to tables
         await tryLoadFromTables();
       }
       setLoading(false);
@@ -194,24 +270,32 @@ export default function Marketplace() {
 
   const tryLoadFromView = async (): Promise<boolean> => {
     try {
-      const { data, error } = await supabase.from("marketplace_providers").select("*");
+      // IMPORTANT: also select 'availability' if your view exposes it
+      const { data, error } = await supabase
+        .from("marketplace_providers")
+        .select("*");
       if (error) {
-        // 42P01 = relation does not exist (view missing)
         console.warn("marketplace_providers error:", error);
         return false;
       }
       if (!data || data.length === 0) {
-        // View exists but returns nothing (likely not approved/active yet)
         console.info("marketplace_providers returned 0 rows; falling back to tables.");
         return false;
       }
 
       const transformed = (data as ViewRow[]).map((r) => {
+        // --- use normaliser so we read either (days+hours) OR (availability per-day)
+        const { availableDays, availableHours } = normalizeAvailability({
+          available_days: r.available_days,
+          available_hours: r.available_hours,
+          availability: (r as any).availability, // safe access
+        });
+        const { nextText } = computeNextAvailable(availableDays, availableHours);
+
         const name = r.full_name || "Healthcare Professional";
         const profession = r.profession || r.dp_profession || "General Practice";
         const specs = Array.isArray(r.specializations) ? r.specializations : [];
         const location = r.location || [r.city, r.country].filter(Boolean).join(", ") || "UK";
-        const { nextText } = computeNextAvailable(r.available_days || [], r.available_hours || { start: "09:00", end: "17:00" });
 
         return makeDoctor({
           id: r.id,
@@ -242,7 +326,8 @@ export default function Marketplace() {
 
   const tryLoadFromTables = async () => {
     try {
-      // specialists: only active (and if you keep flags, also ready + approved)
+      // If you also keep doctor_profiles, you could join them here.
+      // For now we use specialists + profiles fallback as you had.
       const { data: specialists, error: sErr } = await supabase
         .from("specialists")
         .select("*")
@@ -266,20 +351,30 @@ export default function Marketplace() {
       (profiles as ProfileRow[]).forEach((p) => pMap.set(p.user_id, p));
 
       const transformed: Doctor[] = (specialists as SpecialistRow[]).map((s) => {
-        const profile: ProfileRow = pMap.get(s.user_id) || {
-          user_id: s.user_id,
-          full_name: null,
-          email: null,
-          avatar_url: null,
-          profession: null,
-          address: null,
-          city: null,
-          country: null
-        };
-        
+        // --- normalise whichever shape is present on specialists
+        const { availableDays, availableHours } = normalizeAvailability({
+          available_days: s.available_days,
+          available_hours: s.available_hours,
+          availability: (s as any).availability,
+        });
+        const { nextText } = computeNextAvailable(availableDays, availableHours);
+
+        const profile: ProfileRow =
+          pMap.get(s.user_id) || {
+            user_id: s.user_id,
+            full_name: null,
+            email: null,
+            avatar_url: null,
+            profession: null,
+            address: null,
+            city: null,
+            country: null,
+          };
+
         const name =
           profile.full_name ||
           (profile.email ? `Dr. ${profile.email.split("@")[0]}` : "Healthcare Professional");
+
         const profession =
           profile.profession ||
           (s.specialty && !Array.isArray(s.specializations) ? s.specialty : "General Practice");
@@ -287,16 +382,14 @@ export default function Marketplace() {
         const specs = Array.isArray(s.specializations)
           ? s.specializations
           : typeof s.specialty === "string"
-            ? s.specialty.split(",").map((t) => t.trim()).filter(Boolean)
-            : [];
+          ? s.specialty.split(",").map((t) => t.trim()).filter(Boolean)
+          : [];
 
         const location =
           profile.address ||
           [profile.city, profile.country].filter(Boolean).join(", ") ||
           s.address ||
           "UK";
-
-        const { nextText } = computeNextAvailable(s.available_days || [], s.available_hours || { start: "09:00", end: "17:00" });
 
         return makeDoctor({
           id: s.id,
@@ -368,7 +461,6 @@ export default function Marketplace() {
 
   function finalizeDoctors(list: Doctor[]) {
     setDoctors(list);
-    // Build dynamic filter list based on loaded data
     const dynamic = new Set(baseSpecialties);
     list.forEach((d) => {
       if (d.profession) dynamic.add(d.profession);
@@ -597,8 +689,6 @@ export default function Marketplace() {
                       </Button>
                     </div>
 
-                    {/* Message button
-                       If your route expects ?doctor=<userId>, switch to doctor.userId below. */}
                     <Button
                       size="sm"
                       variant="outline"
@@ -614,7 +704,6 @@ export default function Marketplace() {
           </div>
         )}
 
-        {/* Load More (placeholder) */}
         {!loading && filteredDoctors.length > 0 && (
           <div className="text-center mt-12">
             <Button variant="outline" size="lg">Load More Doctors</Button>

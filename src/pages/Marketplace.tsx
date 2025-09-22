@@ -369,7 +369,6 @@ export default function Marketplace() {
         const { availableDays, availableHours } = normalizeAvailability({
           available_days: doctorProfile?.available_days || s.available_days,
           available_hours: doctorProfile?.available_hours || s.available_hours,
-          availability: (s as any).availability,
         });
         const { nextText } = computeNextAvailable(availableDays, availableHours);
 

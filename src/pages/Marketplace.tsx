@@ -347,7 +347,7 @@ export default function Marketplace() {
           .in("user_id", userIds),
         supabase
           .from("doctor_profiles") 
-          .select("user_id, available_days, available_hours")
+          .select("user_id, available_days, available_hours, bio, specializations, years_of_experience")
           .in("user_id", userIds)
       ]);
 

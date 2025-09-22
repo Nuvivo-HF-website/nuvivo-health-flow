@@ -85,23 +85,25 @@ interface Doctor {
 
 const WEEK_ORDER = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"] as const;
 
+/** Format a bio to exactly 55 visible chars, padding short ones with spaces, then add "...". */
+function formatBio(input: string | null | undefined, width = 55): string {
+  const text = (input ?? "").replace(/\s+/g, " ").trim(); // normalize inner spacing a bit
+  const clipped = text.length > width ? text.slice(0, width) : text.padEnd(width, " ");
+  return clipped + "...";
+}
+
 // --- NEW: normalise any incoming availability shape into { days[], hoursMap }
 function normalizeAvailability(input: {
   available_days?: string[] | null;
   available_hours?: any | null;
   availability?: any | null; // per-day JSON: { monday:{enabled,startTime,endTime}, ... }
 }) {
-  // 1) If we have explicit available_days, start from those
   let days: string[] = Array.isArray(input.available_days) ? input.available_days.map(d => d.toLowerCase()) : [];
-
-  // 2) Try to build a day->hours map
   const hoursMap: Record<string, { start: string; end: string }> = {};
 
-  const pad = (n: number) => String(n).padStart(2, "0");
   const fallbackStart = "09:00";
   const fallbackEnd = "17:00";
 
-  // 2a) If we have per-day JSON (`availability`) with enabled flags
   if (input.availability && typeof input.availability === "object") {
     const keys = Object.keys(input.availability);
     const knownDays = new Set([
@@ -113,23 +115,18 @@ function normalizeAvailability(input: {
       if (!knownDays.has(low)) return;
       const cfg = input.availability[k] || input.availability[low] || {};
       const enabled = !!cfg.enabled;
-      const start =
-        cfg.startTime || cfg.start || fallbackStart;
-      const end =
-        cfg.endTime || cfg.end || fallbackEnd;
+      const start = cfg.startTime || cfg.start || fallbackStart;
+      const end = cfg.endTime || cfg.end || fallbackEnd;
       if (enabled) {
         enabledDays.push(low);
         hoursMap[low] = { start, end };
       }
     });
-
-    // If days were empty, adopt enabledDays from the per-day JSON
     if (days.length === 0 && enabledDays.length > 0) {
       days = enabledDays;
     }
   }
 
-  // 2b) If we have legacy available_hours, merge it in (supports both global and per-day)
   if (input.available_hours && typeof input.available_hours === "object") {
     const ah = input.available_hours;
     WEEK_ORDER.forEach((dow) => {
@@ -140,11 +137,9 @@ function normalizeAvailability(input: {
         hoursMap[dow] = { start, end };
       }
     });
-    // Global fallback
     if (ah.start || ah.end) {
       const start = ah.start || fallbackStart;
       const end = ah.end || fallbackEnd;
-      // fill any missing day entries with the global range
       WEEK_ORDER.forEach((dow) => {
         if (!hoursMap[dow]) {
           hoursMap[dow] = { start, end };
@@ -153,12 +148,10 @@ function normalizeAvailability(input: {
     }
   }
 
-  // If we still have no days, assume weekdays
   if (days.length === 0) {
     days = ["monday","tuesday","wednesday","thursday","friday"];
   }
 
-  // Ensure hoursMap has entries for all working days
   days.forEach((d) => {
     if (!hoursMap[d]) {
       hoursMap[d] = { start: fallbackStart, end: fallbackEnd };
@@ -168,7 +161,6 @@ function normalizeAvailability(input: {
   return { availableDays: days, availableHours: hoursMap };
 }
 
-// unchanged signature, but now always call with the normalised pair
 function computeNextAvailable(
   availableDays: string[] = [],
   availableHours: any = { start: "09:00", end: "17:00" }
@@ -200,7 +192,6 @@ function computeNextAvailable(
         }
       }
 
-      // If it's today and we've already passed the end, skip to next day
       if (i === 0) {
         const currentTime = now.getHours() * 60 + now.getMinutes();
         const [endHour, endMin] = end.split(":").map(Number);
@@ -270,7 +261,6 @@ export default function Marketplace() {
 
   const tryLoadFromView = async (): Promise<boolean> => {
     try {
-      // IMPORTANT: also select 'availability' if your view exposes it
       const { data, error } = await supabase
         .from("marketplace_providers")
         .select("*");
@@ -284,11 +274,10 @@ export default function Marketplace() {
       }
 
       const transformed = (data as ViewRow[]).map((r) => {
-        // --- use normaliser so we read either (days+hours) OR (availability per-day)
         const { availableDays, availableHours } = normalizeAvailability({
           available_days: r.available_days,
           available_hours: r.available_hours,
-          availability: (r as any).availability, // safe access
+          availability: (r as any).availability,
         });
         const { nextText } = computeNextAvailable(availableDays, availableHours);
 
@@ -326,8 +315,6 @@ export default function Marketplace() {
 
   const tryLoadFromTables = async () => {
     try {
-      // If you also keep doctor_profiles, you could join them here.
-      // For now we use specialists + profiles fallback as you had.
       const { data: specialists, error: sErr } = await supabase
         .from("specialists")
         .select("*")
@@ -364,7 +351,6 @@ export default function Marketplace() {
       (doctorProfiles || []).forEach((dp: any) => dpMap.set(dp.user_id, dp));
 
       const transformed: Doctor[] = (specialists as SpecialistRow[]).map((s) => {
-        // Get detailed availability from doctor_profiles if available, fallback to specialists
         const doctorProfile = dpMap.get(s.user_id);
         const { availableDays, availableHours } = normalizeAvailability({
           available_days: doctorProfile?.available_days || s.available_days,
@@ -638,9 +624,9 @@ export default function Marketplace() {
                       </div>
                     </div>
 
-                    {/* Bio */}
+                    {/* Bio (fixed 55 characters + "...", with visible padding) */}
                     <div className="text-sm text-muted-foreground">
-                      <p>{doctor.bio}</p>
+                      <p className="whitespace-pre">{formatBio(doctor.bio)}</p>
                     </div>
 
                     {/* Rating & Location */}

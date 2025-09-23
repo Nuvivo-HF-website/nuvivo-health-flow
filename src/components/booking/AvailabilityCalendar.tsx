@@ -37,7 +37,7 @@ const timeStrToMinutes = (raw: string) => {
     h = parseInt(match[1], 10);
     m = match[2] ? parseInt(match[2], 10) : 0;
     const isPM = match[3] === "pm";
-    if (h === 12) h = isPM ? 12 : 0; // 12am -> 0, 12pm -> 12
+    if (h === 12) h = isPM ? 12 : 0;     // 12am -> 0, 12pm -> 12
     else if (isPM) h += 12;
   } else {
     const [hh, mm] = s.split(":").map(Number);
@@ -59,35 +59,43 @@ const isSameDay = (a: Date, b: Date) =>
   a.getMonth() === b.getMonth() &&
   a.getDate() === b.getDate();
 
-/* ---------------------------- Parse from DB shape ------------------------- */
+/* ---------------------------- Parsing from DB ----------------------------- */
 
-// available_days can be text[], Postgres "{mon,tue}", JSON '["mon"]', or CSV "mon,tue"
+// available_days can be text[] (array), Postgres string "{mon,tue}", JSON '["mon"]', or CSV "mon,tue"
 const normalizeDays = (val: unknown): string[] => {
   if (!val) return [];
-  if (Array.isArray(val)) return val.map(v => normalizeDay(String(v))).filter(Boolean);
+  if (Array.isArray(val)) return val.map((v) => normalizeDay(String(v))).filter(Boolean);
   if (typeof val !== "string") return [];
+
   const s = val.trim();
+  // JSON array
   if (s.startsWith("[") && s.endsWith("]")) {
     try {
       const arr = JSON.parse(s);
-      return Array.isArray(arr) ? arr.map((x:any)=>normalizeDay(String(x))).filter(Boolean) : [];
+      return Array.isArray(arr) ? arr.map((x: any) => normalizeDay(String(x))).filter(Boolean) : [];
     } catch { return []; }
   }
+  // Postgres array {a,b,c}
   if (s.startsWith("{") && s.endsWith("}")) {
     const inner = s.slice(1, -1);
     return inner.split(",").map(x => normalizeDay(x.replace(/^"+|"+$/g, "").trim())).filter(Boolean);
   }
+  // CSV
   return s.split(",").map(x => normalizeDay(x)).filter(Boolean);
 };
 
-// available_hours: single window {start,end} or per-day map {monday:{start,end},...}
+// available_hours → either single window {start,end} or per-day map {monday:{start,end}, ...}
+// We normalise per-day keys to monday..sunday and DO NOT fallback when a day key is missing.
 type Window = { start: string; end: string };
 type PerDay = Record<string, Window>;
 
 const normalizeHours = (val: unknown): Window | PerDay | null => {
-  const toWindow = (o:any): Window | null =>
-    o && typeof o === "object" && o.start && o.end ? { start: String(o.start), end: String(o.end) } : null;
-  const toPerDay = (o:any): PerDay | null => {
+  const toWindow = (o: any): Window | null =>
+    o && typeof o === "object" && o.start && o.end
+      ? { start: String(o.start), end: String(o.end) }
+      : null;
+
+  const toPerDay = (o: any): PerDay | null => {
     if (!o || typeof o !== "object") return null;
     const out: PerDay = {};
     for (const k of Object.keys(o)) {
@@ -99,19 +107,25 @@ const normalizeHours = (val: unknown): Window | PerDay | null => {
   };
 
   if (!val) return null;
-  if (typeof val === "object") return toWindow(val) ?? toPerDay(val) ?? null;
+
+  if (typeof val === "object") {
+    return toWindow(val) ?? toPerDay(val) ?? null;
+  }
 
   if (typeof val === "string") {
     const s = val.trim();
+    // JSON?
     if (s.startsWith("{") || s.startsWith("[")) {
       try {
         const parsed = JSON.parse(s);
         return toWindow(parsed) ?? toPerDay(parsed) ?? null;
       } catch { /* ignore */ }
     }
+    // "09:00-17:00"
     const m = s.match(/(\d{1,2}:\d{2}\s*(?:am|pm)?)\s*-\s*(\d{1,2}:\d{2}\s*(?:am|pm)?)/i);
     if (m) return { start: m[1], end: m[2] };
   }
+
   return null;
 };
 
@@ -124,7 +138,7 @@ const useNormalizedSpecialist = (specialist: Specialist) => {
     const available_days = normalizeDays(sp.available_days ?? sp.availableDays);
     const available_hours = normalizeHours(sp.available_hours ?? sp.availableHours);
 
-    // If days empty but per-day hours exist, infer from keys
+    // If days list is empty but we have a per-day hours map, infer days from that map
     let days = available_days;
     if ((!days || days.length === 0) && available_hours && !(available_hours as Window).start) {
       days = Object.keys(available_hours as PerDay);
@@ -137,10 +151,10 @@ const useNormalizedSpecialist = (specialist: Specialist) => {
 
     return {
       // scheduling-critical
-      available_days: days,            // string[]
-      available_hours,                 // Window | PerDay | null
-      slot_step_minutes: sp.slot_step_minutes ?? sp.slotStep ?? sp.slot_interval ?? 30, // default 30
-      // (NO duration logic)
+      available_days: days,                     // string[]
+      available_hours,                          // Window | PerDay | null
+      duration: sp.duration || 30,              // minutes
+      breaks: sp.breaks || null,                // optional [{start,end}]
 
       // UI
       name,
@@ -155,7 +169,7 @@ const useNormalizedSpecialist = (specialist: Specialist) => {
   }, [specialist]);
 };
 
-/* --------------------------- Slot generation (grid) ----------------------- */
+/* ------------------------ Slot generation (no 9–17) ----------------------- */
 
 const getAvailableDaysSet = (days: string[]) => new Set(days);
 
@@ -164,8 +178,10 @@ const getWorkingWindowForDate = (
   available_hours: Window | PerDay | null
 ): { startMin: number; endMin: number } | null => {
   if (!available_hours) return null;
+
   const day = DAY_NAMES[date.getDay()];
 
+  // Single window for all days
   if ((available_hours as Window).start) {
     const { start, end } = available_hours as Window;
     const startMin = timeStrToMinutes(start);
@@ -175,15 +191,28 @@ const getWorkingWindowForDate = (
       : null;
   }
 
+  // Per-day map: if a day key is missing -> CLOSED (no fallback!)
   const per = available_hours as PerDay;
   const entry = per[day];
-  if (!entry) return null; // closed if no entry
+  if (!entry) return null;
 
   const startMin = timeStrToMinutes(entry.start);
   const endMin = timeStrToMinutes(entry.end);
   return Number.isFinite(startMin) && Number.isFinite(endMin) && endMin > startMin
     ? { startMin, endMin }
     : null;
+};
+
+const inAnyBreak = (minutes: number, duration: number, breaks?: Array<{start:string;end:string}> | null) => {
+  if (!Array.isArray(breaks) || breaks.length === 0) return false;
+  const slotStart = minutes;
+  const slotEnd = minutes + duration;
+  return breaks.some(b => {
+    if (!b?.start || !b?.end) return false;
+    const bStart = timeStrToMinutes(String(b.start));
+    const bEnd = timeStrToMinutes(String(b.end));
+    return Math.max(slotStart, bStart) < Math.min(slotEnd, bEnd);
+  });
 };
 
 const generateTimeSlots = (
@@ -199,15 +228,16 @@ const generateTimeSlots = (
   const window = getWorkingWindowForDate(date, S.available_hours);
   if (!window) return slots;
 
-  const step = Math.max(1, parseInt(String(S.slot_step_minutes), 10) || 30);
+  const duration = typeof S.duration === "number" ? S.duration : parseInt(String(S.duration), 10) || 30;
 
   const now = new Date();
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
   const isToday = isSameDay(date, now);
 
-  for (let t = window.startMin; t < window.endMin; t += step) {
-    const isPast = isToday && t <= nowMinutes; // hide past starts today
-    slots.push({ time: minutesToTimeStr(t), available: !isPast });
+  for (let t = window.startMin; t + duration <= window.endMin; t += duration) {
+    const isPast = isToday && t <= nowMinutes; // hide past times today
+    const isOnBreak = inAnyBreak(t, duration, S.breaks);
+    slots.push({ time: minutesToTimeStr(t), available: !isPast && !isOnBreak });
   }
 
   return slots;
@@ -276,7 +306,9 @@ export function AvailabilityCalendar({
   };
 
   const handleTimeSelect = (time: string) => {
-    if (selectedDate) onTimeSlotSelect(selectedDate.toISOString().split("T")[0], time);
+    if (selectedDate) {
+      onTimeSlotSelect(selectedDate.toISOString().split("T")[0], time);
+    }
   };
 
   React.useEffect(() => {
@@ -297,13 +329,9 @@ export function AvailabilityCalendar({
         }
       }
     }
-    // rerun when hours/days/slot grid change
+    // rerun when hours/days change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    JSON.stringify(S.available_hours),
-    (S.available_days || []).join(","),
-    String(S.slot_step_minutes),
-  ]);
+  }, [JSON.stringify(S.available_hours), (S.available_days || []).join(",")]);
 
   const workingWindowForSelected = selectedDate ? getWorkingWindowForDate(selectedDate, S.available_hours) : null;
 
@@ -329,15 +357,25 @@ export function AvailabilityCalendar({
         <CardContent className="flex items-center space-x-4 p-6">
           <Avatar className="w-16 h-16">
             <AvatarImage src={S.image} alt={S.name || "Specialist"} />
-            <AvatarFallback>{S.name ? S.name.split(" ").map(n => n[0]).join("") : "SP"}</AvatarFallback>
+            <AvatarFallback>
+              {S.name ? S.name.split(" ").map(n => n[0]).join("") : "SP"}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <h3 className="text-xl font-semibold">{S.name || "Specialist"}</h3>
-            <Badge variant="secondary" className="mb-1">{S.specialty}</Badge>
+            <Badge variant="secondary" className="mb-1">
+              {S.specialty}
+            </Badge>
             <p className="text-sm text-muted-foreground">{S.qualifications}</p>
-            {S.locations && (
-              <div className="text-sm text-muted-foreground mt-2">Available: {S.locations.join(", ")}</div>
-            )}
+            <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
+              <span className="flex items-center space-x-1">
+                <Clock className="w-4 h-4" />
+                <span>{S.duration || "30 min"}</span>
+              </span>
+              {S.locations && (
+                <span>Available: {S.locations.join(", ")}</span>
+              )}
+            </div>
           </div>
           <div className="text-right">
             {S.price != null && (
@@ -377,7 +415,7 @@ export function AvailabilityCalendar({
                   : "—"}
               </p>
               <p className="text-sm text-muted-foreground">
-                ⌚ Slot grid: {S.slot_step_minutes} min
+                ⏱️ Duration: {S.duration || "30 minutes"}
               </p>
             </div>
           </CardContent>
@@ -402,7 +440,9 @@ export function AvailabilityCalendar({
             {!selectedDate ? (
               <div className="text-center py-8">
                 <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Please select a date to view available times</p>
+                <p className="text-muted-foreground">
+                  Please select a date to view available times
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">

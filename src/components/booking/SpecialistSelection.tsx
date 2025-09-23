@@ -221,7 +221,7 @@ export function SpecialistSelection({ selectedService, onSpecialistSelect, onBac
   };
 
   const getUniqueSpecialties = () => {
-    const specialties = [...new Set(specialists.map(s => s.specialty))];
+    const specialties = [...new Set(specialists.map(s => s.specialty).filter(specialty => specialty && specialty.trim() !== ''))];
     return specialties.sort();
   };
 

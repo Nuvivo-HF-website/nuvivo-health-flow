@@ -123,16 +123,23 @@ export function SpecialistSelection({ selectedService, onSpecialistSelect, onBac
 
       if (error) throw error;
 
-      // Get user profiles separately to avoid the foreign key issue
+      // Get user profiles and doctor profiles to get complete data
       const userIds = specialistsData?.map(s => s.user_id) || [];
       const { data: profilesData } = await supabase
         .from('profiles')
         .select('user_id, full_name, avatar_url')
         .in('user_id', userIds);
+      
+      const { data: doctorProfilesData } = await supabase
+        .from('doctor_profiles')
+        .select('user_id, years_of_experience, bio, specializations')
+        .in('user_id', userIds);
 
       // Transform the data to match our interface
       const transformedData: Specialist[] = (specialistsData || []).map((specialist: any) => {
         const profile = profilesData?.find(p => p.user_id === specialist.user_id);
+        const doctorProfile = doctorProfilesData?.find(dp => dp.user_id === specialist.user_id);
+        
         return {
           ...specialist,
           available_hours: typeof specialist.available_hours === 'object' 
@@ -144,7 +151,11 @@ export function SpecialistSelection({ selectedService, onSpecialistSelect, onBac
           name: profile?.full_name || 'Unknown',
           price: specialist.consultation_fee,
           qualifications: specialist.qualifications || [],
-          duration: `${specialist.consultation_duration} min`
+          duration: `${specialist.consultation_duration} min`,
+          // Use doctor profile data if available (more up-to-date)
+          experience_years: doctorProfile?.years_of_experience || specialist.experience_years || 0,
+          bio: doctorProfile?.bio || specialist.bio,
+          specialty: doctorProfile?.specializations ? doctorProfile.specializations.join(', ') : specialist.specialty
         };
       });
 

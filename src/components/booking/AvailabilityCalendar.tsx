@@ -31,24 +31,28 @@ const generateTimeSlots = (date: Date, specialist: Specialist) => {
   // Generate slots based on consultation duration
   const duration = parseInt(specialist.duration?.replace(' min', '') || '30');
   
-  for (let hour = startHour; hour < endHour; hour++) {
-    for (let minute = 0; minute < 60; minute += duration) {
-      // Don't exceed end time
-      if (hour === endHour && minute >= endMinute) break;
-      if (hour > endHour) break;
-      
-      const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-      
-      let available = true;
-      
-      // Lunch break 12:30-13:30
-      if (hour === 12 && minute >= 30) available = false;
-      if (hour === 13 && minute < 30) available = false;
-      
-      // Some random unavailability for realism (booked slots)
-      if (Math.random() > 0.8) available = false;
-      
-      slots.push({ time, available });
+  // Start from the specialist's actual start time
+  let currentHour = startHour;
+  let currentMinute = startMinute;
+  
+  while (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute)) {
+    const time = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+    
+    // Check if this slot would exceed the end time
+    const slotEndMinutes = currentMinute + duration;
+    const slotEndHour = currentHour + Math.floor(slotEndMinutes / 60);
+    const finalEndMinute = slotEndMinutes % 60;
+    
+    // Only add slot if it doesn't exceed the end time
+    if (slotEndHour < endHour || (slotEndHour === endHour && finalEndMinute <= endMinute)) {
+      slots.push({ time, available: true });
+    }
+    
+    // Move to next slot
+    currentMinute += duration;
+    if (currentMinute >= 60) {
+      currentHour += Math.floor(currentMinute / 60);
+      currentMinute = currentMinute % 60;
     }
   }
   

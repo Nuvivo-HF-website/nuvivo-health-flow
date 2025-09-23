@@ -51,7 +51,12 @@ const timeStrToMinutes = (raw: string) => {
 const minutesToTimeStr = (mins: number) => {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
-  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+  
+  // Convert to 12-hour format for better readability
+  if (h === 0) return `12:${String(m).padStart(2,"0")} AM`;
+  if (h < 12) return `${h}:${String(m).padStart(2,"0")} AM`;
+  if (h === 12) return `12:${String(m).padStart(2,"0")} PM`;
+  return `${h - 12}:${String(m).padStart(2,"0")} PM`;
 };
 
 const getTodayMidnight = () => {
@@ -184,8 +189,8 @@ const getWorkingWindowForDate = (date: Date, specialist: Specialist): { startMin
 
   // Sensible default only if nothing parsed
   if (!start || !end) {
-    start = "09:00";
-    end = "17:00";
+    start = "9:00 AM";
+    end = "5:00 PM";
   }
 
   const startMin = timeStrToMinutes(start);
@@ -401,7 +406,7 @@ export function AvailabilityCalendar({
               <p className="text-sm text-muted-foreground">
                 🕘 Sessions: {workingWindowForSelected
                   ? `${minutesToTimeStr(workingWindowForSelected.startMin)} - ${minutesToTimeStr(workingWindowForSelected.endMin)}`
-                  : "—"}
+                  : "9:00 AM - 5:00 PM"}
               </p>
               <p className="text-sm text-muted-foreground">
                 ⏱️ Duration: {(specialist as any).duration || "30 minutes"}

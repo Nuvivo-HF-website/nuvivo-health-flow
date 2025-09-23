@@ -21,6 +21,12 @@ export interface Specialist {
   duration?: string;
   locations?: string[];
   languages?: string[];
+  available_days?: string[];
+  available_hours?: {
+    start: string;
+    end: string;
+  };
+  experience_years?: number;
 }
 
 export interface TimeSlot {

@@ -8,32 +8,45 @@ import { ChevronLeft, Clock, Info, CheckCircle2, AlertCircle } from "lucide-reac
 import { Specialist } from "@/pages/GuestBooking";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// Enhanced time slot generation with more realistic availability
-const generateTimeSlots = (date: Date) => {
+// Generate time slots based on actual specialist availability
+const generateTimeSlots = (date: Date, specialist: Specialist) => {
   const slots = [];
-  const startHour = 9;
-  const endHour = 17;
   const dayOfWeek = date.getDay();
+  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const currentDay = dayNames[dayOfWeek];
+  
+  // Check if specialist is available on this day
+  const availableDays = specialist.available_days || [];
+  if (!availableDays.includes(currentDay)) {
+    return slots; // Return empty array if not available on this day
+  }
+  
+  // Get specialist's working hours
+  const workingHours = specialist.available_hours || { start: '09:00', end: '17:00' };
+  const startHour = parseInt(workingHours.start.split(':')[0]);
+  const startMinute = parseInt(workingHours.start.split(':')[1]);
+  const endHour = parseInt(workingHours.end.split(':')[0]);
+  const endMinute = parseInt(workingHours.end.split(':')[1]);
+  
+  // Generate slots based on consultation duration
+  const duration = parseInt(specialist.duration?.replace(' min', '') || '30');
   
   for (let hour = startHour; hour < endHour; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
+    for (let minute = 0; minute < 60; minute += duration) {
+      // Don't exceed end time
+      if (hour === endHour && minute >= endMinute) break;
+      if (hour > endHour) break;
+      
       const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
       
-      // More realistic availability logic
       let available = true;
       
       // Lunch break 12:30-13:30
-      if (hour === 12 && minute === 30) available = false;
-      if (hour === 13 && minute === 0) available = false;
+      if (hour === 12 && minute >= 30) available = false;
+      if (hour === 13 && minute < 30) available = false;
       
-      // Less availability in the afternoon
-      if (hour >= 15 && Math.random() > 0.6) available = false;
-      
-      // Weekend unavailable
-      if (dayOfWeek === 0 || dayOfWeek === 6) available = false;
-      
-      // Random unavailability for realism
-      if (Math.random() > 0.7) available = false;
+      // Some random unavailability for realism (booked slots)
+      if (Math.random() > 0.8) available = false;
       
       slots.push({ time, available });
     }
@@ -60,18 +73,24 @@ export function AvailabilityCalendar({
   // Find next available slot across multiple days
   const findNextAvailableSlot = () => {
     const today = new Date();
+    const availableDays = specialist.available_days || [];
+    
     for (let i = 0; i < 14; i++) { // Check next 14 days
       const checkDate = new Date(today);
       checkDate.setDate(today.getDate() + i);
       
-      if (checkDate.getDay() === 0 || checkDate.getDay() === 6) continue; // Skip weekends
+      const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayName = dayNames[checkDate.getDay()];
       
-      const slots = generateTimeSlots(checkDate);
+      // Skip if specialist is not available on this day
+      if (!availableDays.includes(dayName)) continue;
+      
+      const slots = generateTimeSlots(checkDate, specialist);
       const firstAvailable = slots.find(slot => slot.available);
       
       if (firstAvailable) {
-        const dayName = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : checkDate.toLocaleDateString('en-UK', { weekday: 'long', month: 'short', day: 'numeric' });
-        setNextAvailableSlot(`${dayName} at ${firstAvailable.time}`);
+        const displayDayName = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : checkDate.toLocaleDateString('en-UK', { weekday: 'long', month: 'short', day: 'numeric' });
+        setNextAvailableSlot(`${displayDayName} at ${firstAvailable.time}`);
         break;
       }
     }
@@ -80,7 +99,7 @@ export function AvailabilityCalendar({
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (date) {
-      setAvailableSlots(generateTimeSlots(date));
+      setAvailableSlots(generateTimeSlots(date, specialist));
     } else {
       setAvailableSlots([]);
     }
@@ -92,30 +111,43 @@ export function AvailabilityCalendar({
     }
   };
 
-  // Disable past dates and weekends
+  // Disable past dates and days when specialist is not available
   const isDateDisabled = (date: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const dayOfWeek = date.getDay();
-    return date < today || dayOfWeek === 0 || dayOfWeek === 6;
+    
+    // Disable past dates
+    if (date < today) return true;
+    
+    // Check specialist availability
+    const availableDays = specialist.available_days || [];
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = dayNames[date.getDay()];
+    
+    return !availableDays.includes(dayName);
   };
 
-  // Auto-select today if available, otherwise tomorrow
+  // Auto-select today if available, otherwise find next available day
   React.useEffect(() => {
     findNextAvailableSlot();
     const today = new Date();
     if (!isDateDisabled(today)) {
       setSelectedDate(today);
-      setAvailableSlots(generateTimeSlots(today));
+      setAvailableSlots(generateTimeSlots(today, specialist));
     } else {
-      const tomorrow = new Date();
-      tomorrow.setDate(today.getDate() + 1);
-      if (!isDateDisabled(tomorrow)) {
-        setSelectedDate(tomorrow);
-        setAvailableSlots(generateTimeSlots(tomorrow));
+      // Find next available day
+      const availableDays = specialist.available_days || [];
+      for (let i = 1; i <= 7; i++) {
+        const nextDay = new Date();
+        nextDay.setDate(today.getDate() + i);
+        if (!isDateDisabled(nextDay)) {
+          setSelectedDate(nextDay);
+          setAvailableSlots(generateTimeSlots(nextDay, specialist));
+          break;
+        }
       }
     }
-  }, []);
+  }, [specialist]);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -189,10 +221,13 @@ export function AvailabilityCalendar({
             />
             <div className="mt-2 space-y-1">
               <p className="text-sm text-muted-foreground">
-                📅 Available Monday - Friday
+                📅 Available: {specialist.available_days ? 
+                  specialist.available_days.map(day => day.charAt(0).toUpperCase() + day.slice(1)).join(', ') : 
+                  'Monday - Friday'
+                }
               </p>
               <p className="text-sm text-muted-foreground">
-                🕘 Sessions: 9:00 AM - 5:00 PM
+                🕘 Sessions: {specialist.available_hours?.start || '9:00'} - {specialist.available_hours?.end || '17:00'}
               </p>
               <p className="text-sm text-muted-foreground">
                 ⏱️ Duration: {specialist.duration || '30 minutes'}

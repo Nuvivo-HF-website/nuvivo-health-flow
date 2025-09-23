@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -9,7 +9,6 @@ import { Specialist } from "@/pages/GuestBooking";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 /* --------------------------- Helpers & Utilities -------------------------- */
-
 const DAY_NAMES = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
 
 const normalizeDay = (d: string) => {
@@ -25,7 +24,6 @@ const normalizeDay = (d: string) => {
   return s;
 };
 
-// Parse "09:00", "9:00", "5 pm", "5:30 PM"
 const timeStrToMinutes = (raw: string) => {
   if (!raw) return NaN;
   const s = raw.trim().toLowerCase();
@@ -38,12 +36,11 @@ const timeStrToMinutes = (raw: string) => {
     h = parseInt(match[1], 10);
     m = match[2] ? parseInt(match[2], 10) : 0;
     const isPM = match[3] === "pm";
-    if (h === 12) h = isPM ? 12 : 0;        // 12am -> 0, 12pm -> 12
+    if (h === 12) h = isPM ? 12 : 0;
     else if (isPM) h += 12;
   } else {
-    const parts = s.split(":").map(Number);
-    h = parts[0] ?? 0;
-    m = parts[1] ?? 0;
+    const [hh, mm] = s.split(":").map(Number);
+    h = hh ?? 0; m = mm ?? 0;
   }
   return h * 60 + m;
 };
@@ -51,147 +48,103 @@ const timeStrToMinutes = (raw: string) => {
 const minutesToTimeStr = (mins: number) => {
   const h = Math.floor(mins / 60);
   const m = mins % 60;
-  
-  // Convert to 12-hour format for better readability
-  if (h === 0) return `12:${String(m).padStart(2,"0")} AM`;
-  if (h < 12) return `${h}:${String(m).padStart(2,"0")} AM`;
-  if (h === 12) return `12:${String(m).padStart(2,"0")} PM`;
-  return `${h - 12}:${String(m).padStart(2,"0")} PM`;
+  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
 };
 
-const getTodayMidnight = () => {
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  return d;
-};
+const getTodayMidnight = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const isSameDay = (a: Date, b: Date) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
 
-const isSameDay = (a: Date, b: Date) =>
-  a.getFullYear() === b.getFullYear() &&
-  a.getMonth() === b.getMonth() &&
-  a.getDate() === b.getDate();
-
-// Accept Postgres array "{monday,tuesday}" | JSON '["monday","tuesday"]' | CSV "monday,tuesday"
-const parseDays = (val: unknown): string[] => {
-  if (!val) return [];
-  if (Array.isArray(val)) return val.map(String);
+/* ---------------------------- Parsing from DB ----------------------------- */
+// available_days can come as text[] (already array) or string; normalize to string[]
+const normalizeDays = (val: unknown): string[] => {
+  if (Array.isArray(val)) return val.map(v => normalizeDay(String(v))).filter(Boolean);
   if (typeof val !== "string") return [];
-
   const s = val.trim();
-  // JSON array
-  if ((s.startsWith("[") && s.endsWith("]")) || (s.startsWith('"') && s.endsWith('"'))) {
-    try {
-      const arr = JSON.parse(s);
-      return Array.isArray(arr) ? arr.map(String) : [];
-    } catch { /* ignore */ }
-  }
-  // Postgres array {a,b,c}
   if (s.startsWith("{") && s.endsWith("}")) {
-    const inner = s.slice(1, -1);
-    return inner.split(",").map(x => x.replace(/^"+|"+$/g, "").trim());
+    return s.slice(1,-1).split(",").map(x => normalizeDay(x.replace(/^"+|"+$/g,"").trim())).filter(Boolean);
   }
-  // CSV
-  return s.split(",").map(x => x.trim()).filter(Boolean);
+  if (s.startsWith("[") && s.endsWith("]")) {
+    try { const arr = JSON.parse(s); return Array.isArray(arr) ? arr.map((x:string)=>normalizeDay(String(x))).filter(Boolean) : []; } catch { return []; }
+  }
+  return s.split(",").map(x => normalizeDay(x)).filter(Boolean);
 };
 
-// Safely parse available_hours which can be object, JSON string, or "09:00-17:00"
+// available_hours is jsonb -> either {start,end} or per-day map; keep as-is
 type Window = { start: string; end: string };
-type PerDayWindows = Record<string, Window>;
-
-const parseAvailableHours = (val: unknown): Window | PerDayWindows | null => {
+type PerDay = Record<string, Window>;
+const normalizeHours = (val: unknown): Window | PerDay | null => {
   if (!val) return null;
-
-  const tryObject = (o: any): Window | PerDayWindows | null => {
-    if (!o || typeof o !== "object") return null;
-    if ("start" in o && "end" in o) return { start: String(o.start), end: String(o.end) };
-    // per-day map: keys are day names
-    const keys = Object.keys(o);
-    if (keys.length) {
-      const perDay: PerDayWindows = {};
-      for (const k of keys) {
-        const v = o[k];
-        if (v && typeof v === "object" && v.start && v.end) {
-          perDay[normalizeDay(k)] = { start: String(v.start), end: String(v.end) };
-        }
-      }
-      if (Object.keys(perDay).length) return perDay;
-    }
-    return null;
-  };
-
-  if (typeof val === "object") return tryObject(val);
-
+  if (typeof val === "object") return val as any;
   if (typeof val === "string") {
     const s = val.trim();
-    // Try JSON
     if (s.startsWith("{") || s.startsWith("[")) {
-      try {
-        const parsed = JSON.parse(s);
-        const out = tryObject(parsed);
-        if (out) return out;
-      } catch { /* fall through */ }
+      try { return JSON.parse(s); } catch { /* ignore */ }
     }
-    // Try "09:00-17:00"
-    const match = s.match(/(\d{1,2}:\d{2}\s*(?:am|pm)?)\s*-\s*(\d{1,2}:\d{2}\s*(?:am|pm)?)/i);
-    if (match) return { start: match[1], end: match[2] };
+    const m = s.match(/(\d{1,2}:\d{2}\s*(?:am|pm)?)\s*-\s*(\d{1,2}:\d{2}\s*(?:am|pm)?)/i);
+    if (m) return { start: m[1], end: m[2] };
   }
-
   return null;
 };
 
-const getAvailableDaysSet = (specialist: Specialist): Set<string> => {
-  const set = new Set<string>();
-  const anySp: any = specialist;
+/* ------------------------- Normalise Specialist Obj ----------------------- */
+// Map snake_case doctor_profile rows (from your schema) to the shape the UI expects
+const useNormalizedSpecialist = (specialist: Specialist) => {
+  return useMemo(() => {
+    const sp: any = specialist;
 
-  const rawDays =
-    anySp.available_days ??
-    anySp.availableDays ??
-    anySp.days_available ??
-    anySp.daysAvailable ??
-    null;
-
-  const parsedDays = parseDays(rawDays);
-  parsedDays.forEach((d) => set.add(normalizeDay(d)));
-
-  // If days empty, infer from per-day hours
-  if (set.size === 0) {
-    const ah = parseAvailableHours(
-      anySp.available_hours ?? anySp.availableHours ?? anySp.working_hours ?? anySp.workingHours
+    const available_days = normalizeDays(
+      sp.available_days ?? sp.availableDays
     );
-    if (ah && !(ah as Window).start) {
-      Object.keys(ah as PerDayWindows).forEach((k) => set.add(normalizeDay(k)));
-    }
-  }
 
-  // Fallback Mon-Fri
-  if (set.size === 0) ["monday","tuesday","wednesday","thursday","friday"].forEach(d => set.add(d));
-  return set;
+    const available_hours = normalizeHours(
+      sp.available_hours ?? sp.availableHours
+    );
+
+    const name =
+      sp.name ||
+      [sp.first_name, sp.last_name].filter(Boolean).join(" ").trim() ||
+      "Specialist";
+
+    return {
+      // scheduling-critical fields
+      available_days,         // string[]
+      available_hours,        // {start,end} or per-day map
+      duration: sp.duration || 30, // default 30 mins if you don't store it
+      breaks: sp.breaks || null,
+
+      // UI fields mapped from your schema
+      name,
+      image: sp.image ?? sp.avatar_url ?? undefined,
+      specialty: sp.specialty ?? sp.profession ?? "",
+      qualifications: sp.qualifications ?? sp.qualification ?? "",
+      price: sp.price ?? sp.consultation_fee ?? undefined,
+      locations: sp.locations ?? (sp.clinic_name ? [sp.clinic_name] : undefined),
+
+      // keep the original too (if you need other properties)
+      _raw: sp,
+    };
+  }, [specialist]);
 };
 
-const getWorkingWindowForDate = (date: Date, specialist: Specialist): { startMin: number; endMin: number } | null => {
-  const anySp: any = specialist;
-  const ah = parseAvailableHours(
-    anySp.available_hours ?? anySp.availableHours ?? anySp.working_hours ?? anySp.workingHours
-  );
+/* ------------------------ Generate Time Slots (Respect DB) ---------------- */
+const getAvailableDaysSet = (days: string[]) => new Set(days);
+
+const getWorkingWindowForDate = (date: Date, available_hours: Window | PerDay | null): { startMin: number; endMin: number } | null => {
   const day = DAY_NAMES[date.getDay()];
+  let start: string | undefined, end: string | undefined;
 
-  let start: string | undefined;
-  let end: string | undefined;
-
-  if (ah) {
-    if ((ah as Window).start) {
-      start = (ah as Window).start;
-      end = (ah as Window).end;
-    } else if ((ah as PerDayWindows)[day]) {
-      start = (ah as PerDayWindows)[day].start;
-      end = (ah as PerDayWindows)[day].end;
+  if (available_hours) {
+    if ((available_hours as Window).start) {
+      start = (available_hours as Window).start;
+      end = (available_hours as Window).end;
+    } else if ((available_hours as PerDay)[day]) {
+      start = (available_hours as PerDay)[day].start;
+      end = (available_hours as PerDay)[day].end;
     }
   }
 
-  // Sensible default only if nothing parsed
-  if (!start || !end) {
-    start = "9:00 AM";
-    end = "5:00 PM";
-  }
+  // fallback only if undefined
+  if (!start || !end) { start = "09:00"; end = "17:00"; }
 
   const startMin = timeStrToMinutes(start);
   const endMin = timeStrToMinutes(end);
@@ -200,12 +153,11 @@ const getWorkingWindowForDate = (date: Date, specialist: Specialist): { startMin
   return { startMin, endMin };
 };
 
-const inAnyBreak = (minutes: number, duration: number, specialist: Specialist) => {
-  const br: any[] | undefined = (specialist as any).breaks;
-  if (!Array.isArray(br) || br.length === 0) return false;
+const inAnyBreak = (minutes: number, duration: number, breaks?: Array<{start:string;end:string}> | null) => {
+  if (!Array.isArray(breaks) || breaks.length === 0) return false;
   const slotStart = minutes;
   const slotEnd = minutes + duration;
-  return br.some(b => {
+  return breaks.some(b => {
     if (!b?.start || !b?.end) return false;
     const bStart = timeStrToMinutes(String(b.start));
     const bEnd = timeStrToMinutes(String(b.end));
@@ -213,75 +165,61 @@ const inAnyBreak = (minutes: number, duration: number, specialist: Specialist) =
   });
 };
 
-const getDurationMinutes = (specialist: Specialist) => {
-  const raw: any = (specialist as any).duration;
-  if (!raw) return 30;
-  if (typeof raw === "number") return raw;
-  const n = parseInt(String(raw), 10);
-  return Number.isFinite(n) && n > 0 ? n : 30;
-};
-
-/* ------------------------ Generate Time Slots (Robust) --------------------- */
-
-const generateTimeSlots = (date: Date, specialist: Specialist) => {
+const generateTimeSlots = (date: Date, S: ReturnType<typeof useNormalizedSpecialist>) => {
   const slots: { time: string; available: boolean }[] = [];
 
-  const availableDays = getAvailableDaysSet(specialist);
+  const availableDays = getAvailableDaysSet(S.available_days || []);
   const dayName = DAY_NAMES[date.getDay()];
   if (!availableDays.has(dayName)) return slots;
 
-  const window = getWorkingWindowForDate(date, specialist);
+  const window = getWorkingWindowForDate(date, S.available_hours);
   if (!window) return slots;
 
-  const duration = getDurationMinutes(specialist);
+  const duration = typeof S.duration === "number" ? S.duration : parseInt(String(S.duration), 10) || 30;
   const now = new Date();
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
   const isToday = isSameDay(date, now);
 
   for (let t = window.startMin; t + duration <= window.endMin; t += duration) {
-    const isPast = isToday && t <= nowMinutes;     // hide times up to "now"
-    const isOnBreak = inAnyBreak(t, duration, specialist);
-
-    slots.push({
-      time: minutesToTimeStr(t),
-      available: !isPast && !isOnBreak,
-    });
+    const isPast = isToday && t <= nowMinutes; // hide past slots today
+    const isOnBreak = inAnyBreak(t, duration, S.breaks);
+    slots.push({ time: minutesToTimeStr(t), available: !isPast && !isOnBreak });
   }
 
   return slots;
 };
 
-/* ----------------------------- Component Props ---------------------------- */
-
+/* ----------------------------- Component ---------------------------------- */
 interface AvailabilityCalendarProps {
   specialist: Specialist;
   onTimeSlotSelect: (date: string, time: string) => void;
   onBack: () => void;
 }
 
-export function AvailabilityCalendar({ 
-  specialist, 
-  onTimeSlotSelect, 
-  onBack 
-}: AvailabilityCalendarProps) {
+export function AvailabilityCalendar({ specialist, onTimeSlotSelect, onBack }: AvailabilityCalendarProps) {
+  const S = useNormalizedSpecialist(specialist);
+
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [availableSlots, setAvailableSlots] = useState<{ time: string; available: boolean }[]>([]);
   const [nextAvailableSlot, setNextAvailableSlot] = useState<string>("");
 
+  const isDateDisabled = (date: Date) => {
+    const today = getTodayMidnight();
+    if (date < today) return true;
+    const availableDays = getAvailableDaysSet(S.available_days || []);
+    const dayName = DAY_NAMES[date.getDay()];
+    return !availableDays.has(dayName);
+  };
+
   const findNextAvailableSlot = () => {
     const today = getTodayMidnight();
-
     for (let i = 0; i < 14; i++) {
       const checkDate = new Date(today);
       checkDate.setDate(today.getDate() + i);
-
-      const slots = generateTimeSlots(checkDate, specialist);
-      const firstAvailable = slots.find(slot => slot.available);
+      const slots = generateTimeSlots(checkDate, S);
+      const firstAvailable = slots.find(s => s.available);
       if (firstAvailable) {
-        const label =
-          i === 0 ? "Today" :
-          i === 1 ? "Tomorrow" :
-          checkDate.toLocaleDateString("en-GB", { weekday: "long", month: "short", day: "numeric" });
+        const label = i === 0 ? "Today" : i === 1 ? "Tomorrow" : checkDate.toLocaleDateString("en-GB", { weekday: "long", month: "short", day: "numeric" });
         setNextAvailableSlot(`${label} at ${firstAvailable.time}`);
         return;
       }
@@ -291,45 +229,31 @@ export function AvailabilityCalendar({
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
-    setAvailableSlots(date ? generateTimeSlots(date, specialist) : []);
+    setAvailableSlots(date ? generateTimeSlots(date, S) : []);
   };
 
   const handleTimeSelect = (time: string) => {
-    if (selectedDate) {
-      onTimeSlotSelect(selectedDate.toISOString().split("T")[0], time);
-    }
-  };
-
-  const isDateDisabled = (date: Date) => {
-    const today = getTodayMidnight();
-    if (date < today) return true;
-    const availableDays = getAvailableDaysSet(specialist);
-    const dayName = DAY_NAMES[date.getDay()];
-    return !availableDays.has(dayName);
+    if (selectedDate) onTimeSlotSelect(selectedDate.toISOString().split("T")[0], time);
   };
 
   React.useEffect(() => {
     findNextAvailableSlot();
-
     const today = new Date();
     if (!isDateDisabled(today)) {
       setSelectedDate(today);
-      setAvailableSlots(generateTimeSlots(today, specialist));
+      setAvailableSlots(generateTimeSlots(today, S));
     } else {
       for (let i = 1; i <= 14; i++) {
         const nextDay = new Date();
         nextDay.setDate(today.getDate() + i);
         if (!isDateDisabled(nextDay)) {
           setSelectedDate(nextDay);
-          setAvailableSlots(generateTimeSlots(nextDay, specialist));
+          setAvailableSlots(generateTimeSlots(nextDay, S));
           break;
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(specialist)]); // rerun if specialist payload shape/strings change
-
-  const workingWindowForSelected = selectedDate ? getWorkingWindowForDate(selectedDate, specialist) : null;
+  }, [S.available_days?.join(","), JSON.stringify(S.available_hours)]);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -350,30 +274,28 @@ export function AvailabilityCalendar({
       <Card className="mb-6">
         <CardContent className="flex items-center space-x-4 p-6">
           <Avatar className="w-16 h-16">
-            <AvatarImage src={(specialist as any).image} alt={specialist.name || "Specialist"} />
-            <AvatarFallback>
-              {specialist.name ? specialist.name.split(" ").map(n => n[0]).join("") : "SP"}
-            </AvatarFallback>
+            <AvatarImage src={S.image} alt={S.name} />
+            <AvatarFallback>{S.name.split(" ").map(n => n[0]).join("") || "SP"}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h3 className="text-xl font-semibold">{specialist.name || "Specialist"}</h3>
-            <Badge variant="secondary" className="mb-1">
-              {(specialist as any).specialty}
-            </Badge>
-            <p className="text-sm text-muted-foreground">{(specialist as any).qualifications}</p>
+            <h3 className="text-xl font-semibold">{S.name}</h3>
+            <Badge variant="secondary" className="mb-1">{S.specialty}</Badge>
+            <p className="text-sm text-muted-foreground">{S.qualifications}</p>
             <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
               <span className="flex items-center space-x-1">
                 <Clock className="w-4 h-4" />
-                <span>{(specialist as any).duration || "30 min"}</span>
+                <span>{S.duration || "30 min"}</span>
               </span>
-              {(specialist as any).locations && (
-                <span>Available: {(specialist as any).locations.join(", ")}</span>
-              )}
+              {S.locations && <span>Available: {S.locations.join(", ")}</span>}
             </div>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-primary">£{(specialist as any).price}</p>
-            <p className="text-sm text-muted-foreground">per consultation</p>
+            {S.price != null && (
+              <>
+                <p className="text-2xl font-bold text-primary">£{S.price}</p>
+                <p className="text-sm text-muted-foreground">per consultation</p>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -396,21 +318,15 @@ export function AvailabilityCalendar({
             />
             <div className="mt-2 space-y-1">
               <p className="text-sm text-muted-foreground">
-                📅 Available: {(() => {
-                  const days = Array.from(getAvailableDaysSet(specialist));
-                  return days.length
-                    ? days.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(", ")
-                    : "Monday - Friday";
-                })()}
+                📅 Available: {(S.available_days || []).map(d => d.charAt(0).toUpperCase()+d.slice(1)).join(", ")}
               </p>
               <p className="text-sm text-muted-foreground">
-                🕘 Sessions: {workingWindowForSelected
-                  ? `${minutesToTimeStr(workingWindowForSelected.startMin)} - ${minutesToTimeStr(workingWindowForSelected.endMin)}`
-                  : "9:00 AM - 5:00 PM"}
+                🕘 Sessions: {selectedDate ? (() => {
+                  const w = getWorkingWindowForDate(selectedDate, S.available_hours);
+                  return w ? `${minutesToTimeStr(w.startMin)} - ${minutesToTimeStr(w.endMin)}` : "—";
+                })() : "—"}
               </p>
-              <p className="text-sm text-muted-foreground">
-                ⏱️ Duration: {(specialist as any).duration || "30 minutes"}
-              </p>
+              <p className="text-sm text-muted-foreground">⏱️ Duration: {S.duration || "30 minutes"}</p>
             </div>
           </CardContent>
         </Card>
@@ -420,12 +336,7 @@ export function AvailabilityCalendar({
             <CardTitle>Available Times</CardTitle>
             {selectedDate && (
               <p className="text-sm text-muted-foreground">
-                {selectedDate.toLocaleDateString("en-GB", { 
-                  weekday: "long", 
-                  year: "numeric", 
-                  month: "long", 
-                  day: "numeric" 
-                })}
+                {selectedDate.toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
               </p>
             )}
           </CardHeader>
@@ -436,34 +347,19 @@ export function AvailabilityCalendar({
                 <p className="text-muted-foreground">Please select a date to view available times</p>
               </div>
             ) : (
-              <>
-                <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                  <p className="text-sm font-medium text-blue-800 mb-1">💡 Booking Tips:</p>
-                  <ul className="text-xs text-blue-700 space-y-1">
-                    <li>• Morning slots fill up quickly</li>
-                    <li>• Some providers have lunch breaks</li>
-                    <li>• Online consultations available all day</li>
-                  </ul>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
-                  {availableSlots.map((slot, index) => (
-                    <Button
-                      key={index}
-                      variant={slot.available ? "outline" : "ghost"}
-                      disabled={!slot.available}
-                      onClick={() => handleTimeSelect(slot.time)}
-                      className={`justify-center text-sm ${
-                        slot.available 
-                          ? "hover:bg-primary hover:text-primary-foreground border-primary/20" 
-                          : "opacity-50 cursor-not-allowed"
-                      }`}
-                    >
-                      {slot.time}
-                    </Button>
-                  ))}
-                </div>
-              </>
+              <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
+                {availableSlots.map((slot, i) => (
+                  <Button
+                    key={i}
+                    variant={slot.available ? "outline" : "ghost"}
+                    disabled={!slot.available}
+                    onClick={() => handleTimeSelect(slot.time)}
+                    className={`justify-center text-sm ${slot.available ? "hover:bg-primary hover:text-primary-foreground border-primary/20" : "opacity-50 cursor-not-allowed"}`}
+                  >
+                    {slot.time}
+                  </Button>
+                ))}
+              </div>
             )}
 
             {selectedDate && availableSlots.filter(s => s.available).length === 0 && (

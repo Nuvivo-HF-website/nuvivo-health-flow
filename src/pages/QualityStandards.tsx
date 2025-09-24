@@ -135,7 +135,7 @@ const QualityStandards = () => {
                     <div className="p-4 bg-orange-50 rounded-lg">
                       <h4 className="font-medium text-orange-800 mb-2">Patient Experience</h4>
                       <ul className="text-sm space-y-1 text-orange-700">
-                        <li>• Patient satisfaction scores (>95%)</li>
+                        <li>• Patient satisfaction scores (&gt;95%)</li>
                         <li>• Complaint resolution times</li>
                         <li>• Communication effectiveness ratings</li>
                         <li>• Access and convenience measures</li>
@@ -170,25 +170,25 @@ const QualityStandards = () => {
                       <tr>
                         <td className="border border-gray-200 p-3">Test Result Delivery</td>
                         <td className="border border-gray-200 p-3">Within promised timeframe</td>
-                        <td className="border border-gray-200 p-3">>98%</td>
+                        <td className="border border-gray-200 p-3">&gt;98%</td>
                         <td className="border border-gray-200 p-3">Turnaround time tracking</td>
                       </tr>
                       <tr>
                         <td className="border border-gray-200 p-3">Clinical Consultations</td>
                         <td className="border border-gray-200 p-3">On-time start</td>
-                        <td className="border border-gray-200 p-3">>95%</td>
+                        <td className="border border-gray-200 p-3">&gt;95%</td>
                         <td className="border border-gray-200 p-3">Scheduling system analytics</td>
                       </tr>
                       <tr>
                         <td className="border border-gray-200 p-3">Customer Support</td>
                         <td className="border border-gray-200 p-3">First contact resolution</td>
-                        <td className="border border-gray-200 p-3">>90%</td>
+                        <td className="border border-gray-200 p-3">&gt;90%</td>
                         <td className="border border-gray-200 p-3">Support ticket analysis</td>
                       </tr>
                       <tr>
                         <td className="border border-gray-200 p-3">Emergency Response</td>
                         <td className="border border-gray-200 p-3">Critical result notification</td>
-                        <td className="border border-gray-200 p-3"><1 hour</td>
+                        <td className="border border-gray-200 p-3">&lt;1 hour</td>
                         <td className="border border-gray-200 p-3">Alert system monitoring</td>
                       </tr>
                     </tbody>

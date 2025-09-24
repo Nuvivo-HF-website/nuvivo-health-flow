@@ -62,6 +62,14 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import StaffDashboard from "./pages/StaffDashboard";
 import ManageStaff from "./pages/ManageStaff";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import GDPRCompliance from "./pages/GDPRCompliance";
+import MedicalDisclaimer from "./pages/MedicalDisclaimer";
+import DataProtection from "./pages/DataProtection";
+import MedicalCertification from "./pages/MedicalCertification";
+import LabAccreditation from "./pages/LabAccreditation";
+import QualityStandards from "./pages/QualityStandards";
 
 import Testing from "./pages/Testing";
 import ScrollToTop from "./components/ScrollToTop";
@@ -136,6 +144,14 @@ const App = () => (
           <Route path="/my-files" element={<MyFiles />} />
           
           <Route path="/testing" element={<Testing />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/gdpr-compliance" element={<GDPRCompliance />} />
+          <Route path="/medical-disclaimer" element={<MedicalDisclaimer />} />
+          <Route path="/data-protection" element={<DataProtection />} />
+          <Route path="/medical-certification" element={<MedicalCertification />} />
+          <Route path="/lab-accreditation" element={<LabAccreditation />} />
+          <Route path="/quality-standards" element={<QualityStandards />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/subscription-success" element={<SubscriptionSuccess />} />
           <Route path="*" element={<NotFound />} />

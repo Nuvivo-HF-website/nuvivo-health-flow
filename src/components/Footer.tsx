@@ -69,10 +69,10 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><button onClick={() => navigate("/privacy")} className="hover:text-accent transition-colors text-left">Privacy Policy</button></li>
-              <li><button onClick={() => navigate("/terms")} className="hover:text-accent transition-colors text-left">Terms of Service</button></li>
-              <li><button onClick={() => navigate("/gdpr")} className="hover:text-accent transition-colors text-left">GDPR Compliance</button></li>
-              <li><button onClick={() => navigate("/disclaimer")} className="hover:text-accent transition-colors text-left">Medical Disclaimer</button></li>
+              <li><button onClick={() => navigate("/privacy-policy")} className="hover:text-accent transition-colors text-left">Privacy Policy</button></li>
+              <li><button onClick={() => navigate("/terms-of-service")} className="hover:text-accent transition-colors text-left">Terms of Service</button></li>
+              <li><button onClick={() => navigate("/gdpr-compliance")} className="hover:text-accent transition-colors text-left">GDPR Compliance</button></li>
+              <li><button onClick={() => navigate("/medical-disclaimer")} className="hover:text-accent transition-colors text-left">Medical Disclaimer</button></li>
               <li><button onClick={() => navigate("/data-protection")} className="hover:text-accent transition-colors text-left">Data Protection</button></li>
             </ul>
           </div>
@@ -84,13 +84,13 @@ const Footer = () => {
             © 2024 Nuvivo Health. All rights reserved.
           </div>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <button onClick={() => navigate("/certifications")} className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
+            <button onClick={() => navigate("/medical-certification")} className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
               Medical Certification
             </button>
-            <button onClick={() => navigate("/accreditation")} className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
+            <button onClick={() => navigate("/lab-accreditation")} className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
               Lab Accreditation
             </button>
-            <button onClick={() => navigate("/quality")} className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
+            <button onClick={() => navigate("/quality-standards")} className="text-primary-foreground/60 hover:text-accent transition-colors text-sm">
               Quality Standards
             </button>
           </div>
